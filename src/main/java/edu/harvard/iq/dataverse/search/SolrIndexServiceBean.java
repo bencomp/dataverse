@@ -2,6 +2,7 @@ package edu.harvard.iq.dataverse.search;
 
 import edu.harvard.iq.dataverse.DataFile;
 import edu.harvard.iq.dataverse.Dataset;
+import edu.harvard.iq.dataverse.DatasetServiceBean;
 import edu.harvard.iq.dataverse.DatasetVersion;
 import edu.harvard.iq.dataverse.Dataverse;
 import edu.harvard.iq.dataverse.DataverseRoleServiceBean;
@@ -18,7 +19,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
+import javax.ejb.AsyncResult;
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Named;
@@ -46,7 +50,32 @@ public class SolrIndexServiceBean {
     @EJB
     DataverseServiceBean dataverseService;
     @EJB
+    DatasetServiceBean datasetService;
+    @EJB
     DataverseRoleServiceBean rolesSvc;
+    @EJB
+    IndexServiceBean indexService;
+
+    /**
+     * This non-default mode changes the behavior of the "Data Related To Me"
+     * feature to be more like "**Unpublished** Data Related to Me" after you
+     * have changed this boolean to true and run "index all".
+     *
+     * The "Data Related to Me" feature relies on *always* indexing permissions
+     * regardless of if the DvObject is published or not.
+     *
+     * In "Unpublished Data Related to Me" mode, we first check if the DvObject
+     * is published. If it's published, we set the search permissions to *only*
+     * contain "group_public", which is quick and cheap to do. If the DvObject
+     * in question is *not* public, we perform the expensive operation of
+     * rooting around in the system to determine who should be able to
+     * "discover" the unpublished version of DvObject. By default this mode is
+     * *not* enabled. If you want to enable it, change the boolean to true and
+     * run "index all".
+     *
+     * See also https://github.com/IQSS/dataverse/issues/50
+     */
+    private boolean unpublishedDataRelatedToMeModeEnabled = true;
 
     public List<DvObjectSolrDoc> determineSolrDocs(Long dvObjectId) {
         List<DvObjectSolrDoc> emptyList = new ArrayList<>();
@@ -89,7 +118,16 @@ public class SolrIndexServiceBean {
      * datasets and files return lists.
      */
     private DvObjectSolrDoc constructDataverseSolrDoc(Dataverse dataverse) {
-        List<String> perms = searchPermissionsService.findDataversePerms(dataverse);
+        List<String> perms = new ArrayList<>();
+        if (unpublishedDataRelatedToMeModeEnabled) {
+            if (dataverse.isReleased()) {
+                perms.add(IndexServiceBean.getPublicGroupString());
+            } else {
+                perms = searchPermissionsService.findDataversePerms(dataverse);
+            }
+        } else {
+            perms = searchPermissionsService.findDataversePerms(dataverse);
+        }
         DvObjectSolrDoc dvDoc = new DvObjectSolrDoc(dataverse.getId().toString(), IndexServiceBean.solrDocIdentifierDataverse + dataverse.getId(), dataverse.getName(), perms);
         return dvDoc;
     }
@@ -122,7 +160,16 @@ public class SolrIndexServiceBean {
                 String solrIdStart = IndexServiceBean.solrDocIdentifierFile + dataFile.getId();
                 String solrIdEnd = getDatasetOrDataFileSolrEnding(datasetVersionFileIsAttachedTo.getVersionState());
                 String solrId = solrIdStart + solrIdEnd;
-                List<String> perms = searchPermissionsService.findDatasetVersionPerms(datasetVersionFileIsAttachedTo);
+                List<String> perms = new ArrayList<>();
+                if (unpublishedDataRelatedToMeModeEnabled) {
+                    if (datasetVersionFileIsAttachedTo.isReleased()) {
+                        perms.add(IndexServiceBean.getPublicGroupString());
+                    } else {
+                        perms = searchPermissionsService.findDatasetVersionPerms(datasetVersionFileIsAttachedTo);
+                    }
+                } else {
+                    perms = searchPermissionsService.findDatasetVersionPerms(datasetVersionFileIsAttachedTo);
+                }
                 DvObjectSolrDoc dataFileSolrDoc = new DvObjectSolrDoc(dataFile.getId().toString(), solrId, dataFile.getDisplayName(), perms);
                 datafileSolrDocs.add(dataFileSolrDoc);
             }
@@ -137,7 +184,16 @@ public class SolrIndexServiceBean {
         for (DatasetVersion datasetVersionFileIsAttachedTo : datasetVersionsToBuildCardsFor(dataset)) {
             boolean cardShouldExist = desiredCards.get(datasetVersionFileIsAttachedTo.getVersionState());
             if (cardShouldExist) {
-                List<String> perms = searchPermissionsService.findDatasetVersionPerms(datasetVersionFileIsAttachedTo);
+                List<String> perms = new ArrayList<>();
+                if (unpublishedDataRelatedToMeModeEnabled) {
+                    if (datasetVersionFileIsAttachedTo.isReleased()) {
+                        perms.add(IndexServiceBean.getPublicGroupString());
+                    } else {
+                        perms = searchPermissionsService.findDatasetVersionPerms(datasetVersionFileIsAttachedTo);
+                    }
+                } else {
+                    perms = searchPermissionsService.findDatasetVersionPerms(datasetVersionFileIsAttachedTo);
+                }
                 for (FileMetadata fileMetadata : datasetVersionFileIsAttachedTo.getFileMetadatas()) {
                     Long fileId = fileMetadata.getDataFile().getId();
                     String solrIdStart = IndexServiceBean.solrDocIdentifierFile + fileId;
@@ -170,7 +226,16 @@ public class SolrIndexServiceBean {
         String solrIdEnd = getDatasetOrDataFileSolrEnding(version.getVersionState());
         String solrId = solrIdStart + solrIdEnd;
         String name = version.getTitle();
-        List<String> perms = searchPermissionsService.findDatasetVersionPerms(version);
+        List<String> perms = new ArrayList<>();
+        if (unpublishedDataRelatedToMeModeEnabled) {
+            if (version.isReleased()) {
+                perms.add(IndexServiceBean.getPublicGroupString());
+            } else {
+                perms = searchPermissionsService.findDatasetVersionPerms(version);
+            }
+        } else {
+            perms = searchPermissionsService.findDatasetVersionPerms(version);
+        }
         return new DvObjectSolrDoc(version.getDataset().getId().toString(), solrId, name, perms);
     }
 
@@ -294,24 +359,31 @@ public class SolrIndexServiceBean {
         UpdateResponse commitResponse = solrServer.commit();
     }
 
+    /**
+     * We use the database to determine direct children since there is no
+     * inheritance
+     */
     public IndexResponse indexPermissionsOnSelfAndChildren(DvObject definitionPoint) {
         List<Long> dvObjectsToReindexPermissionsFor = new ArrayList<>();
         /**
          * @todo Re-indexing the definition point itself seems to be necessary
          * for revoke but not necessarily grant.
          */
-        dvObjectsToReindexPermissionsFor.add(definitionPoint.getId());
-        SolrServer solrServer = new HttpSolrServer("http://" + systemConfig.getSolrHostColonPort() + "/solr");
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setQuery("*");
-        solrQuery.setRows(Integer.SIZE);
+
+        // We don't create a Solr "primary/content" doc for the root dataverse
+        // so don't create a Solr "permission" doc either.
         if (definitionPoint.isInstanceofDataverse()) {
-            Dataverse dataverse = (Dataverse) definitionPoint;
-
-            String dataversePath = dataverseService.determineDataversePath(dataverse);
-            String filterDownToSubtree = SearchFields.SUBTREE + ":\"" + dataversePath + "\"";
-
-            solrQuery.addFilterQuery(filterDownToSubtree);
+            Dataverse selfDataverse = (Dataverse) definitionPoint;
+            if (!selfDataverse.equals(dataverseService.findRootDataverse())) {
+                dvObjectsToReindexPermissionsFor.add(definitionPoint.getId());
+            }
+            List<Dataset> directChildDatasetsOfDvDefPoint = datasetService.findByOwnerId(selfDataverse.getId());
+            for (Dataset dataset : directChildDatasetsOfDvDefPoint) {
+                dvObjectsToReindexPermissionsFor.add(dataset.getId());
+                for (long fileId : filesToReIndexPermissionsFor(dataset)) {
+                    dvObjectsToReindexPermissionsFor.add(fileId);
+                }
+            }
         } else if (definitionPoint.isInstanceofDataset()) {
             // index the dataset itself
             indexPermissionsForOneDvObject(definitionPoint.getId());
@@ -320,32 +392,11 @@ public class SolrIndexServiceBean {
              * @todo make this faster, index files in batches
              */
             Dataset dataset = (Dataset) definitionPoint;
-            Map<DatasetVersion.VersionState, Boolean> desiredCards = searchPermissionsService.getDesiredCards(dataset);
-            for (DatasetVersion version : datasetVersionsToBuildCardsFor(dataset)) {
-                boolean cardShouldExist = desiredCards.get(version.getVersionState());
-                if (cardShouldExist) {
-                    for (FileMetadata fileMetadata : version.getFileMetadatas()) {
-                        dvObjectsToReindexPermissionsFor.add(fileMetadata.getDataFile().getId());
-                    }
-                }
+            for (long fileId : filesToReIndexPermissionsFor(dataset)) {
+                dvObjectsToReindexPermissionsFor.add(fileId);
             }
-
-        }
-
-        QueryResponse queryResponse = null;
-        try {
-            queryResponse = solrServer.query(solrQuery);
-            if (queryResponse != null) {
-                for (SolrDocument solrDoc : queryResponse.getResults()) {
-                    Object entityIdObject = solrDoc.getFieldValue(SearchFields.ENTITY_ID);
-                    if (entityIdObject != null) {
-                        dvObjectsToReindexPermissionsFor.add((Long) entityIdObject);
-                    }
-                }
-            }
-
-        } catch (SolrServerException | HttpSolrServer.RemoteSolrException ex) {
-            return new IndexResponse("Unable to execute indexPermissionsOnSelfAndChildren on " + definitionPoint.getId() + ":" + definitionPoint.getDisplayName() + ". Exception: " + ex.toString());
+        } else {
+            dvObjectsToReindexPermissionsFor.add(definitionPoint.getId());
         }
 
         List<String> updatePermissionTimeSuccessStatus = new ArrayList<>();
@@ -367,6 +418,20 @@ public class SolrIndexServiceBean {
         );
     }
 
+    private List<Long> filesToReIndexPermissionsFor(Dataset dataset) {
+        List<Long> filesToReindexPermissionsFor = new ArrayList<>();
+        Map<DatasetVersion.VersionState, Boolean> desiredCards = searchPermissionsService.getDesiredCards(dataset);
+        for (DatasetVersion version : datasetVersionsToBuildCardsFor(dataset)) {
+            boolean cardShouldExist = desiredCards.get(version.getVersionState());
+            if (cardShouldExist) {
+                for (FileMetadata fileMetadata : version.getFileMetadatas()) {
+                    filesToReindexPermissionsFor.add(fileMetadata.getDataFile().getId());
+                }
+            }
+        }
+        return filesToReindexPermissionsFor;
+    }
+
     public IndexResponse deleteMultipleSolrIds(List<String> solrIdsToDelete) {
         if (solrIdsToDelete.isEmpty()) {
             return new IndexResponse("nothing to delete");
@@ -380,33 +445,69 @@ public class SolrIndexServiceBean {
              */
             return new IndexResponse("problem deleting the following documents from Solr: " + solrIdsToDelete);
         }
+        try {
+            solrServer.commit();
+        } catch (SolrServerException | IOException ex) {
+            return new IndexResponse("problem committing deletion of the following documents from Solr: " + solrIdsToDelete);
+        }
         return new IndexResponse("no known problem deleting the following documents from Solr:" + solrIdsToDelete);
     }
 
+    @Asynchronous
+    public Future<String> indexMissing() {
+        StringBuilder status = new StringBuilder();
+        List<Dataverse> stateOrMissingDataverses = indexService.findStaleOrMissingDataverses();
+        int countOfIndexedDataverses = 0;
+        for (Dataverse staleOrMissingDataverse : stateOrMissingDataverses) {
+            Future<String> response = indexService.indexDataverseInNewTransaction(staleOrMissingDataverse);
+            countOfIndexedDataverses++;
+        }
+        status.append("indexed dataverses: " + countOfIndexedDataverses + ", ");
+        List<Dataset> staleOrMissingDatasets = indexService.findStaleOrMissingDatasets();
+        int countOfIndexedDatasets = 0;
+        for (Dataset staleOrMissingDataset : staleOrMissingDatasets) {
+            indexService.indexDatasetInNewTransaction(staleOrMissingDataset);
+            countOfIndexedDatasets++;
+        }
+        status.append("indexed datasets: " + countOfIndexedDatasets + ", ");
+        int countOfIndexedPermissions = 0;
+        List<Long> dvObjectsWithStaleOrMissingPermissions = findPermissionsInDatabaseButStaleInOrMissingFromSolr();
+        for (long dvObjectId : dvObjectsWithStaleOrMissingPermissions) {
+            indexPermissionsForOneDvObject(dvObjectId);
+            countOfIndexedPermissions++;
+        }
+        status.append("indexed permissions (DvObject IDs): " + countOfIndexedPermissions);
+        logger.info(status.toString());
+        return new AsyncResult<>(status.toString());
+    }
+
     /**
+     * @todo Do we want to report the root dataverse (id 1, often) in
+     * permissionsInDatabaseButMissingFromSolr?
+     *
      * @return A list of dvobject ids that should have their permissions
      * re-indexed Solr was down when a permission was added. The permission
      * should be added to Solr.
      */
-    public List<Long> findPermissionsMissingFromSolr() throws Exception {
+    public List<Long> findPermissionsInDatabaseButStaleInOrMissingFromSolr() {
         List<Long> indexingRequired = new ArrayList<>();
+        long rootDvId = dataverseService.findRootDataverse().getId();
         for (DvObject dvObject : dvObjectService.findAll()) {
 //            logger.info("examining dvObjectId " + dvObject.getId() + "...");
             Timestamp permissionModificationTime = dvObject.getPermissionModificationTime();
             Timestamp permissionIndexTime = dvObject.getPermissionIndexTime();
             if (permissionIndexTime == null) {
-                indexingRequired.add(dvObject.getId());
+                if (dvObject.getId() != rootDvId) {
+                    // we don't index the rootDv
+                    indexingRequired.add(dvObject.getId());
+                }
             } else {
                 if (permissionModificationTime == null) {
                     /**
                      * @todo What should we do here? Permissions should always
-                     * be there. They are assigned at create time. For now,
-                     * we'll throw an exception. Set this to true and figure it
-                     * out!
+                     * be there. They are assigned at create time.
                      */
-                    if (false) {
-                        throw new Exception("Problem finding missing Solr permissions. No permission modification time for dvObject id " + dvObject.getId());
-                    }
+                    logger.info("no permission modification time for dvobject id " + dvObject.getId());
                 } else {
                     if (permissionIndexTime.before(permissionModificationTime)) {
                         indexingRequired.add(dvObject.getId());

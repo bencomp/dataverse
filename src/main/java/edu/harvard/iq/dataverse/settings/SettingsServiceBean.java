@@ -1,10 +1,14 @@
 package edu.harvard.iq.dataverse.settings;
 
+import edu.harvard.iq.dataverse.actionlogging.ActionLogRecord;
+import edu.harvard.iq.dataverse.actionlogging.ActionLogServiceBean;
+import edu.harvard.iq.dataverse.api.ApiBlockingFilter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
@@ -25,6 +29,45 @@ public class SettingsServiceBean {
      * So there.
      */
     public enum Key {
+        /**
+         * Experimental: Allow non-public search with a key/token using the
+         * Search API. See also https://github.com/IQSS/dataverse/issues/1299
+         */
+        SearchApiNonPublicAllowed,
+        
+        /**
+         * API endpoints that are not accessible. Comma separated list.
+         */
+        BlockedApiEndpoints,
+        
+        /**
+         * A key that, with the right {@link ApiBlockingFilter.BlockPolicy},
+         * allows calling blocked APIs.
+         */
+        BlockedApiKey,
+        
+        
+        /**
+         * How to treat blocked APIs. One of drop, localhost-only, unblock-key
+         */
+        BlockedApiPolicy,
+        
+        /**
+         * For development only (see dev guide for details). Backed by an enum
+         * of possible account types.
+         */
+        DebugShibAccountType,
+        /** Application-wide Terms of Use per installation. */
+        ApplicationTermsOfUse,
+        /** Terms of Use specific to API per installation. */
+        ApiTermsOfUse,
+        /**
+         * URL for the application-wide Privacy Policy per installation, linked
+         * to from the footer.
+         */
+        ApplicationPrivacyPolicyUrl,
+        /** Expose debug information in the UI that users shouldn't normally see. */
+        Debug,
         /**
          * A boolean defining if indexing and search should respect the concept
          * of "permission root".
@@ -52,6 +95,8 @@ public class SettingsServiceBean {
         DataDepositApiMaxUploadInBytes,
         /** Key for if Shibboleth is enabled or disabled. */
         ShibEnabled,
+        /** Key for if ScrubMigrationData is enabled or disabled. */
+        ScrubMigrationData,
         /** Key for the url to send users who want to sign up to. */
         SignUpUrl,
         /** Key for whether we allow users to sign up */
@@ -73,7 +118,13 @@ public class SettingsServiceBean {
         /* zip download size limit */
         ZipDonwloadLimit,
         /* zip upload number of files limit */
-        ZipUploadFilesLimit;
+        ZipUploadFilesLimit,
+        /* status message that will appear on the home page */
+        StatusMessageHeader,
+        /* full text of status message, to appear in popup */
+        StatusMessageText,
+        /* return email address for system emails such as notifications */
+        SystemEmail;
         
         @Override
         public String toString() {
@@ -83,6 +134,9 @@ public class SettingsServiceBean {
     
     @PersistenceContext
     EntityManager em;
+    
+    @EJB
+    ActionLogServiceBean actionLogSvc;
     
     /**
      * Values that are considered as "true".
@@ -131,13 +185,13 @@ public class SettingsServiceBean {
     public Setting set( String name, String content ) {
         Setting s = new Setting( name, content );
         s = em.merge(s);
+        actionLogSvc.log( new ActionLogRecord(ActionLogRecord.ActionType.Setting, "set")
+                            .setInfo(name + ": " + content));
         return s;
     }
     
     public Setting setValueForKey( Key key, String content ) {
-        Setting s = new Setting( key.toString(), content );
-        s = em.merge(s);
-        return s;
+        return set( key.toString(), content );
     }
     
     /**
@@ -161,6 +215,8 @@ public class SettingsServiceBean {
     }
     
     public void delete( String name ) {
+        actionLogSvc.log( new ActionLogRecord(ActionLogRecord.ActionType.Setting, "delete")
+                            .setInfo(name));
         em.createNamedQuery("Setting.deleteByName")
                 .setParameter("name", name)
                 .executeUpdate();

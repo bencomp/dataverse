@@ -9,7 +9,9 @@ import edu.harvard.iq.dataverse.DatasetField;
 import edu.harvard.iq.dataverse.DatasetFieldCompoundValue;
 import edu.harvard.iq.dataverse.DatasetFieldServiceBean;
 import edu.harvard.iq.dataverse.DatasetFieldType;
+import edu.harvard.iq.dataverse.DatasetFieldType.FieldType;
 import edu.harvard.iq.dataverse.DatasetFieldValue;
+import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +37,7 @@ import org.junit.Test;
 public class JsonParserTest {
     
     MockDatasetFieldSvc datasetFieldTypeSvc = null;
+    MockSettingsSvc settingsSvc = null;
     DatasetFieldType keywordType;
     DatasetFieldType descriptionType;
     DatasetFieldType subjectType;
@@ -57,10 +60,10 @@ public class JsonParserTest {
     public void setUp() {
         datasetFieldTypeSvc = new MockDatasetFieldSvc();
 
-        keywordType = datasetFieldTypeSvc.add(new DatasetFieldType("keyword", "primitive", true));
-        descriptionType = datasetFieldTypeSvc.add( new DatasetFieldType("description", "primitive", false) );
+        keywordType = datasetFieldTypeSvc.add(new DatasetFieldType("keyword", FieldType.TEXT, true));
+        descriptionType = datasetFieldTypeSvc.add( new DatasetFieldType("description", FieldType.TEXTBOX, false) );
         
-        subjectType = datasetFieldTypeSvc.add(new DatasetFieldType("subject", "controlledVocabulary", true));
+        subjectType = datasetFieldTypeSvc.add(new DatasetFieldType("subject", FieldType.TEXT, true));
         subjectType.setAllowControlledVocabulary(true);
         subjectType.setControlledVocabularyValues( Arrays.asList( 
                 new ControlledVocabularyValue(1l, "mgmt", subjectType),
@@ -68,7 +71,7 @@ public class JsonParserTest {
                 new ControlledVocabularyValue(3l, "cs", subjectType)
         ));
         
-        pubIdType = datasetFieldTypeSvc.add(new DatasetFieldType("publicationIdType", "controlledVocabulary", false));
+        pubIdType = datasetFieldTypeSvc.add(new DatasetFieldType("publicationIdType", FieldType.TEXT, false));
         pubIdType.setAllowControlledVocabulary(true);
         pubIdType.setControlledVocabularyValues( Arrays.asList( 
                 new ControlledVocabularyValue(1l, "ark", pubIdType),
@@ -76,16 +79,16 @@ public class JsonParserTest {
                 new ControlledVocabularyValue(3l, "url", pubIdType)
         ));
         
-        compoundSingleType = datasetFieldTypeSvc.add(new DatasetFieldType("coordinate", "compound", true));
+        compoundSingleType = datasetFieldTypeSvc.add(new DatasetFieldType("coordinate", FieldType.TEXT, true));
         Set<DatasetFieldType> childTypes = new HashSet<>();
-        childTypes.add( datasetFieldTypeSvc.add(new DatasetFieldType("lat", "primitive", false)) );
-        childTypes.add( datasetFieldTypeSvc.add(new DatasetFieldType("lon", "primitive", false)) );
+        childTypes.add( datasetFieldTypeSvc.add(new DatasetFieldType("lat", FieldType.TEXT, false)) );
+        childTypes.add( datasetFieldTypeSvc.add(new DatasetFieldType("lon", FieldType.TEXT, false)) );
         
         for ( DatasetFieldType t : childTypes ) {
             t.setParentDatasetFieldType(compoundSingleType);
         }
         compoundSingleType.setChildDatasetFieldTypes(childTypes);
-        sut = new JsonParser(datasetFieldTypeSvc, null);
+        sut = new JsonParser(datasetFieldTypeSvc, null, settingsSvc);
     }
     
     @Test 
@@ -259,6 +262,20 @@ public class JsonParserTest {
         throw new IllegalArgumentException("Unknown dataset field type '" + ex.getDatasetFieldType() + "'");
     }
     
+    static class MockSettingsSvc extends SettingsServiceBean {
+        @Override
+        public String getValueForKey( Key key, String defaultValue ) {
+            if (key.equals(SettingsServiceBean.Key.Authority)) {
+                return "10.5072/FK2";
+            } else if (key.equals(SettingsServiceBean.Key.Protocol)) {
+                return "doi";
+            } else if( key.equals(SettingsServiceBean.Key.DoiSeparator)) {
+                return "/";
+            }
+             return null;
+        }
+    }
+    
     static class MockDatasetFieldSvc extends DatasetFieldServiceBean {
         
         Map<String, DatasetFieldType> fieldTypes = new HashMap<>();
@@ -277,8 +294,17 @@ public class JsonParserTest {
         }
         
         @Override
-        public DatasetFieldType findByNameOpt( String name ) {
-            return findByName( name );
+        public DatasetFieldType findByNameOpt(String name) {
+           return findByName(name);
         }
+        
+        @Override
+        public ControlledVocabularyValue findControlledVocabularyValueByDatasetFieldTypeAndStrValue(DatasetFieldType dsft, String strValue, boolean lenient) {
+            ControlledVocabularyValue cvv = new ControlledVocabularyValue();
+            cvv.setDatasetFieldType(dsft);
+            cvv.setStrValue(strValue);
+            return cvv;
+        }
+ 
     }
 }

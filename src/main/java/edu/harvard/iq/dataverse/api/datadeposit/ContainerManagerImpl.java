@@ -17,7 +17,7 @@ import edu.harvard.iq.dataverse.engine.command.impl.DeleteDatasetVersionCommand;
 import edu.harvard.iq.dataverse.engine.command.impl.PublishDatasetCommand;
 import edu.harvard.iq.dataverse.engine.command.impl.PublishDataverseCommand;
 import edu.harvard.iq.dataverse.engine.command.impl.UpdateDatasetCommand;
-import edu.harvard.iq.dataverse.metadataimport.ForeignMetadataImportServiceBean;
+import edu.harvard.iq.dataverse.api.imports.ImportGenericServiceBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class ContainerManagerImpl implements ContainerManager {
     @PersistenceContext(unitName = "VDCNet-ejbPU")
     EntityManager em;
     @EJB
-    ForeignMetadataImportServiceBean foreignMetadataImportService;
+    ImportGenericServiceBean importGenericService;
     @Inject
     SwordAuth swordAuth;
     @Inject
@@ -131,12 +131,14 @@ public class ContainerManagerImpl implements ContainerManager {
                         datasetVersion.setDatasetFields(emptyDatasetFields);
                         String foreignFormat = SwordUtil.DCTERMS;
                         try {
-                            foreignMetadataImportService.importXML(deposit.getSwordEntry().toString(), foreignFormat, datasetVersion);
+                            importGenericService.importXML(deposit.getSwordEntry().toString(), foreignFormat, datasetVersion);
                         } catch (Exception ex) {
                             throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "problem calling importXML: " + ex);
                         }
                         swordService.addDatasetContact(datasetVersion, user);
-                        swordService.addDatasetSubject(datasetVersion);
+                        swordService.addDatasetDepositor(datasetVersion, user);
+                        swordService.addDatasetSubjectIfMissing(datasetVersion);
+                        swordService.setDatasetLicenseAndTermsOfUse(datasetVersion, deposit.getSwordEntry());
                         try {
                             engineSvc.submit(new UpdateDatasetCommand(dataset, user));
                         } catch (CommandException ex) {
@@ -197,7 +199,7 @@ public class ContainerManagerImpl implements ContainerManager {
                 throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Dataverses can not be deleted via the Data Deposit API but other Dataverse APIs may support this operation.");
             } else if ("study".equals(targetType)) {
                 String globalId = urlManager.getTargetIdentifier();
-                logger.info("globalId: " + globalId);
+                logger.fine("globalId: " + globalId);
                 if (globalId != null) {
                     Dataset dataset = dataset = datasetService.findByGlobalId(globalId);
                     if (dataset != null) {
@@ -222,8 +224,6 @@ public class ContainerManagerImpl implements ContainerManager {
                                 throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Lastest version of dataset " + dataset.getGlobalId() + " has already been deaccessioned.");
                             } else if (datasetVersionState.equals(DatasetVersion.VersionState.ARCHIVED)) {
                                 throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Lastest version of dataset " + dataset.getGlobalId() + " has been archived and can not be deleted or deaccessioned.");
-                            } else if (datasetVersionState.equals(DatasetVersion.VersionState.IN_REVIEW)) {
-                                throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Lastest version of dataset " + dataset.getGlobalId() + " is in review and can not be deleted or deaccessioned.");
                             } else {
                                 throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Operation not valid for dataset " + dataset.getGlobalId() + " in state " + datasetVersionState);
                             }
@@ -232,7 +232,7 @@ public class ContainerManagerImpl implements ContainerManager {
                             if (datasetVersionState.equals(DatasetVersion.VersionState.DRAFT)) {
                                 try {
                                     engineSvc.submit(new DeleteDatasetCommand(dataset, user));
-                                    logger.info("dataset deleted");
+                                    logger.fine("dataset deleted");
                                 } catch (CommandExecutionException ex) {
                                     // internal error
                                     throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Can't delete dataset: " + ex.getMessage());
@@ -241,7 +241,7 @@ public class ContainerManagerImpl implements ContainerManager {
                                 }
                             } else {
                                 // we should never get here. throw an error explaining why
-                                throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "dataset is in illegal state (not released yet not in draft)");
+                                throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "dataset is in illegal state (not published yet not in draft)");
                             }
                         }
                     } else {
@@ -303,10 +303,9 @@ public class ContainerManagerImpl implements ContainerManager {
                                     Command<Dataset> cmd;
                                     try {
                                         boolean doMinorVersionBump = false;
-                                        if (dataset.getLatestVersion().isMinorUpdate()) {
+                                        // if dataset is unreleased, major version; if released, then check if can be minor
+                                        if (dataset.isReleased() && dataset.getLatestVersion().isMinorUpdate()) {
                                             doMinorVersionBump = true;
-                                        } else {
-                                            doMinorVersionBump = false;
                                         }
                                         cmd = new PublishDatasetCommand(dataset, user, doMinorVersionBump);
                                         dataset = engineSvc.submit(cmd);
@@ -320,10 +319,10 @@ public class ContainerManagerImpl implements ContainerManager {
                                     DepositReceipt depositReceipt = receiptGenerator.createDatasetReceipt(baseUrl, dataset);
                                     return depositReceipt;
                                 } else {
-                                    throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Latest version of dataset " + globalId + " has already been released.");
+                                    throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Latest version of dataset " + globalId + " has already been published.");
                                 }
                             } else {
-                                throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Pass 'In-Progress: false' header to release a dataset.");
+                                throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Pass 'In-Progress: false' header to publish a dataset.");
                             }
                         } else {
                             throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "User " + user.getDisplayInfo().getTitle() + " is not authorized to modify dataverse " + dvThatOwnsDataset.getAlias());

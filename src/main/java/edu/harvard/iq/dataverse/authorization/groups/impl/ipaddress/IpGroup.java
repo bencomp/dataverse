@@ -1,8 +1,9 @@
 package edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress;
 
+import edu.harvard.iq.dataverse.authorization.RoleAssignee;
 import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.authorization.groups.GroupProvider;
-import edu.harvard.iq.dataverse.authorization.groups.impl.PersistedGroup;
+import edu.harvard.iq.dataverse.authorization.groups.impl.PersistedGlobalGroup;
 import edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.ip.IPv4Range;
 import edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.ip.IPv6Range;
 import edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.ip.IpAddress;
@@ -18,12 +19,12 @@ import javax.persistence.Transient;
 
 @NamedQueries({
     @NamedQuery(name="IpGroup.findAll",
-               query="SELECT g FROM IpGroup g ORDER BY g.alias"),
-    @NamedQuery(name="IpGroup.findByAlias",
-               query="SELECT g FROM IpGroup g WHERE g.alias=:alias")
+               query="SELECT g FROM IpGroup g"),
+    @NamedQuery(name="IpGroup.findByPersistedGroupAlias",
+               query="SELECT g FROM IpGroup g WHERE g.persistedGroupAlias=:persistedGroupAlias")
 })
 @Entity
-public class IpGroup extends PersistedGroup {
+public class IpGroup extends PersistedGlobalGroup {
     
     @OneToMany(mappedBy = "owner", cascade=CascadeType.ALL)
     private Set<IPv6Range> ipv6Ranges;
@@ -43,10 +44,13 @@ public class IpGroup extends PersistedGroup {
     }
     
     @Override
-    public boolean contains(User aUser) {
-        IpAddress userAddress = aUser.getRequestMetadata().getIpAddress();
-        for ( IpAddressRange r : ipv6Ranges ) {
-            if ( r.contains(userAddress).equals(Boolean.TRUE) ) return true;
+    public boolean contains(RoleAssignee ra) {
+        if ( ra instanceof User ) {
+            User aUser = (User) ra;
+            IpAddress userAddress = aUser.getRequestMetadata().getIpAddress();
+            for ( IpAddressRange r : ipv6Ranges ) {
+                if ( r.contains(userAddress).equals(Boolean.TRUE) ) return true;
+            }
         }
         return false;
     }
@@ -77,25 +81,10 @@ public class IpGroup extends PersistedGroup {
         return true;
     }
     
-    void setProvider( IpGroupProvider prv ) {
+    public void setProvider( IpGroupProvider prv ) {
         provider = prv;
     }
 
-    @Override
-    public void setDescription(String description) {
-        super.setDescription(description); 
-    }
-
-    @Override
-    public void setName(String name) {
-        super.setName(name); 
-    }
-
-    @Override
-    public void setAlias(String alias) {
-        super.setAlias(alias); 
-    }
-    
     /**
      * Returns a <strong>read only</strong> set of all the ranges  in the group,
      * both IPv6 and IPv4.

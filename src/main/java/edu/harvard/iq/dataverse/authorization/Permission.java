@@ -4,7 +4,6 @@ import edu.harvard.iq.dataverse.DataFile;
 import edu.harvard.iq.dataverse.Dataset;
 import edu.harvard.iq.dataverse.Dataverse;
 import edu.harvard.iq.dataverse.DvObject;
-import edu.harvard.iq.dataverse.DvObjectContainer;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +26,6 @@ public enum Permission implements java.io.Serializable {
     ViewUnpublishedDataverse("View an unpublished dataverse", Dataverse.class),
     ViewUnpublishedDataset("View an unpublished dataset and its files", Dataset.class),    
     DownloadFile("Download a file", DataFile.class),
-    RequestAccess("Request access to an file", DataFile.class),
     // Update
     EditDataverse("Edit a dataverse's metadata, facets, customization, and templates ", Dataverse.class),
     EditDataset("Edit a dataset's metadata", Dataset.class),
@@ -39,7 +37,7 @@ public enum Permission implements java.io.Serializable {
     DeleteDataverse("Delete an unpublished dataverse", Dataverse.class),    
     DeleteDatasetDraft("Delete a dataset draft", Dataset.class);
 
-    //Tracking("Manage guestbook, download statistics, etc.", Dataverse.class),
+    // FUTURE:
     //RestrictMetadata("Mark metadata as restricted", DvObject.class),
     //AccessRestrictedMetadata("Access metadata marked as\"restricted\"", DvObject.class),
 

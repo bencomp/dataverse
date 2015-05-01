@@ -1,5 +1,6 @@
 package edu.harvard.iq.dataverse.api;
 
+import edu.harvard.iq.dataverse.actionlogging.ActionLogRecord;
 import edu.harvard.iq.dataverse.api.dto.RoleDTO;
 import edu.harvard.iq.dataverse.authorization.AuthenticationProvider;
 import edu.harvard.iq.dataverse.authorization.exceptions.AuthenticationProviderFactoryNotFoundException;
@@ -8,8 +9,6 @@ import edu.harvard.iq.dataverse.authorization.providers.AuthenticationProviderFa
 import edu.harvard.iq.dataverse.authorization.providers.AuthenticationProviderRow;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.settings.Setting;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
@@ -26,6 +25,8 @@ import static edu.harvard.iq.dataverse.util.json.JsonPrinter.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response.Status;
 /**
@@ -33,7 +34,7 @@ import javax.ws.rs.core.Response.Status;
  * @author michael
  */
 @Stateless
-@Path("s")
+@Path("admin")
 public class Admin extends AbstractApiBean {
     
     private static final Logger logger = Logger.getLogger(Admin.class.getName());
@@ -188,7 +189,7 @@ public class Admin extends AbstractApiBean {
                             ? "WARNING: no enabled authentication providers left." : ""));
     }
     
-  @DELETE
+    @DELETE
     @Path("authenticatedUsers/{identifier}/")
     public Response deleteAuthenticatedUser(@PathParam("identifier") String identifier) {
         AuthenticatedUser user = authSvc.getAuthenticatedUser(identifier);
@@ -198,20 +199,50 @@ public class Admin extends AbstractApiBean {
         }
         return errorResponse(Response.Status.BAD_REQUEST, "User "+ identifier+" not found.");
     }
-    
+
+    @DELETE
+    @Path("authenticatedUsers/id/{id}/")
+    public Response deleteAuthenticatedUserById(@PathParam("id") Long id) {
+        AuthenticatedUser user = authSvc.findByID(id);
+        if (user != null) {
+            authSvc.deleteAuthenticatedUser(user.getId());
+            return okResponse("AuthenticatedUser " + id + " deleted. ");
+        }
+        return errorResponse(Response.Status.BAD_REQUEST, "User " + id + " not found.");
+    }
+
     @Path("roles")
     @POST
     public Response createNewBuiltinRole(RoleDTO roleDto) {
+        ActionLogRecord alr = new ActionLogRecord(ActionLogRecord.ActionType.Admin, "createBuiltInRole")
+                .setInfo(roleDto.getAlias() + ":" + roleDto.getDescription() );
         try {
             return okResponse(json(rolesSvc.save(roleDto.asRole())));
+        } catch (Exception e) {
+            alr.setActionResult(ActionLogRecord.Result.InternalError);
+            alr.setInfo( alr.getInfo() + "// " + e.getMessage() );
+            return errorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+        } finally {
+            actionLogSvc.log(alr);
+        }
+    }
+    
+    @Path("roles")
+    @GET
+    public Response listBuiltinRoles() {
+        try {
+            return okResponse( rolesToJson(rolesSvc.findBuiltinRoles()) );
         } catch (Exception e) {
             return errorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
     
+    
     @Path("superuser/{identifier}")
     @POST
     public Response toggleSuperuser(@PathParam("identifier") String identifier) {
+        ActionLogRecord alr = new ActionLogRecord(ActionLogRecord.ActionType.Admin, "toggleSuperuser")
+                .setInfo( identifier );
        try {
           AuthenticatedUser user = authSvc.getAuthenticatedUser(identifier);
           
@@ -219,8 +250,41 @@ public class Admin extends AbstractApiBean {
             
             return okResponse("User " + user.getIdentifier() + " " + (user.isSuperuser() ? "set": "removed") + " as a superuser.");
         } catch (Exception e) {
+            alr.setActionResult(ActionLogRecord.Result.InternalError);
+            alr.setInfo( alr.getInfo() + "// " + e.getMessage() );
             return errorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        } finally {
+           actionLogSvc.log(alr);
+       }
     }    
-    
+
+    @Path("validate")
+    @GET
+    public Response validate() {
+        String msg = "UNKNOWN";
+        try {
+            beanValidationSvc.validateDatasets();
+            msg = "valid";
+        } catch (Exception ex) {
+            Throwable cause = ex;
+            while (cause != null) {
+                if (cause instanceof ConstraintViolationException) {
+                    ConstraintViolationException constraintViolationException = (ConstraintViolationException) cause;
+                    for (ConstraintViolation<?> constraintViolation : constraintViolationException.getConstraintViolations()) {
+                        String databaseRow = constraintViolation.getLeafBean().toString();
+                        String field = constraintViolation.getPropertyPath().toString();
+                        String invalidValue = constraintViolation.getInvalidValue().toString();
+                            JsonObjectBuilder violation = Json.createObjectBuilder();
+                            violation.add("entityClassDatabaseTableRowId", databaseRow);
+                            violation.add("field", field);
+                            violation.add("invalidValue", invalidValue);
+                            return okResponse(violation);
+                    }
+                }
+                cause = cause.getCause();
+            }
+        }
+        return okResponse(msg);
+    }
+
 }

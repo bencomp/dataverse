@@ -1,9 +1,12 @@
 package edu.harvard.iq.dataverse;
 
+import edu.harvard.iq.dataverse.DatasetVersion.VersionState;
 import edu.harvard.iq.dataverse.api.WorldMapRelatedData;
+import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.dataaccess.DataAccess;
 import edu.harvard.iq.dataverse.dataaccess.DataAccessObject;
 import edu.harvard.iq.dataverse.ingest.IngestReport;
+import edu.harvard.iq.dataverse.ingest.IngestRequest;
 import edu.harvard.iq.dataverse.util.FileUtil;
 import edu.harvard.iq.dataverse.util.ShapefileHandler;
 import java.io.IOException;
@@ -13,12 +16,13 @@ import java.util.Objects;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
-import java.util.Collection;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -37,19 +41,22 @@ import org.hibernate.validator.constraints.NotBlank;
 public class DataFile extends DvObject {
     private static final long serialVersionUID = 1L;
     
-    private static final char INGEST_STATUS_NONE = 65;
-    private static final char INGEST_STATUS_SCHEDULED = 66;
-    private static final char INGEST_STATUS_INPROGRESS = 67;
-    private static final char INGEST_STATUS_ERROR = 68; 
+    public static final char INGEST_STATUS_NONE = 65;
+    public static final char INGEST_STATUS_SCHEDULED = 66;
+    public static final char INGEST_STATUS_INPROGRESS = 67;
+    public static final char INGEST_STATUS_ERROR = 68; 
     
     private String name;
     
-    @NotBlank    
+    @NotBlank
+    @Column( nullable = false )
     @Pattern(regexp = "^.*/.*$", message = "Content-Type must contain a slash")
     private String contentType;
     
+    @Column( nullable = false )
     private String fileSystemName;
-
+    
+    @Column( nullable = false )
     private String md5;
 
     @Column(nullable=true)
@@ -67,6 +74,9 @@ public class DataFile extends DvObject {
     
     @OneToMany(mappedBy = "dataFile", cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
     private List<IngestReport> ingestReports;
+    
+    @OneToOne(mappedBy = "dataFile", cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
+    private IngestRequest ingestRequest;
     
     @OneToMany(mappedBy = "dataFile", orphanRemoval = true, cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
     private List<DataFileTag> dataFileTags;
@@ -172,6 +182,14 @@ public class DataFile extends DvObject {
         ingestReports.add(report);
     }
     
+    public IngestRequest getIngestRequest() {
+        return ingestRequest;
+    }
+    
+    public void setIngestRequest(IngestRequest ingestRequest) {
+        this.ingestRequest = ingestRequest;
+    }
+    
     public String getIngestReportMessage() {
         if ( ingestReports != null && ingestReports.size() > 0 ) {
             if (ingestReports.get(0).getReport() != null && !"".equals(ingestReports.get(0).getReport())) {
@@ -181,10 +199,7 @@ public class DataFile extends DvObject {
         return "Ingest failed. No further information is available.";
     }
     public boolean isTabularData() {
-        if ( getDataTables() != null && getDataTables().size() > 0 ) {
-            return true; 
-        }
-        return false; 
+        return getDataTables() != null && getDataTables().size() > 0; 
     }
     
     public String getOriginalFileFormat() {
@@ -270,10 +285,23 @@ public class DataFile extends DvObject {
     private FileMetadata getLatestFileMetadata() {
         FileMetadata fmd = null;
 
+        // for newly added or harvested, just return the one fmd
+        if (fileMetadatas.size() == 1) {
+            return fileMetadatas.get(0);
+        }
+        
         for (FileMetadata fileMetadata : fileMetadatas) {
-            if (fmd == null || fileMetadata.getDatasetVersion().getId().compareTo( fmd.getDatasetVersion().getId() ) > 0 ) {
+            // if it finds a draft, return it
+            if (fileMetadata.getDatasetVersion().getVersionState().equals(VersionState.DRAFT)) {
+                return fileMetadata;
+            }            
+            
+            // otherwise return the one with the latest version number
+            if (fmd == null || fileMetadata.getDatasetVersion().getVersionNumber().compareTo( fmd.getDatasetVersion().getVersionNumber() ) > 0 ) {
                 fmd = fileMetadata;
-            }                       
+            } else if ((fileMetadata.getDatasetVersion().getVersionNumber().compareTo( fmd.getDatasetVersion().getVersionNumber())==0 )&& 
+                   ( fileMetadata.getDatasetVersion().getMinorVersionNumber().compareTo( fmd.getDatasetVersion().getMinorVersionNumber()) > 0 )   )
+                fmd = fileMetadata;
         }
         return fmd;
     }
@@ -485,6 +513,54 @@ public class DataFile extends DvObject {
             return this.getDataTable().getUnf();
         }
         return null; 
+    }
+    
+
+    @ManyToMany
+    @JoinTable(name = "fileaccessrequests",
+    joinColumns = @JoinColumn(name = "datafile_id"),
+    inverseJoinColumns = @JoinColumn(name = "authenticated_user_id"))
+    private List<AuthenticatedUser> fileAccessRequesters;
+
+    public List<AuthenticatedUser> getFileAccessRequesters() {
+        return fileAccessRequesters;
+    }
+
+    public void setFileAccessRequesters(List<AuthenticatedUser> fileAccessRequesters) {
+        this.fileAccessRequesters = fileAccessRequesters;
+    }
+    
+        
+    public boolean isHarvested() {
+        // TODO: 
+        // alternatively, we can determine whether this is a harvested file
+        // by looking at the storage identifier of the physical file; 
+        // if it's something that's not a filesystem path (URL, etc.) - 
+        // then it's a harvested object. 
+        // -- L.A. 4.0 
+        Dataset ownerDataset = this.getOwner();
+        if (ownerDataset != null) {
+            return ownerDataset.isHarvested(); 
+        }
+        return false; 
+    }
+    
+    public String getRemoteArchiveURL() {
+        if (isHarvested()) {
+            Dataset ownerDataset = this.getOwner();
+            return ownerDataset.getRemoteArchiveURL();
+        }
+        
+        return null; 
+    }
+    
+    public String getHarvestingDescription() {
+        if (isHarvested()) {
+            Dataset ownerDataset = this.getOwner();
+            return ownerDataset.getHarvestingDescription();
+        }
+        
+        return null;
     }
     
     @Override

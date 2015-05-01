@@ -1,6 +1,7 @@
 package edu.harvard.iq.dataverse.authorization.users;
 
 import edu.harvard.iq.dataverse.DatasetLock;
+import edu.harvard.iq.dataverse.authorization.AuthenticatedUserDisplayInfo;
 import edu.harvard.iq.dataverse.authorization.AuthenticatedUserLookup;
 import edu.harvard.iq.dataverse.authorization.RoleAssigneeDisplayInfo;
 import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinAuthenticationProvider;
@@ -28,6 +29,8 @@ import javax.validation.constraints.NotNull;
                 query="SELECT au FROM AuthenticatedUser au WHERE au.superuser = TRUE"),
     @NamedQuery( name="AuthenticatedUser.findByIdentifier",
                 query="select au from AuthenticatedUser au WHERE au.userIdentifier=:identifier"),
+    @NamedQuery( name="AuthenticatedUser.findByEmail",
+                query="select au from AuthenticatedUser au WHERE au.email=:email"),
     @NamedQuery( name="AuthenticatedUser.countOfIdentifier",
                 query="SELECT COUNT(a) FROM AuthenticatedUser a WHERE a.userIdentifier=:identifier")
 })
@@ -45,17 +48,34 @@ public class AuthenticatedUser implements User, Serializable {
     private String userIdentifier;
 
     private String name;
+
+
+    @NotNull
+    @Column(nullable = false, unique=true)
     private String email;
     private String affiliation;
+    private String position;
+    private String lastName;
+    private String firstName;
     private boolean superuser;
 
+    /**
+     * @todo Remove? Check for accuracy? For Solr JOINs we used to care about
+     * the modification times of users but now we don't index users at all.
+     */
     private Timestamp modificationTime;
 
-    private Timestamp indexTime;
 
     @Transient
     private UserRequestMetadata requestMetadata;
-    
+
+    /**
+     * @todo Consider storing a hash of *all* potentially interesting Shibboleth
+     * attribute key/value pairs, not just the Identity Provider (IdP).
+     */
+    @Transient
+    private String shibIdentityProvider;
+
     @Override
     public String getIdentifier() {
         return IDENTIFIER_PREFIX + userIdentifier;
@@ -76,17 +96,20 @@ public class AuthenticatedUser implements User, Serializable {
     
     @Override
     public RoleAssigneeDisplayInfo getDisplayInfo() {
-        return new RoleAssigneeDisplayInfo(name, email, affiliation);
+        return new AuthenticatedUserDisplayInfo(firstName, lastName, email, affiliation, position);
     }
     
     /**
      * Takes the passed info object and updated the internal fields according to it.
      * @param inf the info from which we update the fields.
     */
-    public void applyDisplayInfo( RoleAssigneeDisplayInfo inf ) {
+    public void applyDisplayInfo( AuthenticatedUserDisplayInfo inf ) {
+        setFirstName(inf.getFirstName());
+        setLastName(inf.getLastName());
         setEmail(inf.getEmailAddress());
         setAffiliation( inf.getAffiliation() );
-        setName( inf.getTitle() );
+        setPosition( inf.getPosition());
+
     }
     
     @Override
@@ -109,7 +132,7 @@ public class AuthenticatedUser implements User, Serializable {
     }
 
     public String getName() {
-        return name;
+        return firstName + " " + lastName;
     }
 
     public void setName(String name) {
@@ -132,6 +155,31 @@ public class AuthenticatedUser implements User, Serializable {
         this.affiliation = affiliation;
     }
 
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Override
     public boolean isSuperuser() {
         return superuser;
     }
@@ -144,21 +192,13 @@ public class AuthenticatedUser implements User, Serializable {
         this.modificationTime = modificationTime;
     }
 
-    public void setIndexTime(Timestamp indexTime) {
-        this.indexTime = indexTime;
-    }
-
     public boolean isBuiltInUser() {
-        String authProviderString = authenticatedUserLookup.getId().getAuthenticationProviderId();
-        if (authProviderString != null) {
-            if (authProviderString.equals(BuiltinAuthenticationProvider.PROVIDER_ID)) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+        String authProviderString = authenticatedUserLookup.getAuthenticationProviderId();
+        if (authProviderString != null && authProviderString.equals(BuiltinAuthenticationProvider.PROVIDER_ID)) {
+            return true;
         }
+        
+        return false;
     }
 
     @OneToOne(mappedBy = "authenticatedUser")
@@ -196,6 +236,14 @@ public class AuthenticatedUser implements User, Serializable {
 
     public void setRequestMetadata(UserRequestMetadata requestMetadata) {
         this.requestMetadata = requestMetadata;
+    }
+
+    public String getShibIdentityProvider() {
+        return shibIdentityProvider;
+    }
+
+    public void setShibIdentityProvider(String shibIdentityProvider) {
+        this.shibIdentityProvider = shibIdentityProvider;
     }
     
 }

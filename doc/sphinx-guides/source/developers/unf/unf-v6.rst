@@ -61,11 +61,11 @@ Encode each character string with Unicode bit encoding. In UNF Version 6 UTF-8 i
 
 **3. Vectors of Boolean values**
 
-Should be treated as numeric vectors of ``0``s and ``1``s.
+Should be treated as numeric vectors of ``0`` s and ``1`` s.
 
 **4. Bit fields.**
 
-Normalize bit fields by converting to big-endian form, truncating all leading empty bits, aligning to a byte boundary by re-padding with leading zero bits, and ``base64`` encoding to form a character string representation.
+Normalize bit fields by converting to big-endian form, truncating all leading empty bits, aligning to a byte boundary by padding with leading zero bits, and ``base64`` encoding to form a character string representation.
 
 **5. Normalize dates, times and intervals as follows:**
 

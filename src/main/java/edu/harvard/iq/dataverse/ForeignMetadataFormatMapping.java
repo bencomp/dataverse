@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -30,13 +31,15 @@ import javax.persistence.OneToMany;
 public class ForeignMetadataFormatMapping implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @OneToMany(mappedBy = "foreignMetadataFormatMapping", cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
     private List<ForeignMetadataFieldMapping> foreignMetadataFieldMappings;
-
+    
+    @Column( nullable = false )
     private String name;
+    @Column( nullable = false )
     private String displayName;
     private String schemaLocation;
     private String startElement; 

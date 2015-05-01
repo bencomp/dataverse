@@ -2,6 +2,7 @@
 package edu.harvard.iq.dataverse;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.persistence.CascadeType;
@@ -11,8 +12,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -32,11 +35,12 @@ public class Guestbook implements Serializable {
      /**
      * Holds value of the Dataverse
      */
-    @OneToOne
+    @ManyToOne
     @JoinColumn(nullable=true)
     private Dataverse dataverse;
     
     @OneToMany(mappedBy="guestbook",cascade={CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST},orphanRemoval=true)
+    @OrderBy("displayOrder")
     private List<CustomQuestion> customQuestions;
     
     @NotBlank(message="Enter a name for the guestbook")
@@ -47,9 +51,15 @@ public class Guestbook implements Serializable {
     private boolean emailRequired;
     private boolean institutionRequired;   
     private boolean positionRequired; 
-    private Long usageCount;
     @Temporal(value = TemporalType.TIMESTAMP)
+    @Column( nullable = false )
     private Date createTime;
+    
+    /* WE PROBABLY NEED HELP INFO TEXT...
+     * public String guestbook() {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Edit Guestbook", " – Edit your dataset guestbook and click Save Changes. Asterisks indicate required fields."));
+        return null;
+    } */
 
     public Long getId() {
         return id;
@@ -123,14 +133,6 @@ public class Guestbook implements Serializable {
         this.positionRequired = positionRequired;
     }
     
-    public Long getUsageCount() {
-        return usageCount;
-    }
-
-    public void setUsageCount(Long usageCount) {
-        this.usageCount = usageCount;
-    }    
-    
     public Date getCreateTime() {
         return createTime;
     }
@@ -138,10 +140,14 @@ public class Guestbook implements Serializable {
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
+
+    public String getCreateDate() {
+        return new SimpleDateFormat("MMMM d, yyyy").format(createTime);
+    }
         
-    public Guestbook copyGuestbook(Guestbook source) {
+    public Guestbook copyGuestbook(Guestbook source, Dataverse dataverse) {
         Guestbook newGuestbook = new Guestbook();
-        newGuestbook.setEnabled(true);
+        newGuestbook.setDataverse(dataverse);
         newGuestbook.setEmailRequired(source.isEmailRequired());
         newGuestbook.setNameRequired(source.isNameRequired());
         newGuestbook.setPositionRequired(source.isPositionRequired());
@@ -154,16 +160,20 @@ public class Guestbook implements Serializable {
                 target.setGuestbook(newGuestbook);
                 target.setHidden(sq.isHidden());
                 target.setRequired(sq.isRequired());
+                target.setDisplayOrder(sq.getDisplayOrder());
+                target.setQuestionString(sq.getQuestionString());
                 if(!sq.getCustomQuestionValues().isEmpty()){
+                    target.setCustomQuestionValues(new ArrayList());
                     for (CustomQuestionValue scqv: sq.getCustomQuestionValues()){
                         CustomQuestionValue newVal = new CustomQuestionValue();
-                        newVal.setCustomQuestion(target);
                         newVal.setValueString(scqv.getValueString());
+                        newVal.setCustomQuestion(target);
+                        target.getCustomQuestionValues().add(newVal);
                     }
                 }
+                newGuestbook.getCustomQuestions().add(target);
             }          
         }
-
         return newGuestbook;
     }
     
@@ -183,9 +193,9 @@ public class Guestbook implements Serializable {
         for (CustomQuestion cq : this.getCustomQuestions()){
             if(cq.isRequired()){
             if(retVal.isEmpty()){
-               retVal = "Required Custom Qustion(s): " + cq.getQuestionString(); 
+               retVal = "Required Custom Qustions<br/>&#160; &#8226; " + cq.getQuestionString(); 
             } else { 
-               retVal += "; " + cq.getQuestionString();
+               retVal += "<br/>&#160; &#8226; " + cq.getQuestionString();
             }
         }
         }
@@ -197,9 +207,9 @@ public class Guestbook implements Serializable {
         for (CustomQuestion cq : this.getCustomQuestions()){
             if(!cq.isRequired()){
             if(retVal.isEmpty()){
-               retVal = "Optional Custom Qustion(s): " + cq.getQuestionString(); 
+               retVal = "Optional Custom Qustions<br/>&#160; &#8226; " + cq.getQuestionString(); 
             } else { 
-               retVal += "; " + cq.getQuestionString();
+               retVal += "<br/>&#160; &#8226; " + cq.getQuestionString();
             }
         }
         }
@@ -209,27 +219,27 @@ public class Guestbook implements Serializable {
     public String getRequiredAccountInformationString(){
         String retVal = "";
         if(nameRequired){
-            retVal = "Required Account Information: Name";
+            retVal = "Required Account Information<br/>&#160; &#8226; Name";
         }
         if(emailRequired){
             if(retVal.isEmpty()){
-               retVal = "Required Account Information: EMail"; 
+               retVal = "Required Account Information<br/>&#160; &#8226; Email"; 
             } else { 
-               retVal += ", EMail";  
+               retVal += "<br/>&#160; &#8226; Email";  
             }
         }
         if(institutionRequired){
             if(retVal.isEmpty()){
-               retVal = "Required Account Information: Institution"; 
+               retVal = "Required Account Information<br/>&#160; &#8226; Institution"; 
             } else { 
-               retVal += ", Institution";  
+               retVal += "<br/>&#160; &#8226; Institution";  
             }
         }
         if(positionRequired){
             if(retVal.isEmpty()){
-               retVal = "Required Account Information: Position"; 
+               retVal = "Required Account Information<br/>&#160; &#8226; Position"; 
             } else { 
-               retVal += ", Position";  
+               retVal += "<br/>&#160; &#8226; Position";  
             }
         }
         return retVal;
@@ -238,27 +248,27 @@ public class Guestbook implements Serializable {
     public String getOptionalAccountInformationString(){
         String retVal = "";
         if(!nameRequired){
-            retVal = "Optional Account Information: Name";
+            retVal = "Optional Account Information<br/>&#160; &#8226; Name";
         }
         if(!emailRequired){
             if(retVal.isEmpty()){
-               retVal = "Optional Account Information: EMail"; 
+               retVal = "Optional Account Information<br/>&#160; &#8226; Email"; 
             } else { 
-               retVal += ", EMail";  
+               retVal += "<br/>&#160; &#8226; Email";  
             }
         }
         if(!institutionRequired){
             if(retVal.isEmpty()){
-               retVal = "Optional Account Information: Institution"; 
+               retVal = "Optional Account Information<br/>&#160; &#8226; Institution"; 
             } else { 
-               retVal += ", Institution";  
+               retVal += "<br/>&#160; &#8226; Institution";  
             }
         }
         if(!positionRequired){
             if(retVal.isEmpty()){
-               retVal = "Optional Account Information: Position"; 
+               retVal = "Optional Account Information<br/>&#160; &#8226; Position"; 
             } else { 
-               retVal += ", Position";  
+               retVal += "<br/>&#160; &#8226; Position";  
             }
         }
         return retVal;
@@ -271,5 +281,28 @@ public class Guestbook implements Serializable {
     public void addCustomQuestion(int index, CustomQuestion cq){
         customQuestions.add(index, cq);
     }
+    
+    @Transient
+    private Long usageCount;
+
+    public Long getUsageCount() {
+        return usageCount;
+    }
+    
+    public void setUsageCount(Long usageCount) {
+        this.usageCount = usageCount;
+    }
+    
+    @Transient 
+    private Long responseCount;
+
+    public Long getResponseCount() {
+        return responseCount;
+    }
+
+    public void setResponseCount(Long responseCount) {
+        this.responseCount = responseCount;
+    }
+    
     
 }

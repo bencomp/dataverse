@@ -26,29 +26,36 @@ echo "Setup the authentication providers"
 
 echo "Setting up the settings"
 echo  "- Allow internal signup"
-curl -X PUT -d yes "$SERVER/s/settings/:AllowSignUp"
-curl -X PUT -d /dataverseuser.xhtml?editMode=CREATE "$SERVER/s/settings/:SignUpUrl"
+curl -X PUT -d yes "$SERVER/admin/settings/:AllowSignUp"
+curl -X PUT -d /dataverseuser.xhtml?editMode=CREATE "$SERVER/admin/settings/:SignUpUrl"
 
-curl -X PUT -d doi "$SERVER/s/settings/:Protocol"
-curl -X PUT -d 10.5072/FK2 "$SERVER/s/settings/:Authority"
-curl -X PUT -d EZID "$SERVER/s/settings/:DoiProvider"
-curl -X PUT -d / "$SERVER/s/settings/:DoiSeparator"
-curl -X PUT -d burrito $SERVER/s/settings/BuiltinUsers.KEY
+curl -X PUT -d doi "$SERVER/admin/settings/:Protocol"
+curl -X PUT -d 10.5072/FK2 "$SERVER/admin/settings/:Authority"
+curl -X PUT -d EZID "$SERVER/admin/settings/:DoiProvider"
+curl -X PUT -d / "$SERVER/admin/settings/:DoiSeparator"
+curl -X PUT -d burrito $SERVER/admin/settings/BuiltinUsers.KEY
+curl -X PUT -d empanada $SERVER/admin/settings/:BlockedApiKey
+curl -X PUT -d localhost-only $SERVER/admin/settings/:BlockedApiPolicy
 echo
 
 echo "Setting up the admin user (and as superuser)"
-adminResp=$(curl -s -H "Content-type:application/json" -X POST -d @data/user-admin.json "$SERVER/users?password=admin&key=burrito")
+adminResp=$(curl -s -H "Content-type:application/json" -X POST -d @data/user-admin.json "$SERVER/builtin-users?password=admin&key=burrito")
 echo $adminResp
-curl -X POST "$SERVER/s/superuser/admin"
+curl -X POST "$SERVER/admin/superuser/dataverseAdmin"
 echo
 
 echo "Setting up the root dataverse"
 adminKey=$(echo $adminResp | jq .data.apiToken | tr -d \")
-curl -s -H "Content-type:application/json" -X POST -d @data/dv-root.json "$SERVER/dvs/?key=$adminKey"
+curl -s -H "Content-type:application/json" -X POST -d @data/dv-root.json "$SERVER/dataverses/?key=$adminKey"
 echo
 echo "Set the metadata block for Root"
-curl -s -X POST -H "Content-type:application/json" -d "[\"citation\"]" $SERVER/dvs/:root/metadatablocks/?key=$adminKey
+curl -s -X POST -H "Content-type:application/json" -d "[\"citation\"]" $SERVER/dataverses/:root/metadatablocks/?key=$adminKey
+echo
+echo "Set the default facets for Root"
+curl -s -X POST -H "Content-type:application/json" -d "[\"authorName\",\"subject\",\"keywordValue\",\"dateOfDeposit\"]" $SERVER/dataverses/:root/facets/?key=$adminKey
 echo
 
 # OPTIONAL USERS AND DATAVERSES
 #./setup-optional.sh
+
+echo "Setup done. Consider running post-install-api-block.sh for blocking the sensitive API."

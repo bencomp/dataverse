@@ -1,9 +1,11 @@
 package edu.harvard.iq.dataverse.engine.command.impl;
 
 import edu.harvard.iq.dataverse.DataFile;
+import edu.harvard.iq.dataverse.DatasetVersion;
 import edu.harvard.iq.dataverse.FileMetadata;
 import edu.harvard.iq.dataverse.IndexServiceBean;
 import edu.harvard.iq.dataverse.authorization.Permission;
+import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.dataaccess.DataAccessObject;
 import edu.harvard.iq.dataverse.engine.command.AbstractVoidCommand;
@@ -11,13 +13,15 @@ import edu.harvard.iq.dataverse.engine.command.CommandContext;
 import edu.harvard.iq.dataverse.engine.command.RequiredPermissions;
 import edu.harvard.iq.dataverse.engine.command.exception.CommandException;
 import edu.harvard.iq.dataverse.engine.command.exception.CommandExecutionException;
-import edu.harvard.iq.dataverse.engine.command.exception.IllegalCommandException;
+import edu.harvard.iq.dataverse.engine.command.exception.PermissionException;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
@@ -32,35 +36,61 @@ public class DeleteDataFileCommand extends AbstractVoidCommand {
     private static final Logger logger = Logger.getLogger(DeleteDataFileCommand.class.getCanonicalName());
 
     private final DataFile doomed;
+    private final User user;
+    private final boolean destroy;
 
     public DeleteDataFileCommand(DataFile doomed, User aUser) {
+        this(doomed, aUser, false);
+    }
+    
+    public DeleteDataFileCommand(DataFile doomed, User aUser, boolean destroy) {
         super(aUser, doomed.getOwner());
         this.doomed = doomed;
-    }
+        this.user = aUser;
+        this.destroy = destroy;
+    }    
 
     @Override
     protected void executeImpl(CommandContext ctxt) throws CommandException {
-        if (doomed.isReleased()) {
-            logger.fine("Delete command called on a released (published) DataFile "+doomed.getId());
+        if (destroy) {
+            //todo: clean this logic up!
+            //for now, if called as destroy, will check for superuser acess
+            if ( doomed.getOwner().isReleased() && (!(user instanceof AuthenticatedUser) || !user.isSuperuser() ) ) {      
+                throw new PermissionException("Destroy can only be called by superusers.",
+                    this,  Collections.singleton(Permission.DeleteDatasetDraft), doomed);                
+            }            
+        }
+        
+        
+        // if destroy, we skip this and fully delete
+        if (doomed.isReleased() && !destroy) {
+            logger.log(Level.FINE, "Delete command called on a released (published) DataFile {0}", doomed.getId());
             /*
-             If the file has been released but also previously published handle here.
              In this case we're only removing the link to the current version
              we're not deleting the underlying data file
              */
-            if (ctxt.files().isPreviouslyPublished(doomed.getId())) {
-                //if previously published leave physical file alone for prior versions
-                FileMetadata fmr = doomed.getFileMetadatas().get(0);
-                for (FileMetadata testfmd : doomed.getFileMetadatas()) {
-                    if (testfmd.getDatasetVersion().getId() > fmr.getDatasetVersion().getId()) {
-                        fmr = testfmd;
-                    }
-                }
-                FileMetadata doomedAndMerged = ctxt.em().merge(fmr);
-                ctxt.em().remove(doomedAndMerged);
-                String indexingResult = ctxt.index().removeSolrDocFromIndex(IndexServiceBean.solrDocIdentifierFile + doomed.getId() + "_draft");
-                return;
+            
+            // First, verify that we are in a draft version; ig not throw a Command Exception
+            // todo: review code to see how to make this create a draft when caled on a released version
+            DatasetVersion dsv = doomed.getOwner().getLatestVersion();
+            if (!dsv.isDraft()) {
+                throw new CommandException("Cannot delete files from a released version. Please create a draft version of this dataset.", this);               
             }
-            throw new IllegalCommandException("Cannot delete a released file", this);
+            
+            for (Iterator<FileMetadata> it = dsv.getFileMetadatas().iterator(); it.hasNext();) {
+                FileMetadata fmd = it.next();
+                if (doomed.getId() != null && doomed.equals(fmd.getDataFile())) {
+                    /* commented out, because not yet working as expected (see todo, above)
+                    it.remove();
+                    ctxt.engine().submit(new UpdateDatasetCommand(dsv.getDataset(), user));
+                    */
+                    FileMetadata doomedAndMerged = ctxt.em().merge(fmd);
+                    ctxt.em().remove(doomedAndMerged);
+                    String indexingResult = ctxt.index().removeSolrDocFromIndex(IndexServiceBean.solrDocIdentifierFile + doomed.getId() + "_draft");
+                    return;                    
+                }                    
+            } 
+            throw new CommandException("Could not find the file to be deleted in the draft version of the dataset", this);
         }
 
         // We need to delete a bunch of files from the file system;
@@ -68,9 +98,9 @@ public class DeleteDataFileCommand extends AbstractVoidCommand {
         // fails, we throw an exception and abort the command without
         // trying to remove the object from the database:
         
-        logger.fine("Delete command called on an unpublished DataFile "+doomed.getId());
+        logger.log(Level.FINE, "Delete command called on an unpublished DataFile {0}", doomed.getId());
         String fileSystemName = doomed.getFileSystemName();
-        logger.fine("Storage identifier for the file: "+fileSystemName);
+        logger.log(Level.FINE, "Storage identifier for the file: {0}", fileSystemName);
         
         DataAccessObject dataAccess = null; 
         
@@ -88,7 +118,7 @@ public class DeleteDataFileCommand extends AbstractVoidCommand {
                 throw new CommandExecutionException("Error deleting physical file object while deleting DataFile " + doomed.getId() + " from the database.", ex, this);
             }
 
-            logger.fine("Successfully deleted physical storage object (file) for the DataFile " + doomed.getId());
+            logger.log(Level.FINE, "Successfully deleted physical storage object (file) for the DataFile {0}", doomed.getId());
             
             // Destroy the dataAccess object - we will need to purge the 
             // DataFile from the database (below), so we don't want to have any
@@ -124,7 +154,7 @@ public class DeleteDataFileCommand extends AbstractVoidCommand {
             List<String> failures = new ArrayList<>();
             for (Path deadFile : victims) {
                 try {
-                    logger.fine("Deleting cached file "+deadFile.toString());
+                    logger.log(Level.FINE, "Deleting cached file {0}", deadFile.toString());
                     Files.delete(deadFile);
                 } catch (IOException ex) {
                     failures.add(deadFile.toString());
@@ -133,7 +163,7 @@ public class DeleteDataFileCommand extends AbstractVoidCommand {
 
             if (!failures.isEmpty()) {
                 String failedFiles = StringUtils.join(failures, ",");
-                Logger.getLogger(DeleteDataFileCommand.class.getName()).log(Level.SEVERE, "Error deleting physical file(s) " + failedFiles + " while deleting DataFile " + doomed.getName());
+                Logger.getLogger(DeleteDataFileCommand.class.getName()).log(Level.SEVERE, "Error deleting physical file(s) {0} while deleting DataFile {1}", new Object[]{failedFiles, doomed.getName()});
             }
 
             DataFile doomedAndMerged = ctxt.em().merge(doomed);

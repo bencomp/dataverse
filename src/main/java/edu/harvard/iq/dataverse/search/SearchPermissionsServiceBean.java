@@ -13,6 +13,8 @@ import edu.harvard.iq.dataverse.RoleAssignment;
 import edu.harvard.iq.dataverse.authorization.AuthenticationServiceBean;
 import edu.harvard.iq.dataverse.authorization.Permission;
 import edu.harvard.iq.dataverse.authorization.RoleAssignee;
+import edu.harvard.iq.dataverse.authorization.groups.Group;
+import edu.harvard.iq.dataverse.authorization.groups.GroupServiceBean;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import java.util.ArrayList;
@@ -47,8 +49,13 @@ public class SearchPermissionsServiceBean {
     @EJB
     AuthenticationServiceBean authSvc;
     @EJB
+    GroupServiceBean groupService;
+    @EJB
     SettingsServiceBean settingsService;
 
+    LinkedHashMap<String, RoleAssignee> roleAssigneeCache = new LinkedHashMap<>(100, 0.7f, true);
+    private static final int MAX_CACHE_SIZE = 2000;
+    
     /**
      * @todo Should we make a PermStrings object? Probably.
      *
@@ -78,23 +85,37 @@ public class SearchPermissionsServiceBean {
 
     public List<String> findDvObjectPerms(DvObject dvObject) {
         List<String> permStrings = new ArrayList<>();
+        resetRoleAssigneeCache();
         Set<RoleAssignment> roleAssignments = rolesSvc.rolesAssignments(dvObject);
         for (RoleAssignment roleAssignment : roleAssignments) {
+            logger.fine("role assignment on dvObject " + dvObject.getId() + ": " + roleAssignment.getAssigneeIdentifier());
             if (roleAssignment.getRole().permissions().contains(getRequiredSearchPermission(dvObject))) {
-                RoleAssignee userOrGroup = roleAssigneeService.getRoleAssignee(roleAssignment.getAssigneeIdentifier());
-                AuthenticatedUser au = findAuthUser(userOrGroup);
-                if (au != null) {
-                    permStrings.add(IndexServiceBean.getGroupPerUserPrefix() + au.getId());
-                } else {
-                    RoleAssignee group = findGroup(userOrGroup);
-                    if (group != null) {
-                        permStrings.add(IndexServiceBean.getGroupPrefix() + "FIXME groupId");
-                    }
+                RoleAssignee userOrGroup = getRoleAssignee(roleAssignment.getAssigneeIdentifier());
+                String indexableUserOrGroupPermissionString = getIndexableStringForUserOrGroup(userOrGroup);
+                if (indexableUserOrGroupPermissionString != null) {
+                    permStrings.add(indexableUserOrGroupPermissionString);
                 }
-
             }
         }
+        resetRoleAssigneeCache();
         return permStrings;
+    }
+    
+    private void resetRoleAssigneeCache() {
+        roleAssigneeCache.clear();
+    }
+    
+    private RoleAssignee getRoleAssignee( String idtf ) {
+        RoleAssignee ra = roleAssigneeCache.get(idtf);
+        if ( ra != null ) {
+            return ra;
+        }
+        ra = roleAssigneeService.getRoleAssignee(idtf);
+        roleAssigneeCache.put( idtf, ra );
+        if ( roleAssigneeCache.size() > MAX_CACHE_SIZE ) {
+            roleAssigneeCache.remove( roleAssigneeCache.keySet().iterator().next() );
+        }
+        return ra;
     }
 
     @Deprecated
@@ -102,14 +123,10 @@ public class SearchPermissionsServiceBean {
         List<String> permStrings = new ArrayList<>();
         List<RoleAssignee> roleAssignees = findWhoHasDirectAssignments(dvObject);
         for (RoleAssignee roleAssignee : roleAssignees) {
-            AuthenticatedUser au = findAuthUser(roleAssignee);
-            if (au != null) {
-                permStrings.add(IndexServiceBean.getGroupPerUserPrefix() + au.getId());
-            } else {
-                RoleAssignee group = findGroup(roleAssignee);
-                if (group != null) {
-                    permStrings.add(IndexServiceBean.getGroupPrefix() + "FIXME groupId");
-                }
+            logger.fine("user or group (findDirectAssignments): " + roleAssignee.getIdentifier());
+            String indexableUserOrGroupPermissionString = getIndexableStringForUserOrGroup(roleAssignee);
+            if (indexableUserOrGroupPermissionString != null) {
+                permStrings.add(indexableUserOrGroupPermissionString);
             }
         }
         return permStrings;
@@ -119,22 +136,18 @@ public class SearchPermissionsServiceBean {
     private List<RoleAssignee> findWhoHasDirectAssignments(DvObject dvObject) {
         List<RoleAssignee> emptyList = new ArrayList<>();
         List<RoleAssignee> peopleWhoCanSearch = emptyList;
-
+        resetRoleAssigneeCache();
+        
         List<RoleAssignment> assignmentsOn = permissionService.assignmentsOn(dvObject);
         for (RoleAssignment roleAssignment : assignmentsOn) {
             if (roleAssignment.getRole().permissions().contains(getRequiredSearchPermission(dvObject))) {
-                RoleAssignee userOrGroup = roleAssigneeService.getRoleAssignee(roleAssignment.getAssigneeIdentifier());
-                AuthenticatedUser au = findAuthUser(userOrGroup);
-                if (au != null) {
+                RoleAssignee userOrGroup = getRoleAssignee(roleAssignment.getAssigneeIdentifier());
+                if (userOrGroup != null) {
                     peopleWhoCanSearch.add(userOrGroup);
-                } else {
-                    RoleAssignee group = findGroup(userOrGroup);
-                    if (group != null) {
-                        peopleWhoCanSearch.add(group);
-                    }
                 }
             }
         }
+        resetRoleAssigneeCache();
         return peopleWhoCanSearch;
     }
 
@@ -159,26 +172,6 @@ public class SearchPermissionsServiceBean {
         return permStrings;
     }
 
-    private AuthenticatedUser findAuthUser(RoleAssignee roleAssignee) {
-        String assigneeIdentifier = roleAssignee.getIdentifier();
-        if (assigneeIdentifier == null) {
-            return null;
-        }
-        String identifierWithoutPrefix = null;
-        try {
-            String prefix = AuthenticatedUser.IDENTIFIER_PREFIX;
-            int indexAfterPrefix = prefix.length();
-            identifierWithoutPrefix = assigneeIdentifier.substring(indexAfterPrefix);
-        } catch (IndexOutOfBoundsException ex) {
-            return null;
-        }
-        if (identifierWithoutPrefix == null) {
-            return null;
-        }
-        AuthenticatedUser au = userServiceBean.getAuthenticatedUser(identifierWithoutPrefix);
-        return au;
-    }
-
     public Map<DatasetVersion.VersionState, Boolean> getDesiredCards(Dataset dataset) {
         Map<DatasetVersion.VersionState, Boolean> desiredCards = new LinkedHashMap<>();
         DatasetVersion latestVersion = dataset.getLatestVersion();
@@ -201,6 +194,8 @@ public class SearchPermissionsServiceBean {
                 desiredCards.put(DatasetVersion.VersionState.RELEASED, false);
                 desiredCards.put(DatasetVersion.VersionState.DRAFT, false);
             } else {
+                String msg = "No-op. Unexpected condition reached: There is no published version and the latest published version is neither " + DatasetVersion.VersionState.DRAFT + " nor " + DatasetVersion.VersionState.DEACCESSIONED + ". Its state is " + latestVersionState + ".";
+                logger.info(msg);
             }
         } else if (atLeastOnePublishedVersion == true) {
             if (latestVersionState.equals(DatasetVersion.VersionState.RELEASED)
@@ -214,23 +209,17 @@ public class SearchPermissionsServiceBean {
                 desiredCards.put(DatasetVersion.VersionState.DEACCESSIONED, false);
             } else {
                 String msg = "No-op. Unexpected condition reached: There is at least one published version but the latest version is neither published nor draft";
+                logger.info(msg);
             }
         } else {
             String msg = "No-op. Unexpected condition reached: Has a version been published or not?";
+            logger.info(msg);
         }
         return desiredCards;
     }
 
     private boolean hasBeenPublished(Dataverse dataverse) {
         return dataverse.isReleased();
-    }
-
-    /**
-     * @todo Once groups have been implemented, try to look up the group from
-     * the roleAssignee and return it.
-     */
-    private RoleAssignee findGroup(RoleAssignee roleAssignee) {
-        return null;
     }
 
     private Permission getRequiredSearchPermission(DvObject dvObject) {
@@ -247,6 +236,37 @@ public class SearchPermissionsServiceBean {
         boolean safeDefaultIfKeyNotFound = true;
         // see javadoc of the key
         return settingsService.isTrueForKey(SettingsServiceBean.Key.SearchRespectPermissionRoot, safeDefaultIfKeyNotFound);
+    }
+
+    /**
+     * From a Solr perspective we can't just index any string when we go to do
+     * the JOIN to enforce security. (Maybe putting quotes around the string at
+     * search time would allow this.) For users, we index the primary key from
+     * the AuthenticatedUsers table. For groups we index the "alias" which
+     * should be globally unique because non-builtin groups have a sort of a
+     * name space with "shib/2" and "ip/ipGroup3", for example.
+     */
+    private String getIndexableStringForUserOrGroup(RoleAssignee userOrGroup) {
+        if (userOrGroup instanceof AuthenticatedUser) {
+            logger.fine(userOrGroup.getIdentifier() + " must be a user: " + userOrGroup.getClass().getName());
+            AuthenticatedUser au = (AuthenticatedUser) userOrGroup;
+            // Strong prefence to index based on system generated value (e.g. primary key) whenever possible: https://github.com/IQSS/dataverse/issues/1151
+            Long primaryKey = au.getId();
+            return IndexServiceBean.getGroupPerUserPrefix() + primaryKey;
+        } else if (userOrGroup instanceof Group) {
+            logger.fine(userOrGroup.getIdentifier() + " must be a group: " + userOrGroup.getClass().getName());
+            Group group = (Group) userOrGroup;
+            logger.fine("group: " + group.getAlias());
+            String groupAlias = group.getAlias();
+            if (groupAlias != null) {
+                return IndexServiceBean.getGroupPrefix() + groupAlias;
+            } else {
+                logger.fine("Could not find group alias for " + group.getIdentifier());
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
 }

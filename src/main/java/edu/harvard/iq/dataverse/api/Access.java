@@ -21,14 +21,12 @@ import edu.harvard.iq.dataverse.PermissionServiceBean;
 import edu.harvard.iq.dataverse.authorization.Permission;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.authorization.users.GuestUser;
-import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.dataaccess.OptionalAccessService;
 import edu.harvard.iq.dataverse.dataaccess.ImageThumbConverter;
 import edu.harvard.iq.dataverse.datavariable.DataVariable;
 import edu.harvard.iq.dataverse.datavariable.VariableServiceBean;
 import edu.harvard.iq.dataverse.export.DDIExportServiceBean;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
-import edu.harvard.iq.dataverse.worldmapauth.WorldMapToken;
 import edu.harvard.iq.dataverse.worldmapauth.WorldMapTokenServiceBean;
 
 import java.util.List;
@@ -78,11 +76,7 @@ import edu.harvard.iq.dataverse.api.exceptions.AuthorizationRequiredException;
 @Path("access")
 public class Access extends AbstractApiBean {
     private static final Logger logger = Logger.getLogger(Access.class.getCanonicalName());
-    
-    private static final String DEFAULT_FILE_ICON = "icon_file.png";
-    private static final String DEFAULT_DATASET_ICON = "icon_dataset.png";
-    private static final String DEFAULT_DATAVERSE_ICON = "icon_dataverse.png";
-    
+        
     @EJB
     DataFileServiceBean dataFileService;
     @EJB 
@@ -290,7 +284,7 @@ public class Access extends AbstractApiBean {
                         downloadInstance.addDataFile(file);
                     } else {
                         downloadInstance.setManifest(downloadInstance.getManifest() + 
-                                file.getFilename() + " IS RESTRICTED AND CANNOT BE DOWNLOADED\r\n");
+                                file.getFileMetadata().getLabel() + " IS RESTRICTED AND CANNOT BE DOWNLOADED\r\n");
                     }
 
                 } else {
@@ -312,10 +306,10 @@ public class Access extends AbstractApiBean {
         return downloadInstance;
     }
     
-    @Path("imagethumb/{fileSystemId}")
+    @Path("tempPreview/{fileSystemId}")
     @GET
     @Produces({"image/png"})
-    public InputStream imagethumb(@PathParam("fileSystemId") String fileSystemId, @Context UriInfo uriInfo, @Context HttpHeaders headers, @Context HttpServletResponse response) /*throws NotFoundException, ServiceUnavailableException, PermissionDeniedException, AuthorizationRequiredException*/ {
+    public InputStream tempPreview(@PathParam("fileSystemId") String fileSystemId, @Context UriInfo uriInfo, @Context HttpHeaders headers, @Context HttpServletResponse response) /*throws NotFoundException, ServiceUnavailableException, PermissionDeniedException, AuthorizationRequiredException*/ {
         
         String filesRootDirectory = System.getProperty("dataverse.files.directory");
         if (filesRootDirectory == null || filesRootDirectory.equals("")) {
@@ -326,7 +320,7 @@ public class Access extends AbstractApiBean {
         
         String mimeTypeParam = uriInfo.getQueryParameters().getFirst("mimetype");
         String imageThumbFileName = null;
-        
+                
         if ("application/pdf".equals(mimeTypeParam)) {
             imageThumbFileName = ImageThumbConverter.generatePDFThumb(fileSystemName);
         } else {
@@ -339,10 +333,21 @@ public class Access extends AbstractApiBean {
         // (or maybe we shouldn't delete it - but instead move it into the 
         // permanent location... so that it doesn't have to be generated again?)
         // -- L.A. Aug. 21 2014
+        // Update: 
+        // the temporary thumbnail file does get cleaned up now; 
+        // but yeay, maybe we should be saving it permanently instead, as 
+        // the above suggested...
+        // -- L.A. Feb. 28 2015
+        
         
         if (imageThumbFileName == null) {
+            return null; 
+        }
+        /* 
+         removing the old, non-vector default icon: 
             imageThumbFileName = getWebappImageResource(DEFAULT_FILE_ICON);
         }
+        */
 
         InputStream in;
 
@@ -358,10 +363,10 @@ public class Access extends AbstractApiBean {
     
     
     
-    @Path("preview/{fileId}")
+    @Path("fileCardImage/{fileId}")
     @GET
     @Produces({ "image/png" })
-    public InputStream preview(@PathParam("fileId") Long fileId, @Context UriInfo uriInfo, @Context HttpHeaders headers, @Context HttpServletResponse response) /*throws NotFoundException, ServiceUnavailableException, PermissionDeniedException, AuthorizationRequiredException*/ {        
+    public InputStream fileCardImage(@PathParam("fileId") Long fileId, @Context UriInfo uriInfo, @Context HttpHeaders headers, @Context HttpServletResponse response) /*throws NotFoundException, ServiceUnavailableException, PermissionDeniedException, AuthorizationRequiredException*/ {        
         
         
         
@@ -377,9 +382,15 @@ public class Access extends AbstractApiBean {
             imageThumbFileName = ImageThumbConverter.generatePDFThumb(df.getFileSystemLocation().toString(), 48);
         } else if (df != null && df.isImage()) {
             imageThumbFileName = ImageThumbConverter.generateImageThumb(df.getFileSystemLocation().toString(), 48);
-        } else {
+        } else if ("application/zipped-shapefile".equalsIgnoreCase(df.getContentType())) {
+            imageThumbFileName = ImageThumbConverter.generateWorldMapThumb(df.getFileSystemLocation().toString(), 48);
+        } 
+        /* 
+         * Removing the old, non-vector default icon: 
+        else {
             imageThumbFileName = getWebappImageResource (DEFAULT_FILE_ICON);
         }
+        */
         
         if (imageThumbFileName != null) {
             InputStream in;
@@ -395,10 +406,10 @@ public class Access extends AbstractApiBean {
         return null; 
     }
     
-    @Path("dsPreview/{versionId}")
+    @Path("dsCardImage/{versionId}")
     @GET
     @Produces({ "image/png" })
-    public InputStream dsPreview(@PathParam("versionId") Long versionId, @Context UriInfo uriInfo, @Context HttpHeaders headers, @Context HttpServletResponse response) /*throws NotFoundException, ServiceUnavailableException, PermissionDeniedException, AuthorizationRequiredException*/ {        
+    public InputStream dsCardImage(@PathParam("versionId") Long versionId, @Context UriInfo uriInfo, @Context HttpHeaders headers, @Context HttpServletResponse response) /*throws NotFoundException, ServiceUnavailableException, PermissionDeniedException, AuthorizationRequiredException*/ {        
         
         
         /*
@@ -435,24 +446,24 @@ public class Access extends AbstractApiBean {
         }
         
         // If not, we'll try to use one of the files in this dataset version:
-        
-        if (imageThumbFileName == null) {
-            List<FileMetadata> fileMetadatas = datasetVersion.getFileMetadatas();
-            
-            for (FileMetadata fileMetadata : fileMetadatas) {
-                DataFile dataFile = fileMetadata.getDataFile();
-                if ("application/pdf".equalsIgnoreCase(dataFile.getContentType())) {
-                    imageThumbFileName = ImageThumbConverter.generatePDFThumb(dataFile.getFileSystemLocation().toString(), 48);
-                    break; 
-                } else if (dataFile.isImage()) {
-                    imageThumbFileName = ImageThumbConverter.generateImageThumb(dataFile.getFileSystemLocation().toString(), 48);
-                    break;
-                } 
+        if (!datasetVersion.getDataset().isHarvested()) {
+            if (imageThumbFileName == null) {
+                List<FileMetadata> fileMetadatas = datasetVersion.getFileMetadatas();
+
+                for (FileMetadata fileMetadata : fileMetadatas) {
+                    DataFile dataFile = fileMetadata.getDataFile();
+                    if ("application/pdf".equalsIgnoreCase(dataFile.getContentType())) {
+                        imageThumbFileName = ImageThumbConverter.generatePDFThumb(dataFile.getFileSystemLocation().toString(), 48);
+                        break;
+                    } else if (dataFile.isImage()) {
+                        imageThumbFileName = ImageThumbConverter.generateImageThumb(dataFile.getFileSystemLocation().toString(), 48);
+                        break;
+                    } else if ("application/zipped-shapefile".equalsIgnoreCase(dataFile.getContentType())) {
+                        imageThumbFileName = ImageThumbConverter.generateWorldMapThumb(dataFile.getFileSystemLocation().toString(), 48);
+                        break;
+                    }
+                }
             }
-        }
-        
-        if (imageThumbFileName == null) {
-            imageThumbFileName = getWebappImageResource (DEFAULT_DATASET_ICON);
         }
         
         if (imageThumbFileName != null) {
@@ -510,37 +521,44 @@ public class Access extends AbstractApiBean {
         
         // If there's no uploaded logo for this dataverse, go through its 
         // [released] datasets and see if any of them have card images:
-        for (Dataset dataset : datasetService.findPublishedByOwnerId(dataverseId)) {
-            if (dataset != null) {
-                DatasetVersion releasedVersion = dataset.getReleasedVersion();
+        
+        // TODO: figure out if we want to be doing this! 
+        // (efficiency considerations...) -- L.A. 4.0 
+        // And we definitely don't want to be doing this for harvested 
+        // dataverses:
+        
+        if (!dataverse.isHarvested()) {
+            for (Dataset dataset : datasetService.findPublishedByOwnerId(dataverseId)) {
+                if (dataset != null) {
+                    DatasetVersion releasedVersion = dataset.getReleasedVersion();
                 // TODO: 
-                // put the Version-related code below away in its own method, 
-                // share it between this and the "dataset card image" method 
-                // above. 
-                // -- L.A. 4.0 beta 8
-                if (releasedVersion != null) {
-                    for (FileMetadata fileMetadata : releasedVersion.getFileMetadatas()) {
-                        DataFile dataFile = fileMetadata.getDataFile();
-                        if ("application/pdf".equalsIgnoreCase(dataFile.getContentType())) {
-                            imageThumbFileName = ImageThumbConverter.generatePDFThumb(dataFile.getFileSystemLocation().toString(), 48);
-                            break;
-                        } else if (dataFile.isImage()) {
-                            imageThumbFileName = ImageThumbConverter.generateImageThumb(dataFile.getFileSystemLocation().toString(), 48);
-                            break;
+                    // put the Version-related code below away in its own method, 
+                    // share it between this and the "dataset card image" method 
+                    // above. 
+                    // -- L.A. 4.0 beta 8
+                    // TODO: 
+                    // yeah, this needs to be cleaned up - after 4.0. 
+                    // -- L.A. 4.0 beta 11
+                    if (releasedVersion != null) {
+                        for (FileMetadata fileMetadata : releasedVersion.getFileMetadatas()) {
+                            DataFile dataFile = fileMetadata.getDataFile();
+                            if ("application/pdf".equalsIgnoreCase(dataFile.getContentType())) {
+                                imageThumbFileName = ImageThumbConverter.generatePDFThumb(dataFile.getFileSystemLocation().toString(), 48);
+                                break;
+                            } else if (dataFile.isImage()) {
+                                imageThumbFileName = ImageThumbConverter.generateImageThumb(dataFile.getFileSystemLocation().toString(), 48);
+                                break;
+                            } else if ("application/zipped-shapefile".equalsIgnoreCase(dataFile.getContentType())) {
+                                imageThumbFileName = ImageThumbConverter.generateWorldMapThumb(dataFile.getFileSystemLocation().toString(), 48);
+                                break;
+                            }
                         }
                     }
-                }
-                if (imageThumbFileName != null) {
-                    break;
+                    if (imageThumbFileName != null) {
+                        break;
+                    }
                 }
             }
-        }
-        
-        // Finally, if we haven't found anything - we'll give them the default 
-        // dataverse icon: 
-        
-        if (imageThumbFileName == null) {
-            imageThumbFileName = getWebappImageResource (DEFAULT_DATAVERSE_ICON);
         }
         
         if (imageThumbFileName != null) {
@@ -556,6 +574,10 @@ public class Access extends AbstractApiBean {
 
         return null; 
     }
+    
+    // TODO: 
+    // put this method into the dataverseservice; use it there
+    // -- L.A. 4.0 beta14
     
     private File getLogo(Dataverse dataverse) {
         if (dataverse.getId() == null) {
@@ -579,6 +601,8 @@ public class Access extends AbstractApiBean {
         return null;         
     }
     
+    /* 
+        removing: 
     private String getWebappImageResource(String imageName) {
         String imageFilePath = null;
         String persistenceFilePath = null;
@@ -598,8 +622,49 @@ public class Access extends AbstractApiBean {
 
         return null;
     }
+    */
+    
+    
+    // TODO: 
+    // duplicated code in the 2 methods below. 
+    // -- L.A. 4.0, beta11
     
     private void checkAuthorization(DataFile df, String apiToken) throws WebApplicationException {
+        // New as of beta15: 
+        // Either a session, or an API token is *always* required. 
+        // Even if it's a totally public object. 
+        // So, checking for that first:
+        logger.info("checking if either a session or a token supplied.");
+        if (session == null || session.getUser() == null) { // || !session.getUser().isAuthenticated()) {
+            logger.info("session is null, or unauthenticated.");
+            if (apiToken == null || findUserByApiToken(apiToken) == null) {
+                logger.info("token null or not supplied.");
+                throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            }
+        } else {
+            logger.info("session not null.");
+        }
+
+        // We don't even need to check permissions on files that are 
+        // from released Dataset versions and not restricted: 
+        
+        //logger.info("checking if file is restricted:");
+        if (!df.isRestricted()) {
+            //logger.info("nope.");
+            if (df.getOwner().getReleasedVersion() != null) {
+                //logger.info("file belongs to a dataset with a released version.");
+                if (df.getOwner().getReleasedVersion().getFileMetadatas() != null) {
+                    //logger.info("going through the list of filemetadatas that belong to the released version.");
+                    for (FileMetadata fm : df.getOwner().getReleasedVersion().getFileMetadatas()) {
+                        if (df.equals(fm.getDataFile())) {
+                            //logger.info("found a match!");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        
         AuthenticatedUser user = null;
        
         /** 
@@ -640,9 +705,9 @@ public class Access extends AbstractApiBean {
             // User from the Session object, just like in the code fragment 
             // above. That's why it's not passed along as an argument.
             if (user != null) {
-                logger.info("Session-based auth: user "+user.getName()+" has access rights on the requested datafile.");
+                logger.fine("Session-based auth: user "+user.getName()+" has access rights on the requested datafile.");
             } else {
-                logger.info("Session-based auth: guest user is granted access to the datafile.");
+                logger.fine("Session-based auth: guest user is granted access to the datafile.");
             }
         } else if ((apiToken != null)&&(apiToken.length()==64)){
             /* 
@@ -658,7 +723,7 @@ public class Access extends AbstractApiBean {
             
             // Yes! User may access file
             //
-            logger.info("WorldMap token-based auth: Token is valid for the requested datafile");
+            logger.fine("WorldMap token-based auth: Token is valid for the requested datafile");
             
         } else if ((apiToken != null)&&(apiToken.length()!=64)) {
             // Will try to obtain the user information from the API token, 
@@ -673,13 +738,13 @@ public class Access extends AbstractApiBean {
             } 
             
             if (!permissionService.userOn(user, df).has(Permission.DownloadFile)) { 
-                logger.info("API token-based auth: User "+user.getName()+" is not authorized to access the datafile.");
+                logger.fine("API token-based auth: User "+user.getName()+" is not authorized to access the datafile.");
                 throw new WebApplicationException(Response.Status.FORBIDDEN);
             }
             
-            logger.info("API token-based auth: User "+user.getName()+" has rights to access the datafile.");
+            logger.fine("API token-based auth: User "+user.getName()+" has rights to access the datafile.");
         } else {
-            logger.info("Unauthenticated access: No guest access to the datafile.");
+            logger.fine("Unauthenticated access: No guest access to the datafile.");
             // throwing "authorization required" (401) instead of "access denied" (403) here:
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
@@ -691,6 +756,26 @@ public class Access extends AbstractApiBean {
     private boolean isAccessAuthorized(DataFile df, String apiToken) {
         AuthenticatedUser user = null;
        
+        // We don't even need to check permissions on files that are 
+        // from released Dataset versions and not restricted: 
+        
+        //logger.info("checking if file is restricted:");
+        if (!df.isRestricted()) {
+            //logger.info("nope.");
+            if (df.getOwner().getReleasedVersion() != null) {
+                //logger.info("file belongs to a dataset with a released version.");
+                if (df.getOwner().getReleasedVersion().getFileMetadatas() != null) {
+                    //logger.info("going through the list of filemetadatas that belong to the released version.");
+                    for (FileMetadata fm : df.getOwner().getReleasedVersion().getFileMetadatas()) {
+                        if (df.equals(fm.getDataFile())) {
+                            //logger.info("found a match!");
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        
         if (session != null) {
             if (session.getUser() != null) {
                 if (session.getUser().isAuthenticated()) {
@@ -718,9 +803,9 @@ public class Access extends AbstractApiBean {
             // User from the Session object, just like in the code fragment 
             // above. That's why it's not passed along as an argument.
             if (user != null) {
-                logger.info("Session-based auth: user "+user.getName()+" has access rights on the requested datafile.");
+                logger.fine("Session-based auth: user "+user.getName()+" has access rights on the requested datafile.");
             } else {
-                logger.info("Session-based auth: guest user is granted access to the datafile.");
+                logger.fine("Session-based auth: guest user is granted access to the datafile.");
             }
         } else if (apiToken != null) {
             // Will try to obtain the user information from the API token, 
@@ -735,13 +820,13 @@ public class Access extends AbstractApiBean {
             } 
             
             if (!permissionService.userOn(user, df).has(Permission.DownloadFile)) { 
-                logger.info("API token-based auth: User "+user.getName()+" is not authorized to access the datafile.");
+                logger.fine("API token-based auth: User "+user.getName()+" is not authorized to access the datafile.");
                 return false; 
             }
             
-            logger.info("API token-based auth: User "+user.getName()+" has rights to access the datafile.");
+            logger.fine("API token-based auth: User "+user.getName()+" has rights to access the datafile.");
         } else {
-            logger.info("Unauthenticated access: No guest access to the datafile.");
+            logger.fine("Unauthenticated access: No guest access to the datafile.");
             // throwing "authorization required" (401) instead of "access denied" (403) here:
             return false; 
         }

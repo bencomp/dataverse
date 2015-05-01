@@ -16,10 +16,13 @@ import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinUser;
 import edu.harvard.iq.dataverse.FileMetadata;
 import edu.harvard.iq.dataverse.MetadataBlock;
 import edu.harvard.iq.dataverse.RoleAssignment;
+import edu.harvard.iq.dataverse.api.Util;
 import edu.harvard.iq.dataverse.authorization.Permission;
 import edu.harvard.iq.dataverse.authorization.RoleAssigneeDisplayInfo;
+import edu.harvard.iq.dataverse.authorization.groups.impl.explicit.ExplicitGroup;
 import edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.IpGroup;
 import edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.ip.IpAddressRange;
+import edu.harvard.iq.dataverse.authorization.groups.impl.shib.ShibGroup;
 import edu.harvard.iq.dataverse.authorization.providers.AuthenticationProviderRow;
 import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.util.DatasetFieldWalker;
@@ -27,13 +30,12 @@ import java.util.Set;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 
 import static edu.harvard.iq.dataverse.util.json.NullSafeJsonBuilder.jsonObjectBuilder;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
@@ -45,13 +47,18 @@ import javax.json.JsonObject;
  * @author michael
  */
 public class JsonPrinter {
-	public static final String TIME_FORMAT_STRING = "yyyy-MM-dd hh:mm:ss X";
-    	public static final String DATE_FORMAT_STRING = "yyyy-MM-dd";
- 
-    private static final DateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT_STRING);
 	
+    	
 	public static final BriefJsonPrinter brief = new BriefJsonPrinter();
 	
+    public static JsonArrayBuilder asJsonArray( Collection<String> strings ) {
+        JsonArrayBuilder arr = Json.createArrayBuilder();
+        for ( String s : strings ) {
+            arr.add(s);
+        }
+        return arr;
+    }
+    
 	public static JsonObjectBuilder json( User u ) {
         RoleAssigneeDisplayInfo displayInfo = u.getDisplayInfo();
         return jsonObjectBuilder()
@@ -91,11 +98,28 @@ public class JsonPrinter {
             rangeBld.add( Json.createArrayBuilder().add(r.getBottom().toString()).add(r.getTop().toString()) );
         }
         return jsonObjectBuilder()
-                .add("alias", grp.getAlias() )
+                .add("alias", grp.getPersistedGroupAlias() )
+                .add("identifier", grp.getIdentifier())
                 .add("id", grp.getId() )
-                .add("name", grp.getName() )
+                .add("name", grp.getDisplayName() )
                 .add("description", grp.getDescription() )
                 .add("ranges", rangeBld);
+    }
+
+        public static JsonObjectBuilder json(ShibGroup grp) {
+        return jsonObjectBuilder()
+                .add("name", grp.getName())
+                .add("attribute", grp.getAttribute())
+                .add("pattern", grp.getPattern())
+                .add("id", grp.getId());
+    }
+    
+	public static JsonArrayBuilder rolesToJson( List<DataverseRole> role ) {
+        JsonArrayBuilder bld = Json.createArrayBuilder();
+        for ( DataverseRole r : role ) {
+            bld.add( json(r) );
+        }
+        return bld;
     }
     
 	public static JsonObjectBuilder json( DataverseRole role ) {
@@ -123,7 +147,7 @@ public class JsonPrinter {
 			bld.add("ownerId", dv.getOwner().getId());
 		}
 		if ( dv.getCreateDate() != null ) {
-			bld.add("creationDate", timeFormat.format(dv.getCreateDate()));
+			bld.add("creationDate", Util.getDateTimeFormat().format(dv.getCreateDate()));
 		}
                 if ( dv.getCreator() != null ) {
                     bld.add("creator",json(dv.getCreator()));
@@ -185,9 +209,19 @@ public class JsonPrinter {
 				;
                 
 		bld.add("metadataBlocks", jsonByBlocks(dsv.getDatasetFields()));
+        
+        bld.add( "files", jsonFileMetadatas(dsv.getFileMetadatas()) );
 		
 		return bld;
 	}
+    
+    public static JsonArrayBuilder jsonFileMetadatas( Collection<FileMetadata> fmds ) {
+        JsonArrayBuilder filesArr = Json.createArrayBuilder();
+        for ( FileMetadata fmd : fmds ) {
+            filesArr.add(json(fmd));
+        }
+        return filesArr;
+    }
     
     public static JsonObjectBuilder json( DatasetDistributor dist ) {
         return jsonObjectBuilder()
@@ -270,7 +304,7 @@ public class JsonPrinter {
 		fieldsBld.add( "name", fld.getName() );
 		fieldsBld.add( "displayName", fld.getDisplayName());
 		fieldsBld.add( "title", fld.getTitle());
-		fieldsBld.add( "type", fld.getFieldType());
+		fieldsBld.add( "type", fld.getFieldType().toString());
 		fieldsBld.add( "watermark", fld.getWatermark());
 		fieldsBld.add( "description", fld.getDescription());
 		if ( ! fld.getChildDatasetFieldTypes().isEmpty() ) {
@@ -314,7 +348,7 @@ public class JsonPrinter {
 	}
 	
 	public static String format( Date d ) {
-		return (d==null) ? null : timeFormat.format(d);
+		return (d==null) ? null : Util.getDateTimeFormat().format(d);
 	}
     
     private static class DatasetFieldsToJson implements DatasetFieldWalker.Listener {
@@ -391,5 +425,28 @@ public class JsonPrinter {
                         .add("factoryData", aRow.getFactoryData())
                         .add("enabled", aRow.isEnabled())
                 ;
+    }
+    
+    public static JsonObjectBuilder json(ExplicitGroup eg ) {
+        JsonArrayBuilder ras = Json.createArrayBuilder();
+        for ( String u : eg.getContainedRoleAssgineeIdentifiers() ) {
+            ras.add(u);
+        }
+        return jsonObjectBuilder()
+                .add("identifier", eg.getIdentifier() )
+                .add("groupAliasInOwner", eg.getGroupAliasInOwner() )
+                .add("owner",eg.getOwner().getId())
+                .add("description", eg.getDescription())
+                .add("displayName", eg.getDisplayName())
+                .add("containedRoleAssignees", ras);
+                
+    }
+    
+    public static JsonArrayBuilder json( Collection<ExplicitGroup> egc ) {
+        JsonArrayBuilder bld = Json.createArrayBuilder();
+        for ( ExplicitGroup eg : egc ) {
+            bld.add( json(eg) );
+        }
+        return bld;
     }
 }

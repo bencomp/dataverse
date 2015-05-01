@@ -7,9 +7,10 @@ package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.engine.command.exception.CommandException;
 import edu.harvard.iq.dataverse.engine.command.impl.CreateGuestbookCommand;
+import edu.harvard.iq.dataverse.engine.command.impl.DeleteGuestbookCommand;
 import edu.harvard.iq.dataverse.engine.command.impl.UpdateDataverseCommand;
 import edu.harvard.iq.dataverse.engine.command.impl.UpdateDataverseGuestbookCommand;
-import edu.harvard.iq.dataverse.engine.command.impl.UpdateDataverseTemplateRootCommand;
+import edu.harvard.iq.dataverse.engine.command.impl.UpdateDataverseGuestbookRootCommand;
 import edu.harvard.iq.dataverse.util.JsfHelper;
 import static edu.harvard.iq.dataverse.util.JsfHelper.JH;
 import java.sql.Timestamp;
@@ -42,6 +43,9 @@ public class ManageGuestbooksPage implements java.io.Serializable {
     GuestbookResponseServiceBean guestbookResponseService;
     
     @EJB
+    GuestbookServiceBean guestbookService;
+    
+    @EJB
     EjbDataverseEngine engineService;
 
     @PersistenceContext(unitName = "VDCNet-ejbPU")
@@ -69,10 +73,11 @@ public class ManageGuestbooksPage implements java.io.Serializable {
         dvpage.setDataverse(dataverse);
 
         guestbooks = new LinkedList<>();
-        setInheritGuestbooksValue(dataverse.isGuestbookRoot());
+        setInheritGuestbooksValue(!dataverse.isGuestbookRoot());
         if (inheritGuestbooksValue && dataverse.getOwner() != null) {
             for (Guestbook pg : dataverse.getParentGuestbooks()) {
-                pg.setDataverse(dataverse.getOwner());
+                pg.setUsageCount(guestbookService.findCountUsages(pg.getId()));
+                pg.setResponseCount(guestbookResponseService.findCountByGuestbookId(pg.getId()));
                 pg.setDeletable(true);
                 if (!(pg.getUsageCount().intValue() == 0)) {
                     pg.setDeletable(false);
@@ -82,67 +87,64 @@ public class ManageGuestbooksPage implements java.io.Serializable {
         }
         for (Guestbook cg : dataverse.getGuestbooks()) {
             cg.setDeletable(true);
+            cg.setUsageCount(guestbookService.findCountUsages(cg.getId()));
             if (!(cg.getUsageCount().intValue() == 0)) {
                 cg.setDeletable(false);
             }
+            cg.setResponseCount(guestbookResponseService.findCountByGuestbookId(cg.getId()));
             cg.setDataverse(dataverse);
             guestbooks.add(cg);
         }
     }
 
 
-    public String cloneGuestbook(Guestbook guestbookIn) {
-        Guestbook newOne = guestbookIn.copyGuestbook(guestbookIn);
-        String name = "Copy of " + guestbookIn.getName();
-        newOne.setName(name);
-        newOne.setUsageCount(new Long(0));
-        newOne.setCreateTime(new Timestamp(new Date().getTime()));
 
-        dataverse.getGuestbooks().add(newOne);
-        guestbooks.add(newOne);
-        Guestbook created;
-        try {
-            created = engineService.submit(new CreateGuestbookCommand(newOne, session.getUser(), dataverse));
-            saveDataverse("");
-            String msg =  "The guestbook has been copied.";
-            JsfHelper.addFlashMessage(msg);
-            created.setDataverse(dataverse);
-            return "/guestbook.xhtml?id=" + created.getId() + "&ownerId=" + dataverse.getId() + "&editMode=METADATA&faces-redirect=true";
-        } catch (CommandException ex) {
-            JH.addMessage(FacesMessage.SEVERITY_FATAL, "The guestbook cannot be copied");
-        }
-        return "";
-    }
 
     public void deleteGuestbook() {
         if (selectedGuestbook != null) {
             guestbooks.remove(selectedGuestbook);
             dataverse.getGuestbooks().remove(selectedGuestbook);
-            saveDataverse("The guestbook has been deleted.");
+            try {
+                engineService.submit(new DeleteGuestbookCommand(session.getUser(), getDataverse(), selectedGuestbook));
+                JsfHelper.addFlashMessage("The guestbook has been deleted");
+            } catch (CommandException ex) {
+                String failMessage = "The dataset guestbook cannot be deleted.";
+                JH.addMessage(FacesMessage.SEVERITY_FATAL, failMessage);
+            }
         } else {
             System.out.print("Selected Guestbook is null");
         }
     }
 
     public void saveDataverse(ActionEvent e) {
-        saveDataverse("");
+        saveDataverse("", "");
     }
     
-    public void viewSelectedGuestbookResponses(Guestbook selectedGuestbook){
-        this.selectedGuestbook = selectedGuestbook;
-        guestbookPage.setGuestbook(selectedGuestbook);
-        setResponses(guestbookResponseService.findAll());
+    public String enableGuestbook(Guestbook selectedGuestbook) {
+        selectedGuestbook.setEnabled(true);
+        saveDataverse("dataset.manageGuestbooks.message.enableSuccess", "dataset.manageGuestbooks.message.enableFailure");
+        return "";
     }
 
-    private void saveDataverse(String successMessage) {
+    public String disableGuestbook(Guestbook selectedGuestbook) {
+        selectedGuestbook.setEnabled(false);
+        saveDataverse("dataset.manageGuestbooks.message.disableSuccess", "dataset.manageGuestbooks.message.disableFailure");
+        return "";
+    }
+    
+
+    private void saveDataverse(String successMessage, String failureMessage) {
         if (successMessage.isEmpty()) {
-            successMessage = "Dataverse Guestbook data updated";
+            successMessage = "dataset.manageGuestbooks.message.editSuccess";
         }
+        if (failureMessage.isEmpty()) {
+            failureMessage = "dataset.manageGuestbooks.message.editFailure";
+        }     
         try {
             engineService.submit(new UpdateDataverseCommand(getDataverse(), null, null, session.getUser(), null));
-            JsfHelper.addSuccessMessage(successMessage);
+            JsfHelper.addSuccessMessage(JH.localize(successMessage));
         } catch (CommandException ex) {
-            JH.addMessage(FacesMessage.SEVERITY_FATAL, "Update failed: " + ex.getMessage());
+            JH.addMessage(FacesMessage.SEVERITY_FATAL, JH.localize(failureMessage));
         }
 
     }
@@ -155,14 +157,7 @@ public class ManageGuestbooksPage implements java.io.Serializable {
         this.guestbooks = guestbooks;
     }
     
-    
-    public List<GuestbookResponse> getResponses() {
-        return responses;
-    }
 
-    public void setResponses(List<GuestbookResponse> responses) {
-        this.responses = responses;
-    }
 
     public Dataverse getDataverse() {
         return dataverse;
@@ -201,37 +196,11 @@ public class ManageGuestbooksPage implements java.io.Serializable {
         guestbookPage.setGuestbook(selectedGuestbook);
     }
 
-    public String enableGuestbook(Guestbook selectedGuestbook) {
-        selectedGuestbook.setEnabled(true);
-        try {
-            dataverse = engineService.submit(new UpdateDataverseGuestbookCommand(dataverse, selectedGuestbook, session.getUser()));
-            init();
-            JsfHelper.addSuccessMessage("The guestbook has been enabled.");
-            return "";
-        } catch (CommandException ex) {
-            Logger.getLogger(ManageGuestbooksPage.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "";
-    }
 
-    public String disableGuestbook(Guestbook selectedGuestbook) {
-        selectedGuestbook.setEnabled(false);
-        try {
-            dataverse = engineService.submit(new UpdateDataverseGuestbookCommand(dataverse, selectedGuestbook, session.getUser()));
-            init();
-            JsfHelper.addSuccessMessage("The guestbook has been disabled.");
-            return "";
-        } catch (CommandException ex) {
-            Logger.getLogger(ManageGuestbooksPage.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "";
-    }
 
     public String updateGuestbooksRoot(javax.faces.event.AjaxBehaviorEvent event) throws javax.faces.event.AbortProcessingException {
         try {
-
-
-            dataverse = engineService.submit(new UpdateDataverseTemplateRootCommand(isInheritGuestbooksValue(), session.getUser(), getDataverse()));
+            dataverse = engineService.submit(new UpdateDataverseGuestbookRootCommand(!isInheritGuestbooksValue(), session.getUser(), getDataverse()));
             init();
             return "";
         } catch (CommandException ex) {

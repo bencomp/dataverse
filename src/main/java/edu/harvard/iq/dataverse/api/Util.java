@@ -1,10 +1,8 @@
 package edu.harvard.iq.dataverse.api;
 
-import edu.harvard.iq.dataverse.util.json.JsonPrinter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +50,7 @@ public class Util {
         return stringWriter.toString();
     }
 
+    @Deprecated
     static String jsonArray2prettyString(JsonArray jsonArray) {
         Map<String, Boolean> config = new HashMap<>();
         config.put(JsonGenerator.PRETTY_PRINTING, true);
@@ -64,16 +63,6 @@ public class Util {
         return stringWriter.toString();
     }
 
-    @Deprecated
-    static String message2ApiError(String message) {
-        JsonObject error = Json.createObjectBuilder()
-                .add("message", message)
-                .add("documentation_url", "http://thedata.org")
-                .build();
-        return jsonObject2prettyString(error);
-
-    }
-	
     static JsonArray asJsonArray( String str ) {
         try ( JsonReader rdr = Json.createReader(new StringReader(str)) ) {
             return rdr.readArray();
@@ -129,7 +118,8 @@ public class Util {
 
     /**
      * @param date The Date object to convert.
-     * @return A ISO 8601 date with UTC time zone or null.
+     * @return A ISO 8601 date/time with UTC time zone (i.e.
+     * 2015-01-23T19:51:50Z) or null.
      *
      * <p>
      *
@@ -146,18 +136,45 @@ public class Util {
      * http://apiux.com/2013/03/20/5-laws-api-dates-and-times/
      *
      */
-    public static String getDateTimeFormatToReturnIn(Date date) {
-        if (date == null) {
-            return null;
+    private static final  String DATE_TIME_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private static final String DATE_FORMAT_STRING = "yyyy-MM-dd";
+         
+    private static final ThreadLocal<SimpleDateFormat> threadLocalTimeFormatter = new ThreadLocal<SimpleDateFormat>(){
+        @Override
+        protected SimpleDateFormat initialValue()
+        {
+            SimpleDateFormat format =  new SimpleDateFormat(DATE_TIME_FORMAT_STRING);
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return format;
         }
-        String otherFormatString = JsonPrinter.TIME_FORMAT_STRING;
-        String dateTimeFormatString = "yyyy-MM-dd'T'HH:mm'Z'";
-        if (!dateTimeFormatString.equals(otherFormatString)) {
-            logger.info("Warning. Two different date/time format strings in use: " + dateTimeFormatString + " and " + otherFormatString);
+    };
+      
+    private static final ThreadLocal<SimpleDateFormat> threadLocalDateFormatter = new ThreadLocal<SimpleDateFormat>(){
+        @Override
+        protected SimpleDateFormat initialValue()
+        {
+            SimpleDateFormat format =  new SimpleDateFormat(DATE_FORMAT_STRING);
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return format;
         }
-        SimpleDateFormat dateFormat = new SimpleDateFormat(dateTimeFormatString);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return dateFormat.format(date);
+    };
+    
+    /**
+     * Note: SimpleDateFormat is not thread-safe! Never retain the format returned by this method in a field.
+     * @return The standard API format for date-and-time.
+     */
+    public static SimpleDateFormat getDateTimeFormat() {
+        return threadLocalTimeFormatter.get();
     }
+    
+    /**
+     * Note: SimpleDateFormat is not thread-safe! Never retain the format returned by this method in a field.
+     * @return The standard API format for dates.
+     */
+    public static SimpleDateFormat getDateFormat() {
+        return threadLocalDateFormatter.get();
+    }
+    
+   
 
 }

@@ -9,8 +9,8 @@ import edu.harvard.iq.dataverse.DataFile;
 import edu.harvard.iq.dataverse.Dataset;
 import edu.harvard.iq.dataverse.DatasetVersionUser;
 import edu.harvard.iq.dataverse.DatasetField;
-import edu.harvard.iq.dataverse.DatasetVersionUI;
 import edu.harvard.iq.dataverse.authorization.Permission;
+import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.engine.command.AbstractCommand;
 import edu.harvard.iq.dataverse.engine.command.CommandContext;
@@ -22,9 +22,10 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 /**
  *
@@ -55,7 +56,11 @@ public class UpdateDatasetCommand extends AbstractCommand<Dataset> {
             }
             throw new IllegalCommandException(validationFailedString, this);
         }
-
+        
+        if ( ! (getUser() instanceof AuthenticatedUser) ) {
+            throw new IllegalCommandException("Only authenticated users can update datasets", this);
+        }
+        
         return save(ctxt);
     }
 
@@ -64,6 +69,7 @@ public class UpdateDatasetCommand extends AbstractCommand<Dataset> {
     }
 
     public Dataset save(CommandContext ctxt) {
+        
         Iterator<DatasetField> dsfIt = theDataset.getEditVersion().getDatasetFields().iterator();
         while (dsfIt.hasNext()) {
             if (dsfIt.next().removeBlankDatasetFieldValues()) {
@@ -80,6 +86,7 @@ public class UpdateDatasetCommand extends AbstractCommand<Dataset> {
         for (DataFile dataFile : theDataset.getFiles()) {
             if (dataFile.getCreateDate() == null) {
                 dataFile.setCreateDate(updateTime);
+                dataFile.setCreator((AuthenticatedUser) getUser());
             }
         }
 
@@ -110,9 +117,15 @@ public class UpdateDatasetCommand extends AbstractCommand<Dataset> {
 
         Dataset savedDataset = ctxt.em().merge(theDataset);
         ctxt.em().flush();
-        String indexingResult = ctxt.index().indexDataset(savedDataset);
+
+        /**
+         * @todo What should we do with the indexing result? Print it to the
+         * log?
+         */
+        boolean doNormalSolrDocCleanUp = true;
+        Future<String> indexingResult = ctxt.index().indexDataset(savedDataset, doNormalSolrDocCleanUp);
         //String indexingResult = "(Indexing Skipped)";
-        logger.log(Level.INFO, "during dataset save, indexing result was: {0}", indexingResult);
+//        logger.log(Level.INFO, "during dataset save, indexing result was: {0}", indexingResult);
         DatasetVersionUser ddu = ctxt.datasets().getDatasetVersionUser(theDataset.getLatestVersion(), this.getUser());
 
         if (ddu != null) {
@@ -121,9 +134,11 @@ public class UpdateDatasetCommand extends AbstractCommand<Dataset> {
         } else {
             DatasetVersionUser datasetDataverseUser = new DatasetVersionUser();
             datasetDataverseUser.setDatasetVersion(savedDataset.getLatestVersion());
-            datasetDataverseUser.setLastUpdateDate((Timestamp) updateTime);
-            datasetDataverseUser.setDatasetversionid(savedDataset.getLatestVersion().getId());
-            datasetDataverseUser.setUserIdentifier(getUser().getIdentifier());
+            datasetDataverseUser.setLastUpdateDate((Timestamp) updateTime); 
+            String id = getUser().getIdentifier();
+            id = id.startsWith("@") ? id.substring(1) : id;
+            AuthenticatedUser au = ctxt.authentication().getAuthenticatedUser(id);
+            datasetDataverseUser.setAuthenticatedUser(au);
             ctxt.em().merge(datasetDataverseUser);
         }
         return savedDataset;

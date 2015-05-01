@@ -1,8 +1,12 @@
 package edu.harvard.iq.dataverse;
 
+import edu.harvard.iq.dataverse.actionlogging.ActionLogRecord;
+import edu.harvard.iq.dataverse.actionlogging.ActionLogServiceBean;
+import edu.harvard.iq.dataverse.authorization.AuthenticationServiceBean;
 import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinUserServiceBean;
 import edu.harvard.iq.dataverse.engine.DataverseEngine;
 import edu.harvard.iq.dataverse.authorization.Permission;
+import edu.harvard.iq.dataverse.authorization.groups.impl.explicit.ExplicitGroupServiceBean;
 import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.engine.command.Command;
 import edu.harvard.iq.dataverse.engine.command.CommandContext;
@@ -15,8 +19,10 @@ import javax.ejb.Stateless;
 import javax.inject.Named;
 
 import edu.harvard.iq.dataverse.search.SolrIndexServiceBean;
+import edu.harvard.iq.dataverse.search.savedsearch.SavedSearchServiceBean;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import java.util.EnumSet;
+import javax.ejb.EJBException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -70,6 +76,9 @@ public class EjbDataverseEngine {
 
     @EJB
     TemplateServiceBean templateService;
+    
+    @EJB
+    SavedSearchServiceBean savedSearchService;
 
     @EJB
     DataverseFieldTypeInputLevelServiceBean fieldTypeInputLevels;
@@ -85,53 +94,97 @@ public class EjbDataverseEngine {
     
     @EJB
     GuestbookResponseServiceBean responses;
+    
+    @EJB
+    DataverseLinkingServiceBean dvLinking;
+    
+    @EJB
+    DatasetLinkingServiceBean dsLinking;
 
+    @EJB
+    ExplicitGroupServiceBean explicitGroups;
+    
+    @EJB
+    RoleAssigneeServiceBean roleAssignees;
+    
+    @EJB
+    UserNotificationServiceBean userNotificationService;   
+    
+    @EJB
+    AuthenticationServiceBean authentication; 
+    
     @PersistenceContext(unitName = "VDCNet-ejbPU")
     private EntityManager em;
+    
+    @EJB
+    ActionLogServiceBean logSvc;
 
     private CommandContext ctxt;
 
     public <R> R submit(Command<R> aCommand) throws CommandException {
-
-		// Currently not in use
-        // Check permissions - or throw an exception
-        Map<String, ? extends Set<Permission>> requiredMap = aCommand.getRequiredPermissions();
-        if (requiredMap == null) {
-            throw new RuntimeException("Command class " + aCommand.getClass() + " does not define required permissions. "
-                    + "Please use the RequiredPermissions annotation.");
-        }
-
-        User user = aCommand.getUser();
-
-        Map<String, DvObject> affectedDataverses = aCommand.getAffectedDvObjects();
-
-        for (Map.Entry<String, ? extends Set<Permission>> pair : requiredMap.entrySet()) {
-            String dvName = pair.getKey();
-            if (!affectedDataverses.containsKey(dvName)) {
-                throw new RuntimeException("Command instance " + aCommand + " does not have a DvObject named '" + dvName + "'");
+        
+        final ActionLogRecord logRec = new ActionLogRecord(ActionLogRecord.ActionType.Command, aCommand.getClass().getCanonicalName());
+        
+        try {
+            logRec.setUserIdentifier( aCommand.getUser().getIdentifier() );
+            
+            // Check permissions - or throw an exception
+            Map<String, ? extends Set<Permission>> requiredMap = aCommand.getRequiredPermissions();
+            if (requiredMap == null) {
+                throw new RuntimeException("Command " + aCommand + " does not define required permissions.");
             }
-            DvObject dvo = affectedDataverses.get(dvName);
 
-            Set<Permission> granted = (dvo != null) ? permissionService.permissionsFor(user, dvo)
-                    : EnumSet.allOf(Permission.class);
-            Set<Permission> required = requiredMap.get(dvName);
-            if (!granted.containsAll(required)) {
-                required.removeAll(granted);
-                throw new PermissionException("Can't execute command " + aCommand
-                        + ", because user " + aCommand.getUser()
-                        + " is missing permissions " + required
-                        + " on Object " + dvo.accept(DvObject.NamePrinter),
-                        aCommand,
-                        required, dvo);
+            User user = aCommand.getUser();
+            
+            Map<String, DvObject> affectedDvObjects = aCommand.getAffectedDvObjects();
+            logRec.setInfo( describe(affectedDvObjects) );
+            for (Map.Entry<String, ? extends Set<Permission>> pair : requiredMap.entrySet()) {
+                String dvName = pair.getKey();
+                if (!affectedDvObjects.containsKey(dvName)) {
+                    throw new RuntimeException("Command instance " + aCommand + " does not have a DvObject named '" + dvName + "'");
+                }
+                DvObject dvo = affectedDvObjects.get(dvName);
+
+                Set<Permission> granted = (dvo != null) ? permissionService.permissionsFor(user, dvo)
+                        : EnumSet.allOf(Permission.class);
+                Set<Permission> required = requiredMap.get(dvName);
+                if (!granted.containsAll(required)) {
+                    required.removeAll(granted);
+                    logRec.setActionResult(ActionLogRecord.Result.PermissionError);
+                    throw new PermissionException("Can't execute command " + aCommand
+                            + ", because user " + aCommand.getUser()
+                            + " is missing permissions " + required
+                            + " on Object " + dvo.accept(DvObject.NamePrinter),
+                            aCommand,
+                            required, dvo);
+                }
             }
+            try {
+                return aCommand.execute(getContext());
+                
+            } catch ( EJBException ejbe ) {
+                logRec.setActionResult(ActionLogRecord.Result.InternalError);
+                throw new CommandException("Command " + aCommand.toString() + " failed: " + ejbe.getMessage(), ejbe.getCausedByException(), aCommand);
+            }
+            
+        } catch ( RuntimeException re ) {
+            logRec.setActionResult(ActionLogRecord.Result.InternalError);
+            logRec.setInfo( re.getMessage() );
+            throw re;
+            
+        } finally {
+            if ( logRec.getActionResult() == null ) {
+                logRec.setActionResult( ActionLogRecord.Result.OK );
+            }
+            logRec.setEndTime( new java.util.Date() );
+            logSvc.log(logRec);
         }
-
-        return aCommand.execute(getContext());
     }
 
     public CommandContext getContext() {
         if (ctxt == null) {
             ctxt = new CommandContext() {
+                
                 @Override
                 public DatasetServiceBean datasets() {
                     return datasetService;
@@ -148,7 +201,7 @@ public class EjbDataverseEngine {
                 }
 
                 @Override
-                public BuiltinUserServiceBean users() {
+                public BuiltinUserServiceBean builtinUsers() {
                     return usersService;
                 }
 
@@ -201,6 +254,11 @@ public class EjbDataverseEngine {
                 public TemplateServiceBean templates() {
                     return templateService;
                 }
+                
+                @Override
+                public SavedSearchServiceBean savedSearches() {
+                    return savedSearchService;
+                }
 
                 @Override
                 public DataverseFieldTypeInputLevelServiceBean fieldTypeInputLevels() {
@@ -226,6 +284,16 @@ public class EjbDataverseEngine {
                 public GuestbookResponseServiceBean responses() {
                     return responses;
                 }
+                
+                @Override
+                public DataverseLinkingServiceBean dvLinking() {
+                    return dvLinking;
+                }
+                                
+                @Override
+                public DatasetLinkingServiceBean dsLinking() {
+                    return dsLinking;
+                }
                 @Override
                 public DataverseEngine engine() {
                     return new DataverseEngine() {
@@ -235,10 +303,42 @@ public class EjbDataverseEngine {
                         }
                     };
                 }
+
+                @Override
+                public ExplicitGroupServiceBean explicitGroups() {
+                    return explicitGroups;
+                }
+
+                @Override
+                public RoleAssigneeServiceBean roleAssignees() {
+                    return roleAssignees;
+                }
+                
+                @Override
+                public UserNotificationServiceBean notifications() {
+                    return userNotificationService;
+                } 
+                
+                @Override
+                public AuthenticationServiceBean authentication() {
+                    return authentication;
+                } 
+                
             };
         }
 
         return ctxt;
     }
-
+    
+    
+    private String describe( Map<String, DvObject> dvObjMap ) {
+        StringBuilder sb = new StringBuilder();
+        for ( Map.Entry<String, DvObject> ent : dvObjMap.entrySet() ) {
+            DvObject value = ent.getValue();
+            sb.append(ent.getKey()).append(":");
+            sb.append( (value!=null) ? value.accept(DvObject.NameIdPrinter) : "<null>");
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
 }

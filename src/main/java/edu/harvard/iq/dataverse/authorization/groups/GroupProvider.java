@@ -1,5 +1,7 @@
 package edu.harvard.iq.dataverse.authorization.groups;
 
+import edu.harvard.iq.dataverse.DvObject;
+import edu.harvard.iq.dataverse.authorization.RoleAssignee;
 import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.authorization.users.UserRequestMetadata;
 import java.util.Set;
@@ -25,8 +27,15 @@ public interface GroupProvider<T extends Group> {
      */
     public String getGroupProviderInfo();
     
+    /**
+     * Looks up the groups this provider has for a role assignee, in the context of a {@link DvObject}.
+     * @param ra The role assignee we
+     * @param dvo the DvObject which is the context for the groups. May be {@code null}
+     * @return The set of groups the user is member of.
+     */
+    public Set<T> groupsFor( RoleAssignee ra, DvObject dvo );
     
-    public Set<T> groupsFor( User u );
-    
-    
+    public T get( String groupAlias );
+
+    public Set<T> findGlobalGroups();
 }

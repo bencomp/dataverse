@@ -2,6 +2,7 @@ package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -25,6 +26,7 @@ import javax.persistence.*;
 // in the child tables. (i.e., the id sequences will be "sparse" in the 3 
 // child tables). Tested, appears to be working properly. -- L.A. Nov. 4 2014
 @Inheritance(strategy=InheritanceType.JOINED)
+@Table(indexes = {@Index(columnList="owner_id"),@Index(columnList="creator_id"),@Index(columnList="releaseuser_id")})
 public abstract class DvObject implements java.io.Serializable {
     
     public static final Visitor<String> NamePrinter = new Visitor<String>(){
@@ -44,23 +46,47 @@ public abstract class DvObject implements java.io.Serializable {
             return df.getFileMetadata().getLabel();
         }
     };
+    public static final Visitor<String> NameIdPrinter = new Visitor<String>(){
+
+        @Override
+        public String visit(Dataverse dv) {
+            return "[" + dv.getId() + " " + dv.getName() + "]";
+        }
+
+        @Override
+        public String visit(Dataset ds) {
+            return "[" + ds.getId() + " " + ds.getLatestVersion().getTitle() + "]";
+        }
+
+        @Override
+        public String visit(DataFile df) {
+            return "[" + df.getId() + " " + df.getFileMetadata().getLabel() + "]";
+        }
+    };
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    private DvObjectContainer owner;
+    private DvObject owner;
 
     private Timestamp publicationDate;
 
-    private String releaseUserIdtf;
+    /** The user that released this dataverse */
+    @ManyToOne
+    private AuthenticatedUser releaseUser;
     
+    @Column( nullable = false )
     private Timestamp createDate;
 
     @Column(nullable = false)
     private Timestamp modificationTime;
 
+    /**
+     * @todo Rename this to contentIndexTime (or something) to differentiate it
+     * from permissionIndexTime. Content Solr docs vs. permission Solr docs.
+     */
     private Timestamp indexTime;
 
     /**
@@ -79,6 +105,7 @@ public abstract class DvObject implements java.io.Serializable {
     /**
      * modificationTime is used for comparison with indexTime so we know if the
      * Solr index is stale.
+     * @param modificationTime
      */
     public void setModificationTime(Timestamp modificationTime) {
         this.modificationTime = modificationTime;
@@ -91,6 +118,7 @@ public abstract class DvObject implements java.io.Serializable {
     /**
      * indexTime is used for comparison with modificationTime so we know if the
      * Solr index is stale.
+     * @param indexTime
      */
     public void setIndexTime(Timestamp indexTime) {
         this.indexTime = indexTime;
@@ -108,7 +136,7 @@ public abstract class DvObject implements java.io.Serializable {
     /**
      * Sets the owner of the object. This is {@code protected} rather than
      * {@code public}, since different sub-classes have different possible owner
-     * types: a {@link DataFile} can only have a {@link DataSet}, for example.
+     * types: a {@link DataFile} can only have a {@link Dataset}, for example.
      *
      * @param newOwner
      */
@@ -117,7 +145,7 @@ public abstract class DvObject implements java.io.Serializable {
     }
 
     public DvObjectContainer getOwner() {
-        return owner;
+        return (DvObjectContainer)owner;
     }
 
     public Long getId() {
@@ -141,12 +169,12 @@ public abstract class DvObject implements java.io.Serializable {
         this.publicationDate = publicationDate;
     }
 
-    public String getReleaseUserIdentifier() {
-        return releaseUserIdtf;
+    public AuthenticatedUser getReleaseUser() {
+        return releaseUser;
     }
-
-    public void setReleaseUserIdentifier(String releaseUserIdtf) {
-        this.releaseUserIdtf = releaseUserIdtf;
+    
+    public void setReleaseUser(AuthenticatedUser releaseUser) {
+        this.releaseUser = releaseUser;
     }
 
     public boolean isReleased() {
@@ -235,4 +263,7 @@ public abstract class DvObject implements java.io.Serializable {
         
         return null;
     }    
+    
+    @OneToMany(mappedBy = "definitionPoint",cascade={ CascadeType.REMOVE, CascadeType.MERGE,CascadeType.PERSIST}, orphanRemoval=true)
+    List<RoleAssignment> roleAssignments;
 }

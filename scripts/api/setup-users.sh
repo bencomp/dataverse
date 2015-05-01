@@ -5,22 +5,22 @@ SERVER=http://localhost:8080/api
 echo Setting up users on $SERVER
 echo ==============================================
 
-curl -X PUT -d burrito $SERVER/s/settings/BuiltinUsers.KEY
+curl -X PUT -d burrito $SERVER/admin/settings/BuiltinUsers.KEY
 
 
-peteResp=$(curl -s -H "Content-type:application/json" -X POST -d @data/userPete.json "$SERVER/users?password=pete&key=burrito")
+peteResp=$(curl -s -H "Content-type:application/json" -X POST -d @data/userPete.json "$SERVER/builtin-users?password=pete&key=burrito")
 echo $peteResp
 
-umaResp=$(curl -s -H "Content-type:application/json" -X POST -d @data/userUma.json "$SERVER/users?password=uma&key=burrito")
+umaResp=$(curl -s -H "Content-type:application/json" -X POST -d @data/userUma.json "$SERVER/builtin-users?password=uma&key=burrito")
 echo $umaResp
 
-curl -s -H "Content-type:application/json" -X POST -d @data/userGabbi.json "$SERVER/users?password=gabbi&key=burrito"
+curl -s -H "Content-type:application/json" -X POST -d @data/userGabbi.json "$SERVER/builtin-users?password=gabbi&key=burrito"
 echo
 
-curl -s -H "Content-type:application/json" -X POST -d @data/userCathy.json "$SERVER/users?password=cathy&key=burrito"
+curl -s -H "Content-type:application/json" -X POST -d @data/userCathy.json "$SERVER/builtin-users?password=cathy&key=burrito"
 echo
 
-curl -s -H "Content-type:application/json" -X POST -d @data/userNick.json "$SERVER/users?password=nick&key=burrito"
+curl -s -H "Content-type:application/json" -X POST -d @data/userNick.json "$SERVER/builtin-users?password=nick&key=burrito"
 echo
 
 echo reporting API keys

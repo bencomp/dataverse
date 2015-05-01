@@ -3,6 +3,8 @@ package edu.harvard.iq.dataverse;
 import edu.harvard.iq.dataverse.search.SearchFields;
 import edu.harvard.iq.dataverse.authorization.users.GuestUser;
 import edu.harvard.iq.dataverse.search.SearchException;
+import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
+import edu.harvard.iq.dataverse.util.SystemConfig;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -34,6 +36,10 @@ public class SearchIncludeFragment implements java.io.Serializable {
     DataFileServiceBean dataFileService;
     @EJB
     PermissionServiceBean permissionService;
+    @EJB
+    SettingsServiceBean settingsService;
+    @EJB
+    SystemConfig systemConfig;
     @Inject
     DataverseSession session;
 
@@ -55,7 +61,6 @@ public class SearchIncludeFragment implements java.io.Serializable {
     private String fq7;
     private String fq8;
     private String fq9;
-    private Long dataverseId;
     private String dataverseAlias;
     private Dataverse dataverse;
     // commenting out dataverseSubtreeContext. it was not well-loved in the GUI
@@ -158,7 +163,7 @@ public class SearchIncludeFragment implements java.io.Serializable {
          */
 
         dataverseRedirectPage = StringUtils.isBlank(dataverseRedirectPage) ? "dataverse.xhtml" : dataverseRedirectPage;
-        String optionalDataverseScope = dataverse.getId().equals(dataverseService.findRootDataverse().getId()) ? "" : "&id=" + dataverse.getId();
+        String optionalDataverseScope = "&alias=" + dataverse.getAlias();
 
         return dataverseRedirectPage + "?faces-redirect=true&q=" + query + optionalDataverseScope;
 
@@ -217,10 +222,8 @@ public class SearchIncludeFragment implements java.io.Serializable {
         List<String> filterQueriesFinal = new ArrayList<>();
         if (dataverseAlias != null) {
             this.dataverse = dataverseService.findByAlias(dataverseAlias);
-            dataverseId = dataverse.getId();
         }
-        if (dataverseId != null) {
-            this.dataverse = dataverseService.find(dataverseId);
+        if (this.dataverse != null) {
             String dataversePath = dataverseService.determineDataversePath(this.dataverse);
             String filterDownToSubtree = SearchFields.SUBTREE + ":\"" + dataversePath + "\"";
             if (!this.dataverse.equals(dataverseService.findRootDataverse())) {
@@ -324,9 +327,20 @@ public class SearchIncludeFragment implements java.io.Serializable {
                 if (solrSearchResult.getType().equals("dataverses")) {
                     Dataverse dataverseInCard = dataverseService.find(solrSearchResult.getEntityId());
                     String parentId = solrSearchResult.getParent().get("id");
+                    solrSearchResult.setIsInTree(false);
                     if (parentId != null) {
                         Dataverse parentDataverseInCard = dataverseService.find(Long.parseLong(parentId));
                         solrSearchResult.setDataverseParentAlias(parentDataverseInCard.getAlias());
+                        List<Dataverse> dvTree = new ArrayList();
+                        Dataverse testDV = parentDataverseInCard;
+                        dvTree.add(testDV);
+                        while (testDV.getOwner() != null) {
+                            dvTree.add(testDV.getOwner());
+                            testDV = testDV.getOwner();
+                        }
+                        if (dvTree.contains(dataverse)) {
+                            solrSearchResult.setIsInTree(true);
+                        }
                     }
 
                     if (dataverseInCard != null) {
@@ -339,6 +353,30 @@ public class SearchIncludeFragment implements java.io.Serializable {
                 } else if (solrSearchResult.getType().equals("datasets")) {
                     Long dataverseId = Long.parseLong(solrSearchResult.getParent().get("id"));
                     Dataverse parentDataverse = dataverseService.find(dataverseId);
+                    solrSearchResult.setIsInTree(false);
+                    List<Dataverse> dvTree = new ArrayList();
+                    Dataverse testDV = parentDataverse;
+                    dvTree.add(testDV);
+                    /**
+                     * @todo Why is a NPE being thrown at this `while
+                     * (testDV.getOwner() != null){` line? An NPE was being
+                     * thrown while browsing the site *after* issuing the
+                     * DestroyDatasetCommand but before a fix was put in to
+                     * remove the dataset "card" from Solr. The ticket tracking
+                     * this that fix is
+                     * https://github.com/IQSS/dataverse/issues/1316 but it's
+                     * unclear why the NPE was thrown. The users see a nasty
+                     * "Internal Server Error - An unexpected error was
+                     * encountered, no more information is available." and
+                     * server.log has a stacktrace with the NPE.
+                     */
+                    while (testDV.getOwner() != null) {
+                        dvTree.add(testDV.getOwner());
+                        testDV = testDV.getOwner();
+                    }
+                    if (dvTree.contains(dataverse)) {
+                        solrSearchResult.setIsInTree(true);
+                    }
                     /**
                      * @todo can a dataverse alias ever be null?
                      */
@@ -350,20 +388,47 @@ public class SearchIncludeFragment implements java.io.Serializable {
                             if (datasetVersion.isDeaccessioned()) {
                                 solrSearchResult.setDeaccessionedState(true);
                             }
-                            try {
-                                String citation = datasetVersion.getCitation();
-                                if (citation != null) {
-                                    solrSearchResult.setCitation(citation);
-                                }
-                            } catch (Exception ex) {
-                                logger.info("Caught exception trying to call datasetVersion.getCitation() on " + datasetVersion.getId() + ". This will be fixed in https://github.com/IQSS/dataverse/issues/1153");
-                            }
+
                         }
+                    }
+                    String deaccesssionReason = solrSearchResult.getDeaccessionReason();
+                    if (deaccesssionReason != null) {
+                        solrSearchResult.setDescriptionNoSnippet(deaccesssionReason);
                     }
                 } else if (solrSearchResult.getType().equals("files")) {
                     DataFile dataFile = dataFileService.find(solrSearchResult.getEntityId());
                     if (dataFile != null) {
                         solrSearchResult.setStatus(getCreatedOrReleasedDate(dataFile, solrSearchResult.getReleaseOrCreateDate()));
+                    }
+                    Long datasetId = Long.parseLong(solrSearchResult.getParent().get("id"));
+                    Dataset parentDS = datasetService.find(datasetId);
+                    Dataverse parentDataverse = parentDS.getOwner();
+                    solrSearchResult.setIsInTree(false);
+                    List<Dataverse> dvTree = new ArrayList();
+                    Dataverse testDV = parentDataverse;
+                    dvTree.add(testDV);
+                    /**
+                     * @todo Why is a NPE being thrown at this `while
+                     * (testDV.getOwner() != null){` line? An NPE was being
+                     * thrown while browsing the site *after* issuing the
+                     * DestroyDatasetCommand but before a fix was put in to
+                     * remove the dataset "card" from Solr. The ticket tracking
+                     * this that fix is
+                     * https://github.com/IQSS/dataverse/issues/1316 but it's
+                     * unclear why the NPE was thrown. The users see a nasty
+                     * "Internal Server Error - An unexpected error was
+                     * encountered, no more information is available." and
+                     * server.log has a stacktrace with the NPE.
+                     */
+                    if (testDV != null) {
+                        while (testDV.getOwner() != null) {
+                            dvTree.add(testDV.getOwner());
+                            testDV = testDV.getOwner();
+                        }
+                    }
+
+                    if (dvTree.contains(dataverse)) {
+                        solrSearchResult.setIsInTree(true);
                     }
                     /**
                      * @todo: show DataTable variables
@@ -609,14 +674,6 @@ public class SearchIncludeFragment implements java.io.Serializable {
         this.fq9 = fq9;
     }
 
-    public Long getDataverseId() {
-        return dataverseId;
-    }
-
-    public void setDataverseId(Long dataverseId) {
-        this.dataverseId = dataverseId;
-    }
-
     public Dataverse getDataverse() {
         return dataverse;
     }
@@ -830,7 +887,8 @@ public class SearchIncludeFragment implements java.io.Serializable {
     }
 
     public boolean isDebug() {
-        return debug;
+        return  (debug && session.getUser().isSuperuser()) ||
+                systemConfig.isDebugEnabled();
     }
 
     public void setDebug(boolean debug) {
@@ -1021,5 +1079,25 @@ public class SearchIncludeFragment implements java.io.Serializable {
         }
 
         return "";
+    }
+
+    public void setDisplayCardValues() {
+        for (SolrSearchResult result : searchResultsList) {
+            boolean valueSet = false;
+            if (result.getType().equals("dataverses") && result.getEntity() instanceof Dataverse){
+                result.setDisplayImage(dataverseService.isDataverseCardImageAvailable((Dataverse) result.getEntity(), session.getUser()));
+                valueSet = true;
+            } else if (result.getType().equals("datasets") && result.getEntity() instanceof Dataset) {
+                result.setDisplayImage(datasetService.isDatasetCardImageAvailable(datasetVersionService.find(result.getDatasetVersionId()), session.getUser()));
+                valueSet = true;
+            } else if (result.getType().equals("files") && result.getEntity() instanceof DataFile) {
+                result.setDisplayImage(dataFileService.isThumbnailAvailable((DataFile) result.getEntity(), session.getUser()));
+                valueSet = true;
+            }
+
+            if (!valueSet) {
+                logger.warning("Index result / entity mismatch (id:resultType) - " + result.getId() + ":" + result.getType());
+            }            
+        }
     }
 }

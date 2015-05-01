@@ -18,7 +18,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import org.hibernate.validator.constraints.NotBlank;
 import edu.harvard.iq.dataverse.DataTable;
+import javax.persistence.Column;
+import javax.persistence.Index;
 import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 /**
  *
@@ -30,6 +33,7 @@ import javax.persistence.OrderBy;
  */
 
 @Entity
+@Table(indexes = {@Index(columnList="datatable_id")})
 public class DataVariable implements Serializable {
     
     /** Creates a new instance of DataVariable */
@@ -61,6 +65,7 @@ public class DataVariable implements Serializable {
     /*
      * label: Variable Label
      */
+    @Column(columnDefinition="TEXT")
     private String label;
     
     /*

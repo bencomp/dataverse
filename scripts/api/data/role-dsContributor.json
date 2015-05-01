@@ -1,7 +1,7 @@
 {
   "alias": "dsContributor",
-  "name": "DS Contributor",
-  "description": "Allows creation of Dataset",
+  "name": "Dataset Creator",
+  "description": "A person who can add datasets within a dataverse.",
   "permissions": [
     "AddDataset"
   ]

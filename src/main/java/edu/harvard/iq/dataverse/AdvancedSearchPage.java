@@ -2,7 +2,10 @@ package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.search.SearchFields;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,13 +29,16 @@ public class AdvancedSearchPage implements java.io.Serializable {
     DatasetFieldServiceBean datasetFieldService;
 
     private Dataverse dataverse;
+    private String dataverseIdentifier;
     private List<MetadataBlock> metadataBlocks;
     private Map<Long, List<DatasetFieldType>> metadataFieldMap = new HashMap();
     private List<DatasetFieldType> metadataFieldList;
     private String dvFieldName;
     private String dvFieldDescription;
     private String dvFieldAffiliation;
+    private List<String> dvFieldSubject;
     private String dsPublicationDate;
+    private String dsPersistentId;
     private String fileFieldName;
     private String fileFieldDescription;
     private String fileFieldFiletype;
@@ -40,12 +46,14 @@ public class AdvancedSearchPage implements java.io.Serializable {
     private String fileFieldVariableLabel;
 
     public void init() {
-        /**
-         * @todo: support advanced search at any depth in the dataverse
-         * hierarchy https://redmine.hmdc.harvard.edu/issues/3894
-         */
-        this.dataverse = dataverseServiceBean.findRootDataverse();
-        this.metadataBlocks = dataverseServiceBean.findAllMetadataBlocks();
+
+        if (dataverseIdentifier != null) {
+            dataverse = dataverseServiceBean.findByAlias(dataverseIdentifier);
+        }
+        if (dataverse == null) {
+            dataverse = dataverseServiceBean.findRootDataverse();
+        }
+        metadataBlocks = dataverse.getMetadataBlocks();
         this.metadataFieldList = datasetFieldService.findAllAdvancedSearchFieldTypes();
 
         for (MetadataBlock mdb : metadataBlocks) {
@@ -61,13 +69,19 @@ public class AdvancedSearchPage implements java.io.Serializable {
 
     }
 
-    public String find() throws IOException {
+    public String find() throws IOException, UnsupportedEncodingException {
         List<String> queryStrings = new ArrayList();
         queryStrings.add(constructDataverseQuery());
         queryStrings.add(constructDatasetQuery());
         queryStrings.add(constructFileQuery());
 
-        return "/dataverse.xhtml?q=" + constructQuery(queryStrings, false, false) + "faces-redirect=true";
+        String returnString = "/dataverse.xhtml?q=";
+        returnString += URLEncoder.encode(constructQuery(queryStrings, false, false), "UTF-8");       
+        returnString += "&alias=" + dataverse.getAlias() + "&faces-redirect=true";
+
+        
+        logger.fine(returnString);        
+        return returnString;
     }
 
     private String constructDatasetQuery() {
@@ -85,6 +99,9 @@ public class AdvancedSearchPage implements java.io.Serializable {
         }
         if (StringUtils.isNotBlank(dsPublicationDate)) {
             queryStrings.add(constructQuery(SearchFields.DATASET_PUBLICATION_DATE, dsPublicationDate));
+        }
+        if (StringUtils.isNotBlank(dsPersistentId)) {
+            queryStrings.add(constructQuery(SearchFields.DATASET_PERSISTENT_ID, dsPersistentId));
         }
         return constructQuery(queryStrings, true);
 
@@ -104,8 +121,16 @@ public class AdvancedSearchPage implements java.io.Serializable {
             queryStrings.add(constructQuery(SearchFields.DATAVERSE_DESCRIPTION, dvFieldDescription));
         }
 
-        return constructQuery(queryStrings, true);
-    }
+        if (dvFieldSubject != null && !dvFieldSubject.isEmpty()) {
+            List<String> listQueryStrings = new ArrayList();
+            for (String value : dvFieldSubject) {
+                listQueryStrings.add(SearchFields.DATAVERSE_SUBJECT + ":" + "\"" + value + "\"");
+            }
+            queryStrings.add(constructQuery(listQueryStrings, false));
+        }
+
+            return constructQuery(queryStrings, true);
+        }
 
     private String constructFileQuery() {
         List queryStrings = new ArrayList();
@@ -206,6 +231,14 @@ public class AdvancedSearchPage implements java.io.Serializable {
         this.dataverse = dataverse;
     }
 
+    public String getDataverseIdentifier() {
+        return dataverseIdentifier;
+    }
+
+    public void setDataverseIdentifier(String dataverseIdentifier) {
+        this.dataverseIdentifier = dataverseIdentifier;
+    }
+
     public List<MetadataBlock> getMetadataBlocks() {
         return metadataBlocks;
     }
@@ -246,12 +279,33 @@ public class AdvancedSearchPage implements java.io.Serializable {
         this.dvFieldAffiliation = dvFieldAffiliation;
     }
 
+    public List<String> getDvFieldSubject() {
+        return dvFieldSubject;
+    }
+
+    public void setDvFieldSubject(List<String> dvFieldSubject) {
+        this.dvFieldSubject = dvFieldSubject;
+    }
+
+    public Collection<ControlledVocabularyValue> getDvFieldSubjectValues() {
+        DatasetFieldType subjectType = datasetFieldService.findByName(DatasetFieldConstant.subject);
+        return subjectType.getControlledVocabularyValues();
+    }
+
     public String getDsPublicationDate() {
         return dsPublicationDate;
     }
 
     public void setDsPublicationDate(String dsPublicationDate) {
         this.dsPublicationDate = dsPublicationDate;
+    }
+
+    public String getDsPersistentId() {
+        return dsPersistentId;
+    }
+
+    public void setDsPersistentId(String dsPersistentId) {
+        this.dsPersistentId = dsPersistentId;
     }
 
     public String getFileFieldName() {

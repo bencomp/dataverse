@@ -243,24 +243,69 @@
         unknown fields indexed and/or stored by default --> 
    <!--dynamicField name="*" type="ignored" multiValued="true" /-->
    
+   <!-- Dataverse-specific -->
+   <field name="definitionPointDocId" type="string" stored="true" indexed="true" multiValued="false"/>
+   <field name="definitionPointDvObjectId" type="string" stored="true" indexed="true" multiValued="false"/>
+   <field name="discoverableBy" type="string" stored="true" indexed="true" multiValued="true"/>
 
-   <!-- Added for Dataverse 4.0 alpha 1. We use "dvtype" to distinguish between 3 types: dataverses, datasets, and files -->
-   <field name="dvtype" type="string" stored="true" indexed="true" multiValued="false"/>
+   <field name="dvObjectType" type="string" stored="true" indexed="true" multiValued="false"/>
+
+   <field name="dvName" type="text_en" stored="true" indexed="true" multiValued="false"/>
+   <field name="dvAffiliation" type="text_en" stored="true" indexed="true" multiValued="false"/>
+   <field name="dvDescription" type="text_en" stored="true" indexed="true" multiValued="false"/>
+
+   <field name="dvCategory" type="string" stored="true" indexed="true" multiValued="false"/>
+
+   <field name="publicationDate" type="string" stored="true" indexed="true" multiValued="false"/>
+   <field name="dsPublicationDate" type="string" stored="true" indexed="true" multiValued="false"/>
+
+   <field name="dvSubject" type="string" stored="true" indexed="true" multiValued="true"/>
+
+   <field name="publicationStatus" type="string" stored="true" indexed="true" multiValued="true"/>
+
+   <field name="dateFriendly" type="text_en" stored="true" indexed="true" multiValued="false"/>
+
+   <field name="subtreePaths" type="string" stored="true" indexed="true" multiValued="true"/>
+
+   <field name="fileName" type="text_en" stored="true" indexed="true" multiValued="true"/>
+   <field name="fileType" type="text_en" stored="true" indexed="true" multiValued="true"/>
+   <field name="fileNameWithoutExtension" type="text_en" stored="true" indexed="true" multiValued="true"/>
+   <field name="variableName" type="text_en" stored="true" indexed="true" multiValued="true"/>
+   <field name="variableLabel" type="text_en" stored="true" indexed="true" multiValued="true"/>
+
+   <field name="fileDescription" type="text_en" stored="true" indexed="true" multiValued="false"/>
+
+   <field name="fileTypeGroupFacet" type="string" stored="true" indexed="true" multiValued="false"/>
+   <field name="fileTypeDisplay" type="string" stored="true" indexed="true" multiValued="false"/>
 
    <!-- Added for Dataverse 4.0 alpha 1: static "parent" fields not copied to "catchall" field https://redmine.hmdc.harvard.edu/issues/3603  -->
    <!-- We index parentid and parentname as a debugging aid in case we want to match on it with an explict query like curl 'http://localhost:8983/solr/collection1/select?rows=100&wt=json&indent=true&q=parentid%3A42' or curl 'http://localhost:8983/solr/collection1/select?rows=100&wt=json&indent=true&q=parentname%3Abirds' -->
    <!-- TODO: store parentid as a long instead of a string  -->
-   <field name="parentid" type="string" stored="true" indexed="true" multiValued="false"/>
-   <field name="parentname" type="text_en" stored="true" indexed="true" multiValued="false"/>
+   <field name="parentId" type="string" stored="true" indexed="false" multiValued="false"/>
+   <field name="parentIdentifier" type="string" stored="true" indexed="false" multiValued="false"/>
+   <field name="parentName" type="string" stored="true" indexed="false" multiValued="false"/>
+   <field name="parentCitation" type="string" stored="true" indexed="false" multiValued="false"/>
+   <field name="citation" type="string" stored="true" indexed="false" multiValued="false"/>
+   <field name="identifier" type="string" stored="true" indexed="false" multiValued="false"/>
+   <field name="persistentUrl" type="string" stored="true" indexed="false" multiValued="false"/>
+   <field name="unf" type="string" stored="true" indexed="false" multiValued="false"/>
+   <field name="fileSizeInBytes" type="long" stored="true" indexed="false" multiValued="false"/>
+   <field name="fileMd5" type="string" stored="true" indexed="false" multiValued="false"/>
+   <field name="fileContentType" type="string" stored="true" indexed="false" multiValued="false"/>
+   <field name="deaccessionReason" type="string" stored="true" indexed="false" multiValued="false"/>
 
    <!-- Added for Dataverse 4.0 alpha 1. This is a required field so we don't have to go to the database to get the database id of the entity. On cards we use the id in links -->
-   <field name="entityid" type="long" stored="true" indexed="true" multiValued="false"/>
+   <field name="entityId" type="long" stored="true" indexed="false" multiValued="false"/>
+
+   <field name="datasetVersionId" type="long" stored="true" indexed="false" multiValued="false"/>
 
    <!-- Added for Dataverse 4.0 alpha 1 to sort by name  -->
    <!-- https://redmine.hmdc.harvard.edu/issues/3482 -->
    <!-- 'Sorting can be done on the "score" of the document, or on any multiValued="false" indexed="true" field provided that field is either non-tokenized (ie: has no Analyzer) or uses an Analyzer that only produces a single Term (ie: uses the KeywordTokenizer)' http://wiki.apache.org/solr/CommonQueryParameters#sort -->
    <!-- http://stackoverflow.com/questions/13360706/solr-4-0-alphabetical-sorting-trouble/13361226#13361226 -->
-   <field name="name_sort" type="alphaOnlySort" indexed="true" stored="true"/>
+   <field name="nameSort" type="alphaOnlySort" indexed="true" stored="true"/>
+
+   <field name="dateSort" type="date" indexed="true" stored="true"/>
 
    <!-- Added for Dataverse 4.0: release date https://redmine.hmdc.harvard.edu/issues/3592 -->
    <field name="releasedate" type="int" indexed="true" stored="true"/>
@@ -270,14 +315,35 @@
    <copyField source="description" dest="text" maxChars="3000"/>
 
    <!-- Added for Dataverse 4.0 Beta: make variable names and labels searchable in basic search https://redmine.hmdc.harvard.edu/issues/3945 -->
-   <copyField source="variable_name_en" dest="text" maxChars="3000"/>
-   <copyField source="variable_label_en" dest="text" maxChars="3000"/>
+   <copyField source="variableName" dest="text" maxChars="3000"/>
+   <copyField source="variableLabel" dest="text" maxChars="3000"/>
+   <!-- Make dataverse subject and affiliation searchable from basic search: https://github.com/IQSS/dataverse/issues/1431 -->
+   <copyField source="dvSubject" dest="text" maxChars="3000"/>
+   <copyField source="dvAffiliation" dest="text" maxChars="3000"/>
 
-   <!-- Added for Dataverse 4.0 alpha 1 from output of http://localhost:8080/api/config/solr/schema -->
+   <field name="dsPersistentId" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <copyField source="dsPersistentId" dest="text" maxChars="3000"/>
+
+   <!-- Dynamic Dataverse fields from http://localhost:8080/api/admin/index/solr/schema -->
+   <field name="ARCS1" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="ARCS2" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="ARCS3" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="ARCS4" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="ARCS5" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="PSRI1" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="PSRI10" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="PSRI11" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="PSRI2" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="PSRI3" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="PSRI4" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="PSRI5" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="PSRI6" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="PSRI7" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="PSRI8" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="PSRI9" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="accessToSources" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="actionsToMinimizeLoss" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="alternativeTitle" type="text_en" multiValued="false" stored="true" indexed="true"/>
-   <field name="articleType" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="astroFacility" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="astroInstrument" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="astroObject" type="text_en" multiValued="true" stored="true" indexed="true"/>
@@ -289,6 +355,7 @@
    <field name="authorName" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="characteristicOfSources" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="city" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="classificationSchemaCHIA" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="cleaningOperations" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="collectionMode" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="collectorTraining" type="text_en" multiValued="false" stored="true" indexed="true"/>
@@ -317,6 +384,7 @@
    <field name="dataCollectionSituation" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="dataCollector" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="dataSources" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="datadePublicao" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="datasetContact" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="datasetContactAffiliation" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="datasetContactEmail" type="text_en" multiValued="true" stored="true" indexed="true"/>
@@ -326,8 +394,10 @@
    <field name="dateOfCollectionEnd" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="dateOfCollectionStart" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="dateOfDeposit" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="datesAdditionalInformationCHIA" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="depositor" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="deviationsFromSampleDesign" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="distributionDate" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="distributor" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="distributorAbbreviation" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="distributorAffiliation" type="text_en" multiValued="true" stored="true" indexed="true"/>
@@ -345,9 +415,11 @@
    <field name="grantNumber" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="grantNumberAgency" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="grantNumberValue" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="gsdAccreditation" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="gsdCoordinator" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="gsdCourseName" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="gsdFacultyName" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="gsdPrizes" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="gsdProgramBrief" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="gsdRecommendation" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="gsdSemester" type="text_en" multiValued="false" stored="true" indexed="true"/>
@@ -356,15 +428,22 @@
    <field name="gsdStudentProgram" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="gsdTags" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="gsdTypes" type="text_en" multiValued="true" stored="true" indexed="true"/>
-   <field name="issue" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="journalArticleType" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="journalIssue" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="journalPubDate" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="journalVolume" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="journalVolumeIssue" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="keyword" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="keywordValue" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="keywordVocabulary" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="keywordVocabularyURI" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="kindOfData" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="language" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="localdePublicao" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="mraCollection" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="northLongitude" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="notesText" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="numero" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="originOfSources" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="otherDataAppraisal" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="otherGeographicCoverage" type="text_en" multiValued="true" stored="true" indexed="true"/>
@@ -380,6 +459,16 @@
    <field name="producerURL" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="productionDate" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="productionPlace" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="proprietrio" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="provenanceCHIA" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="psiBehavior" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="psiDonor" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="psiHealthArea" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="psiIntervention" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="psiPopulation" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="psiProductsServices" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="psiStudyDesignElement" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="psiStudyType" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="publication" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="publicationCitation" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="publicationIDNumber" type="text_en" multiValued="true" stored="true" indexed="true"/>
@@ -394,19 +483,29 @@
    <field name="resolution.Spectral" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="resolution.Temporal" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="responseRate" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="rightsAvailabilityCHIA" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="samplingErrorEstimates" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="samplingProcedure" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="series" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="seriesInformation" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="seriesName" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="socialScienceNotes" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="socialScienceNotesSubject" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="socialScienceNotesText" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="socialScienceNotesType" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="software" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="softwareName" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="softwareVersion" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="sourceCHIA" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="southLongitude" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="state" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="studyAssayCellType" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="studyAssayMeasurementType" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="studyAssayOrganism" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="studyAssayOtherMeasurmentType" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="studyAssayOtherOrganism" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="studyAssayPlatform" type="text_en" multiValued="true" stored="true" indexed="true"/>
+   <field name="studyAssayTechnologyType" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="studyDesignType" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="studyFactorType" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="subject" type="text_en" multiValued="true" stored="true" indexed="true"/>
@@ -419,13 +518,14 @@
    <field name="timePeriodCoveredEnd" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="timePeriodCoveredStart" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="title" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="titulo" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="topicClassValue" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="topicClassVocab" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="topicClassVocabURI" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="topicClassification" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="unitOfAnalysis" type="text_en" multiValued="true" stored="true" indexed="true"/>
    <field name="universe" type="text_en" multiValued="true" stored="true" indexed="true"/>
-   <field name="volume" type="text_en" multiValued="false" stored="true" indexed="true"/>
+   <field name="variablesCHIA" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="weighting" type="text_en" multiValued="false" stored="true" indexed="true"/>
    <field name="westLongitude" type="text_en" multiValued="true" stored="true" indexed="true"/>
  </fields>
@@ -459,8 +559,8 @@
    <!-- Dataverse 4.0: we want the "name" field in the "catchall"  -->
    <copyField source="name" dest="text"/>
    <!-- Dataverse 4.0: we want the "filetype_en" and "filename_without_extension_en" field in the "catchall" per https://redmine.hmdc.harvard.edu/issues/3848  -->
-   <copyField source="filetype_en" dest="text"/>
-   <copyField source="filename_without_extension_en" dest="text"/>
+   <copyField source="fileType" dest="text"/>
+   <copyField source="fileNameWithoutExtension" dest="text"/>
    <!-- <copyField source="manu" dest="text"/> -->
    <!-- <copyField source="features" dest="text"/> -->
    <!-- <copyField source="includes" dest="text"/> -->
@@ -495,11 +595,26 @@
    <!-- <copyField source="*_ss" dest="text" maxChars="3000"/> -->
    <!-- <copyField source="*_i" dest="text" maxChars="3000"/> -->
 
-   <!-- Added for Dataverse 4.0 alpha 1 from output of http://localhost:8080/api/config/solr/schema -->
+   <!-- Dataverse copyField from http://localhost:8080/api/admin/index/solr/schema -->
+   <copyField source="ARCS1" dest="text" maxChars="3000"/>
+   <copyField source="ARCS2" dest="text" maxChars="3000"/>
+   <copyField source="ARCS3" dest="text" maxChars="3000"/>
+   <copyField source="ARCS4" dest="text" maxChars="3000"/>
+   <copyField source="ARCS5" dest="text" maxChars="3000"/>
+   <copyField source="PSRI1" dest="text" maxChars="3000"/>
+   <copyField source="PSRI10" dest="text" maxChars="3000"/>
+   <copyField source="PSRI11" dest="text" maxChars="3000"/>
+   <copyField source="PSRI2" dest="text" maxChars="3000"/>
+   <copyField source="PSRI3" dest="text" maxChars="3000"/>
+   <copyField source="PSRI4" dest="text" maxChars="3000"/>
+   <copyField source="PSRI5" dest="text" maxChars="3000"/>
+   <copyField source="PSRI6" dest="text" maxChars="3000"/>
+   <copyField source="PSRI7" dest="text" maxChars="3000"/>
+   <copyField source="PSRI8" dest="text" maxChars="3000"/>
+   <copyField source="PSRI9" dest="text" maxChars="3000"/>
    <copyField source="accessToSources" dest="text" maxChars="3000"/>
    <copyField source="actionsToMinimizeLoss" dest="text" maxChars="3000"/>
    <copyField source="alternativeTitle" dest="text" maxChars="3000"/>
-   <copyField source="articleType" dest="text" maxChars="3000"/>
    <copyField source="astroFacility" dest="text" maxChars="3000"/>
    <copyField source="astroInstrument" dest="text" maxChars="3000"/>
    <copyField source="astroObject" dest="text" maxChars="3000"/>
@@ -511,6 +626,7 @@
    <copyField source="authorName" dest="text" maxChars="3000"/>
    <copyField source="characteristicOfSources" dest="text" maxChars="3000"/>
    <copyField source="city" dest="text" maxChars="3000"/>
+   <copyField source="classificationSchemaCHIA" dest="text" maxChars="3000"/>
    <copyField source="cleaningOperations" dest="text" maxChars="3000"/>
    <copyField source="collectionMode" dest="text" maxChars="3000"/>
    <copyField source="collectorTraining" dest="text" maxChars="3000"/>
@@ -539,6 +655,7 @@
    <copyField source="dataCollectionSituation" dest="text" maxChars="3000"/>
    <copyField source="dataCollector" dest="text" maxChars="3000"/>
    <copyField source="dataSources" dest="text" maxChars="3000"/>
+   <copyField source="datadePublicao" dest="text" maxChars="3000"/>
    <copyField source="datasetContact" dest="text" maxChars="3000"/>
    <copyField source="datasetContactAffiliation" dest="text" maxChars="3000"/>
    <copyField source="datasetContactEmail" dest="text" maxChars="3000"/>
@@ -548,8 +665,10 @@
    <copyField source="dateOfCollectionEnd" dest="text" maxChars="3000"/>
    <copyField source="dateOfCollectionStart" dest="text" maxChars="3000"/>
    <copyField source="dateOfDeposit" dest="text" maxChars="3000"/>
+   <copyField source="datesAdditionalInformationCHIA" dest="text" maxChars="3000"/>
    <copyField source="depositor" dest="text" maxChars="3000"/>
    <copyField source="deviationsFromSampleDesign" dest="text" maxChars="3000"/>
+   <copyField source="distributionDate" dest="text" maxChars="3000"/>
    <copyField source="distributor" dest="text" maxChars="3000"/>
    <copyField source="distributorAbbreviation" dest="text" maxChars="3000"/>
    <copyField source="distributorAffiliation" dest="text" maxChars="3000"/>
@@ -567,9 +686,11 @@
    <copyField source="grantNumber" dest="text" maxChars="3000"/>
    <copyField source="grantNumberAgency" dest="text" maxChars="3000"/>
    <copyField source="grantNumberValue" dest="text" maxChars="3000"/>
+   <copyField source="gsdAccreditation" dest="text" maxChars="3000"/>
    <copyField source="gsdCoordinator" dest="text" maxChars="3000"/>
    <copyField source="gsdCourseName" dest="text" maxChars="3000"/>
    <copyField source="gsdFacultyName" dest="text" maxChars="3000"/>
+   <copyField source="gsdPrizes" dest="text" maxChars="3000"/>
    <copyField source="gsdProgramBrief" dest="text" maxChars="3000"/>
    <copyField source="gsdRecommendation" dest="text" maxChars="3000"/>
    <copyField source="gsdSemester" dest="text" maxChars="3000"/>
@@ -578,15 +699,22 @@
    <copyField source="gsdStudentProgram" dest="text" maxChars="3000"/>
    <copyField source="gsdTags" dest="text" maxChars="3000"/>
    <copyField source="gsdTypes" dest="text" maxChars="3000"/>
-   <copyField source="issue" dest="text" maxChars="3000"/>
+   <copyField source="journalArticleType" dest="text" maxChars="3000"/>
+   <copyField source="journalIssue" dest="text" maxChars="3000"/>
+   <copyField source="journalPubDate" dest="text" maxChars="3000"/>
+   <copyField source="journalVolume" dest="text" maxChars="3000"/>
+   <copyField source="journalVolumeIssue" dest="text" maxChars="3000"/>
    <copyField source="keyword" dest="text" maxChars="3000"/>
    <copyField source="keywordValue" dest="text" maxChars="3000"/>
    <copyField source="keywordVocabulary" dest="text" maxChars="3000"/>
    <copyField source="keywordVocabularyURI" dest="text" maxChars="3000"/>
    <copyField source="kindOfData" dest="text" maxChars="3000"/>
    <copyField source="language" dest="text" maxChars="3000"/>
+   <copyField source="localdePublicao" dest="text" maxChars="3000"/>
+   <copyField source="mraCollection" dest="text" maxChars="3000"/>
    <copyField source="northLongitude" dest="text" maxChars="3000"/>
    <copyField source="notesText" dest="text" maxChars="3000"/>
+   <copyField source="numero" dest="text" maxChars="3000"/>
    <copyField source="originOfSources" dest="text" maxChars="3000"/>
    <copyField source="otherDataAppraisal" dest="text" maxChars="3000"/>
    <copyField source="otherGeographicCoverage" dest="text" maxChars="3000"/>
@@ -602,6 +730,16 @@
    <copyField source="producerURL" dest="text" maxChars="3000"/>
    <copyField source="productionDate" dest="text" maxChars="3000"/>
    <copyField source="productionPlace" dest="text" maxChars="3000"/>
+   <copyField source="proprietrio" dest="text" maxChars="3000"/>
+   <copyField source="provenanceCHIA" dest="text" maxChars="3000"/>
+   <copyField source="psiBehavior" dest="text" maxChars="3000"/>
+   <copyField source="psiDonor" dest="text" maxChars="3000"/>
+   <copyField source="psiHealthArea" dest="text" maxChars="3000"/>
+   <copyField source="psiIntervention" dest="text" maxChars="3000"/>
+   <copyField source="psiPopulation" dest="text" maxChars="3000"/>
+   <copyField source="psiProductsServices" dest="text" maxChars="3000"/>
+   <copyField source="psiStudyDesignElement" dest="text" maxChars="3000"/>
+   <copyField source="psiStudyType" dest="text" maxChars="3000"/>
    <copyField source="publication" dest="text" maxChars="3000"/>
    <copyField source="publicationCitation" dest="text" maxChars="3000"/>
    <copyField source="publicationIDNumber" dest="text" maxChars="3000"/>
@@ -616,19 +754,29 @@
    <copyField source="resolution.Spectral" dest="text" maxChars="3000"/>
    <copyField source="resolution.Temporal" dest="text" maxChars="3000"/>
    <copyField source="responseRate" dest="text" maxChars="3000"/>
+   <copyField source="rightsAvailabilityCHIA" dest="text" maxChars="3000"/>
    <copyField source="samplingErrorEstimates" dest="text" maxChars="3000"/>
    <copyField source="samplingProcedure" dest="text" maxChars="3000"/>
    <copyField source="series" dest="text" maxChars="3000"/>
    <copyField source="seriesInformation" dest="text" maxChars="3000"/>
    <copyField source="seriesName" dest="text" maxChars="3000"/>
+   <copyField source="socialScienceNotes" dest="text" maxChars="3000"/>
+   <copyField source="socialScienceNotesSubject" dest="text" maxChars="3000"/>
+   <copyField source="socialScienceNotesText" dest="text" maxChars="3000"/>
+   <copyField source="socialScienceNotesType" dest="text" maxChars="3000"/>
    <copyField source="software" dest="text" maxChars="3000"/>
    <copyField source="softwareName" dest="text" maxChars="3000"/>
    <copyField source="softwareVersion" dest="text" maxChars="3000"/>
+   <copyField source="sourceCHIA" dest="text" maxChars="3000"/>
    <copyField source="southLongitude" dest="text" maxChars="3000"/>
    <copyField source="state" dest="text" maxChars="3000"/>
    <copyField source="studyAssayCellType" dest="text" maxChars="3000"/>
    <copyField source="studyAssayMeasurementType" dest="text" maxChars="3000"/>
    <copyField source="studyAssayOrganism" dest="text" maxChars="3000"/>
+   <copyField source="studyAssayOtherMeasurmentType" dest="text" maxChars="3000"/>
+   <copyField source="studyAssayOtherOrganism" dest="text" maxChars="3000"/>
+   <copyField source="studyAssayPlatform" dest="text" maxChars="3000"/>
+   <copyField source="studyAssayTechnologyType" dest="text" maxChars="3000"/>
    <copyField source="studyDesignType" dest="text" maxChars="3000"/>
    <copyField source="studyFactorType" dest="text" maxChars="3000"/>
    <copyField source="subject" dest="text" maxChars="3000"/>
@@ -641,13 +789,14 @@
    <copyField source="timePeriodCoveredEnd" dest="text" maxChars="3000"/>
    <copyField source="timePeriodCoveredStart" dest="text" maxChars="3000"/>
    <copyField source="title" dest="text" maxChars="3000"/>
+   <copyField source="titulo" dest="text" maxChars="3000"/>
    <copyField source="topicClassValue" dest="text" maxChars="3000"/>
    <copyField source="topicClassVocab" dest="text" maxChars="3000"/>
    <copyField source="topicClassVocabURI" dest="text" maxChars="3000"/>
    <copyField source="topicClassification" dest="text" maxChars="3000"/>
    <copyField source="unitOfAnalysis" dest="text" maxChars="3000"/>
    <copyField source="universe" dest="text" maxChars="3000"/>
-   <copyField source="volume" dest="text" maxChars="3000"/>
+   <copyField source="variablesCHIA" dest="text" maxChars="3000"/>
    <copyField source="weighting" dest="text" maxChars="3000"/>
    <copyField source="westLongitude" dest="text" maxChars="3000"/>
 

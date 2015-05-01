@@ -1,5 +1,6 @@
 package edu.harvard.iq.dataverse.authorization.providers.builtin;
 
+import edu.harvard.iq.dataverse.DvObject;
 import edu.harvard.iq.dataverse.authorization.AuthenticationProviderDisplayInfo;
 import edu.harvard.iq.dataverse.authorization.AuthenticationRequest;
 import edu.harvard.iq.dataverse.authorization.AuthenticationResponse;
@@ -10,6 +11,9 @@ import edu.harvard.iq.dataverse.authorization.users.User;
 import java.util.Arrays;
 import java.util.List;
 import static edu.harvard.iq.dataverse.authorization.CredentialsAuthenticationProvider.Credential;
+import edu.harvard.iq.dataverse.authorization.RoleAssignee;
+import edu.harvard.iq.dataverse.authorization.groups.Group;
+import edu.harvard.iq.dataverse.passwordreset.PasswordResetException;
 import java.util.Set;
 
 /**
@@ -51,9 +55,24 @@ public class BuiltinAuthenticationProvider implements CredentialsAuthenticationP
         BuiltinUser u = bean.findByUserName( authReq.getCredential(KEY_USERNAME) );
         if ( u == null ) return AuthenticationResponse.makeFail("Bad username or password");
         
-        return ( u.getEncryptedPassword().equals( bean.encryptPassword(authReq.getCredential(KEY_PASSWORD))))
-            ? AuthenticationResponse.makeSuccess(u.getUserName(), u.getDisplayInfo())
-             : AuthenticationResponse.makeFail("Bad username or password");
+        boolean userAuthenticated = PasswordEncryption.getVersion(u.getPasswordEncryptionVersion())
+                                            .check(authReq.getCredential(KEY_PASSWORD), u.getEncryptedPassword() );
+        if ( ! userAuthenticated ) {
+            return AuthenticationResponse.makeFail("Bad username or password");
+        }
+        
+        
+        if ( u.getPasswordEncryptionVersion() < PasswordEncryption.getLatestVersionNumber() ) {
+            try {
+                String passwordResetUrl = bean.requestPasswordUpgradeLink(u);
+                
+                return AuthenticationResponse.makeBreakout(u.getUserName(), passwordResetUrl);
+            } catch (PasswordResetException ex) {
+                return AuthenticationResponse.makeError("Error while attempting to upgrade password", ex);
+            }
+        } else {
+            return AuthenticationResponse.makeSuccess(u.getUserName(), u.getDisplayInfo());
+        }
    }
 
     @Override
@@ -72,7 +91,17 @@ public class BuiltinAuthenticationProvider implements CredentialsAuthenticationP
     }
 
     @Override
-    public Set groupsFor(User u) {
+    public Set groupsFor(RoleAssignee u, DvObject o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Group get(String groupAlias) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Set findGlobalGroups() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

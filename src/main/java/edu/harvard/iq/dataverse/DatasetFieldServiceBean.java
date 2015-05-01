@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 /**
@@ -59,8 +60,12 @@ public class DatasetFieldServiceBean implements java.io.Serializable {
     }
 
     public DatasetFieldType findByName(String name) {
-        DatasetFieldType dsfType = (DatasetFieldType) em.createQuery(NAME_QUERY).setParameter("fieldName", name).getSingleResult();
-        return dsfType;
+        try {
+            return  (DatasetFieldType) em.createQuery(NAME_QUERY).setParameter("fieldName", name).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+       
     }
 
     /**
@@ -110,10 +115,11 @@ public class DatasetFieldServiceBean implements java.io.Serializable {
      * ControlledVocabularyValue.
      * @param strValue String value that may exist in a controlled vocabulary of
      * the provided DatasetFieldType.
+     * @param lenient should we accept alternate spellings for value from mapping table
      *
      * @return The ControlledVocabularyValue found or null.
      */
-    public ControlledVocabularyValue findControlledVocabularyValueByDatasetFieldTypeAndStrValue(DatasetFieldType dsft, String strValue) {
+    public ControlledVocabularyValue findControlledVocabularyValueByDatasetFieldTypeAndStrValue(DatasetFieldType dsft, String strValue, boolean lenient) {
         TypedQuery<ControlledVocabularyValue> typedQuery = em.createQuery("SELECT OBJECT(o) FROM ControlledVocabularyValue AS o WHERE o.strValue = :strvalue AND o.datasetFieldType = :dsft", ControlledVocabularyValue.class);
         typedQuery.setParameter("strvalue", strValue);
         typedQuery.setParameter("dsft", dsft);
@@ -121,7 +127,21 @@ public class DatasetFieldServiceBean implements java.io.Serializable {
             ControlledVocabularyValue cvv = typedQuery.getSingleResult();
             return cvv;
         } catch (NoResultException | NonUniqueResultException ex) {
-            return null;
+            if (lenient) {
+                // if the value isn't found, check in the list of alternate values for this datasetFieldType
+                TypedQuery<ControlledVocabAlternate> alternateQuery = em.createQuery("SELECT OBJECT(o) FROM ControlledVocabAlternate as o WHERE o.strValue = :strvalue AND o.datasetFieldType = :dsft", ControlledVocabAlternate.class);
+                alternateQuery.setParameter("strvalue", strValue);
+                alternateQuery.setParameter("dsft", dsft);
+                try {
+                    ControlledVocabAlternate alternateValue = alternateQuery.getSingleResult();
+                    return alternateValue.getControlledVocabularyValue();
+                } catch (NoResultException | NonUniqueResultException ex2) {
+                    return null;
+                }
+
+            } else {
+                return null;
+            }
         }
     }
 
@@ -143,5 +163,9 @@ public class DatasetFieldServiceBean implements java.io.Serializable {
     public ControlledVocabularyValue save(ControlledVocabularyValue cvv) {
         return em.merge(cvv);
     }
+    
+    public ControlledVocabAlternate save(ControlledVocabAlternate alt) {
+        return em.merge(alt);
+    } 
 
 }

@@ -14,8 +14,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  *
@@ -23,6 +25,7 @@ import javax.persistence.OneToOne;
  */
 
 @Entity
+@Table(indexes = {@Index(columnList="dataverse_id")})
 public class DataverseTheme implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -51,7 +54,6 @@ public class DataverseTheme implements Serializable {
     private String logo;
     private String tagline;
     private String linkUrl;
-    private String linkText;
     private String linkColor;
     private String textColor;
     private String backgroundColor;
@@ -105,14 +107,6 @@ public class DataverseTheme implements Serializable {
 
     public void setLinkUrl(String linkUrl) {
         this.linkUrl = linkUrl;
-    }
-
-    public String getLinkText() {
-        return linkText;
-    }
-
-    public void setLinkText(String linkText) {
-        this.linkText = linkText;
     }
 
     public String getLinkColor() {

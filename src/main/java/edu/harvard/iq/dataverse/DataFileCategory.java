@@ -9,18 +9,17 @@ package edu.harvard.iq.dataverse;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
@@ -28,11 +27,12 @@ import javax.persistence.OneToMany;
  */
 
 @Entity
+@Table(indexes = {@Index(columnList="dataset_id")})
 public class DataFileCategory implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     public Long getId() {
@@ -43,7 +43,7 @@ public class DataFileCategory implements Serializable {
         this.id = id;
     }
 
-    /*
+    /**
      * Dataset to which this file category belongs:
      */
     @ManyToOne
@@ -57,7 +57,8 @@ public class DataFileCategory implements Serializable {
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
     }
-
+    
+    @Column( nullable = false )
     private String name;
     
     public String getName() {
@@ -99,11 +100,23 @@ public class DataFileCategory implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof DataFileCategory)) {
             return false;
         }
         DataFileCategory other = (DataFileCategory) object;
+        
+        // Custom code for comparing 2 categories before the 
+        // objects have been persisted with the entity manager
+        // and assigned database ids: 
+        // (will also need to compare datasets for it to work - ?
+        /*
+        if (this.id == null && other.id == null) {
+            if (this.name != null) {
+                return this.name.equals(other.name);
+             }
+            return false; 
+        }*/
+        
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

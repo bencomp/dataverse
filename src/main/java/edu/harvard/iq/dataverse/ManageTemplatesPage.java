@@ -3,6 +3,7 @@ package edu.harvard.iq.dataverse;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.engine.command.exception.CommandException;
 import edu.harvard.iq.dataverse.engine.command.impl.CreateTemplateCommand;
+import edu.harvard.iq.dataverse.engine.command.impl.DeleteTemplateCommand;
 import edu.harvard.iq.dataverse.engine.command.impl.UpdateDataverseCommand;
 import edu.harvard.iq.dataverse.engine.command.impl.UpdateDataverseTemplateRootCommand;
 import edu.harvard.iq.dataverse.util.JsfHelper;
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -33,6 +35,9 @@ public class ManageTemplatesPage implements java.io.Serializable {
     @EJB
     DataverseServiceBean dvService;
 
+    @EJB
+    TemplateServiceBean templateService;
+    
     @EJB
     EjbDataverseEngine engineService;
 
@@ -64,7 +69,7 @@ public class ManageTemplatesPage implements java.io.Serializable {
         }
  
         templates = new LinkedList<>();
-        setInheritTemplatesValue(dataverse.isTemplateRoot());
+        setInheritTemplatesValue(!dataverse.isTemplateRoot());
         if (inheritTemplatesValue && dataverse.getOwner() != null) {
             for (Template pt : dataverse.getParentTemplates()) {
                 pt.setDataverse(dataverse.getOwner());
@@ -73,7 +78,12 @@ public class ManageTemplatesPage implements java.io.Serializable {
         }
         for (Template ct : dataverse.getTemplates()) {
             ct.setDataverse(dataverse);
+            ct.setDataversesHasAsDefault(templateService.findDataversesByDefaultTemplateId(ct.getId()));
+            ct.setIsDefaultForDataverse(!ct.getDataversesHasAsDefault().isEmpty());
             templates.add(ct);
+        }
+        if (!templates.isEmpty()){
+             JH.addMessage(FacesMessage.SEVERITY_INFO, JH.localize("dataset.manageTemplates.info.message.notEmptyTable"));
         }
 
     }
@@ -110,12 +120,23 @@ public class ManageTemplatesPage implements java.io.Serializable {
     }
 
     public void deleteTemplate() {
+        List <Dataverse> dataverseWDefaultTemplate = null;
         if (selectedTemplate != null) {
             templates.remove(selectedTemplate);
-            dataverse.getTemplates().remove(selectedTemplate);
-            saveDataverse("The template has been deleted");
+            if(dataverse.getDefaultTemplate() != null && dataverse.getDefaultTemplate().equals(selectedTemplate)){
+                dataverse.setDefaultTemplate(null);
+            }
+            dataverse.getTemplates().remove(selectedTemplate);  
+            dataverseWDefaultTemplate = templateService.findDataversesByDefaultTemplateId(selectedTemplate.getId());
         } else {
             System.out.print("selected template is null");
+        }
+        try {
+            engineService.submit(new DeleteTemplateCommand(session.getUser(), getDataverse(), selectedTemplate, dataverseWDefaultTemplate  ));
+            JsfHelper.addFlashMessage("The template has been deleted");
+        } catch (CommandException ex) {
+            String failMessage = "The dataset template cannot be deleted.";
+            JH.addMessage(FacesMessage.SEVERITY_FATAL, failMessage);
         }
     }
 
@@ -134,10 +155,10 @@ public class ManageTemplatesPage implements java.io.Serializable {
         } catch (CommandException ex) {
             String failMessage = "Template update failed";
             if(successMessage.equals("The template has been deleted")){
-                failMessage = "The dataset template cannot be deleted. Please try again or contact support.";
+                failMessage = "The dataset template cannot be deleted.";
             }
             if(successMessage.equals("The template has been selected as the default template for this dataverse")){
-                failMessage = "The dataset template cannot be made default. Please try again or contact support.";
+                failMessage = "The dataset template cannot be made default.";
             }
             JH.addMessage(FacesMessage.SEVERITY_FATAL, failMessage);
         }
@@ -214,7 +235,7 @@ public class ManageTemplatesPage implements java.io.Serializable {
                 }
             }
 
-            dataverse = engineService.submit(new UpdateDataverseTemplateRootCommand(isInheritTemplatesValue(), session.getUser(), getDataverse()));
+            dataverse = engineService.submit(new UpdateDataverseTemplateRootCommand(!isInheritTemplatesValue(), session.getUser(), getDataverse()));
             init();
             return "";
         } catch (CommandException ex) {

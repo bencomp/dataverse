@@ -25,8 +25,13 @@ import javax.persistence.*;
 			    query= "select dsfType from DatasetFieldType dsfType WHERE dsfType.facetable = true and dsfType.title != '' and dsfType.metadataBlock.id = :metadataBlockId order by dsfType.id")
 })
 @Entity
+@Table(indexes = {@Index(columnList="metadatablock_id"),@Index(columnList="parentdatasetfieldtype_id")})
 public class DatasetFieldType implements Serializable, Comparable<DatasetFieldType> {
 
+    public enum FieldType {
+        TEXT, TEXTBOX, DATE, EMAIL, URL, FLOAT, INT, NONE
+    };    
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,14 +48,16 @@ public class DatasetFieldType implements Serializable, Comparable<DatasetFieldTy
         return id.toString();
     }
 
-    @Column(name = "name", columnDefinition = "TEXT")
+    @Column(name = "name", columnDefinition = "TEXT", nullable = false)
     private String name;    // This is the internal, DDI-like name, no spaces, etc.
     @Column(name = "title", columnDefinition = "TEXT")
     private String title;   // A longer, human-friendlier name - punctuation allowed
     @Column(name = "description", columnDefinition = "TEXT")
     private String description; // A user-friendly Description; will be used for 
     // mouse-overs, etc. 
-    private String fieldType;
+    @Enumerated(EnumType.STRING)
+    @Column( nullable=false )
+    private FieldType fieldType;
     private boolean allowControlledVocabulary;
     private String watermark;
 
@@ -108,7 +115,7 @@ public class DatasetFieldType implements Serializable, Comparable<DatasetFieldTy
     
     public DatasetFieldType() {}
 
-    public DatasetFieldType(String name, String fieldType, boolean allowMultiples) {
+    public DatasetFieldType(String name, FieldType fieldType, boolean allowMultiples) {
         this.name = name;
         this.fieldType = fieldType;
         this.allowMultiples = allowMultiples;
@@ -116,6 +123,7 @@ public class DatasetFieldType implements Serializable, Comparable<DatasetFieldTy
     }
     
     private int displayOrder;
+    private String displayFormat;
 
     public int getDisplayOrder() {
         return this.displayOrder;
@@ -124,6 +132,16 @@ public class DatasetFieldType implements Serializable, Comparable<DatasetFieldTy
     public void setDisplayOrder(int displayOrder) {
         this.displayOrder = displayOrder;
     }
+
+    public String getDisplayFormat() {
+        return displayFormat;
+    }
+
+    public void setDisplayFormat(String displayFormat) {
+        this.displayFormat = displayFormat;
+    }
+    
+    
 
     public String getName() {
         return name;
@@ -167,11 +185,11 @@ public class DatasetFieldType implements Serializable, Comparable<DatasetFieldTy
         this.allowMultiples = allowMultiples;
     }
 
-    public String getFieldType() {
+    public FieldType getFieldType() {
         return fieldType;
     }
 
-    public void setFieldType(String fieldType) {
+    public void setFieldType(FieldType fieldType) {
         this.fieldType = fieldType;
     }
     
@@ -415,9 +433,9 @@ public class DatasetFieldType implements Serializable, Comparable<DatasetFieldTy
              * @todo made more decisions based on fieldType: index as dates,
              * integers, and floats so we can do range queries etc.
              */
-            if (fieldType.equals("date")) {
+            if (fieldType.equals(FieldType.DATE)) {
                 solrType = SolrField.SolrType.DATE;
-            } else if (fieldType.equals("email")) {
+            } else if (fieldType.equals(FieldType.EMAIL)) {
                 solrType = SolrField.SolrType.EMAIL;
             }
 

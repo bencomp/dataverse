@@ -2,8 +2,11 @@ package edu.harvard.iq.dataverse.engine;
 
 import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinUserServiceBean;
 import edu.harvard.iq.dataverse.*;
+import edu.harvard.iq.dataverse.authorization.AuthenticationServiceBean;
+import edu.harvard.iq.dataverse.authorization.groups.impl.explicit.ExplicitGroupServiceBean;
 import edu.harvard.iq.dataverse.engine.command.CommandContext;
 import edu.harvard.iq.dataverse.search.SolrIndexServiceBean;
+import edu.harvard.iq.dataverse.search.savedsearch.SavedSearchServiceBean;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import javax.persistence.EntityManager;
 
@@ -31,7 +34,7 @@ public class TestCommandContext implements CommandContext {
 	}
 
 	@Override
-	public BuiltinUserServiceBean users() {
+	public BuiltinUserServiceBean builtinUsers() {
 		return null;
 	}
 
@@ -81,6 +84,11 @@ public class TestCommandContext implements CommandContext {
 	}
         
         @Override
+	public SavedSearchServiceBean savedSearches() {
+		return null;
+	}
+        
+        @Override
 	public DataverseFieldTypeInputLevelServiceBean fieldTypeInputLevels() {
 		return null;
 	}
@@ -104,6 +112,21 @@ public class TestCommandContext implements CommandContext {
 	public GuestbookResponseServiceBean responses() {
 		return null;
 	}
+ 
+        @Override
+	public DataverseLinkingServiceBean dvLinking() {
+		return null;
+	}
+        
+        @Override
+	public DatasetLinkingServiceBean dsLinking() {
+		return null;
+	}
+        
+         @Override
+	public AuthenticationServiceBean authentication() {
+		return null;
+	}
         
 	@Override
         
@@ -113,5 +136,20 @@ public class TestCommandContext implements CommandContext {
     public DataFileServiceBean files() {
         return null;
     }
+
+    @Override
+    public ExplicitGroupServiceBean explicitGroups() {
+        return null;
+    }
+    
+    @Override
+    public RoleAssigneeServiceBean roleAssignees() {
+        return null;
+    }
+    
+    @Override
+    public UserNotificationServiceBean notifications() {
+        return null;
+    }     
 	
 }

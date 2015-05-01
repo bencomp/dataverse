@@ -5,11 +5,13 @@ import edu.harvard.iq.dataverse.DatasetServiceBean;
 import edu.harvard.iq.dataverse.Dataverse;
 import edu.harvard.iq.dataverse.DataverseServiceBean;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
+import edu.harvard.iq.dataverse.authorization.users.UserRequestMetadata;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.i18n.iri.IRI;
@@ -35,10 +37,12 @@ public class CollectionListManagerImpl implements CollectionListManager {
     @Inject
     UrlManager urlManager;
 
+    private HttpServletRequest request;
+
     @Override
     public Feed listCollectionContents(IRI iri, AuthCredentials authCredentials, SwordConfiguration swordConfiguration) throws SwordServerException, SwordAuthException, SwordError {
         AuthenticatedUser user = swordAuth.auth(authCredentials);
-
+        user.setRequestMetadata(new UserRequestMetadata(request));
         urlManager.processUrl(iri.toString());
         String dvAlias = urlManager.getTargetIdentifier();
         if (urlManager.getTargetType().equals("dataverse") && dvAlias != null) {
@@ -53,9 +57,9 @@ public class CollectionListManagerImpl implements CollectionListManager {
                     /**
                      * @todo For the supplied dataverse, should we should only
                      * the datasets that are *owned* by the user? Probably not!
-                     * We be using the permission system? Show the equivalent of
-                     * datasets the user is "admin" on? What permission should
-                     * we check?
+                     * We should be using the permission system? Show the
+                     * equivalent of datasets the user is "admin" on? What
+                     * permission should we check?
                      *
                      * And should we only show datasets at the current level or
                      * should we show datasets that are in sub-dataverses as
@@ -93,6 +97,10 @@ public class CollectionListManagerImpl implements CollectionListManager {
         } else {
             throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Couldn't determine target type or identifer from URL: " + iri);
         }
+    }
+
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
     }
 
 }

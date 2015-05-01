@@ -13,8 +13,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
@@ -23,6 +25,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @ValidateDatasetFieldType
+@Table(indexes = {@Index(columnList="datasetfield_id")})
 public class DatasetFieldValue implements Serializable {
     private static final long serialVersionUID = 1L;
     
@@ -49,7 +52,7 @@ public class DatasetFieldValue implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "value", columnDefinition = "TEXT")
+    @Column(name = "value", columnDefinition = "TEXT", nullable = false)
     private String value;
     private int displayOrder;
     
@@ -70,6 +73,16 @@ public class DatasetFieldValue implements Serializable {
     }
 
     public void setValue(String value) {
+        this.value = value;
+    }
+
+    // these methods wrap around value but do not display the N/A value
+    // (forcing validation)
+    public String getValueForEdit() {
+        return DatasetField.NA_VALUE.equals(value) ? "" : value;
+    }
+
+    public void setValueForEdit(String value) {
         this.value = value;
     }
 

@@ -20,7 +20,7 @@ public class GuestUser implements User {
     
     @Override
     public String getIdentifier() {
-        return ":Guest";
+        return ":guest";
     }
 
     @Override
@@ -35,7 +35,12 @@ public class GuestUser implements User {
     public boolean isBuiltInUser(){
         return false;
     }
-
+    
+    @Override
+    public boolean isSuperuser() {
+        return false;
+    }
+   
     @Override
     public UserRequestMetadata getRequestMetadata() {
         return requestMetadata;

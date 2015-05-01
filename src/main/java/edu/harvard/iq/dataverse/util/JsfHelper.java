@@ -1,12 +1,11 @@
 package edu.harvard.iq.dataverse.util;
 
-import edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.ip.IpAddress;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.servlet.ServletRequest;
 
 /**
  * Utility class for common JSF tasks.
@@ -18,14 +17,21 @@ public class JsfHelper {
 	public static final JsfHelper JH = new JsfHelper();
 
         public static void addSuccessMessage(String message) {
-              FacesContext.getCurrentInstance().getExternalContext().getFlash().put("msg", message);     
-        }         
-        
-        public static void addFlashMessage(String message) {
-              FacesContext.getCurrentInstance().getExternalContext().getFlash().put("msg", message);
+              FacesContext.getCurrentInstance().getExternalContext().getFlash().put("successMsg", message);
       
         } 
-    
+        public static void addFlashMessage(String message) {
+            addSuccessMessage(message);
+        }
+        public static void addErrorMessage(String message) {
+              FacesContext.getCurrentInstance().getExternalContext().getFlash().put("errorMsg", message);      
+        } 
+        public static void addInfoMessage(String message) {
+              FacesContext.getCurrentInstance().getExternalContext().getFlash().put("infoMsg", message);      
+        } 
+        public static void addWarningMessage(String message) {
+              FacesContext.getCurrentInstance().getExternalContext().getFlash().put("warningMsg", message);      
+        } 
 	public void addMessage( FacesMessage.Severity s, String summary, String details ) {
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(s, summary, details));
 	}
@@ -43,5 +49,13 @@ public class JsfHelper {
 			return defaultValue;
 		}
 	}
+    
+    public String localize( String messageKey ) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        String messageBundleName = facesContext.getApplication().getMessageBundle();
+        Locale locale = facesContext.getViewRoot().getLocale();
+        ResourceBundle bundle = ResourceBundle.getBundle("Bundle", locale);
+        return bundle.getString(messageKey);
+    }
     
 }

@@ -5,8 +5,10 @@
  */
 package edu.harvard.iq.dataverse;
 
+import edu.harvard.iq.dataverse.authorization.AuthenticationServiceBean;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.authorization.users.User;
+import edu.harvard.iq.dataverse.dataaccess.ImageThumbConverter;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -48,6 +50,15 @@ public class DatasetServiceBean implements java.io.Serializable {
 
     @EJB
     SettingsServiceBean settingsService;
+    
+    @EJB
+    DatasetVersionServiceBean versionService;
+    
+    @EJB
+    AuthenticationServiceBean authentication;
+    
+    @EJB
+    DataFileServiceBean fileService; 
 
     @PersistenceContext(unitName = "VDCNet-ejbPU")
     private EntityManager em;
@@ -85,9 +96,23 @@ public class DatasetServiceBean implements java.io.Serializable {
     }
 
     /**
-     * @todo write this method for real. Don't just iterate through every single
-     * dataset! See https://redmine.hmdc.harvard.edu/issues/3988
-     */
+     * For docs, see the equivalent method on the DataverseServiceBean.
+     * @see DataverseServiceBean#findAllOrSubset(long, long) 
+     */     
+    public List<Dataset> findAllOrSubset(long numPartitions, long partitionId, boolean skipIndexed) {
+        if (numPartitions < 1) {
+            long saneNumPartitions = 1;
+            numPartitions = saneNumPartitions;
+        }
+        String skipClause = skipIndexed ? "AND o.indexTime is null " : "";
+        TypedQuery<Dataset> typedQuery = em.createQuery("SELECT OBJECT(o) FROM Dataset AS o WHERE MOD( o.id, :numPartitions) = :partitionId " +
+                skipClause +
+                "ORDER BY o.id", Dataset.class);
+        typedQuery.setParameter("numPartitions", numPartitions);
+        typedQuery.setParameter("partitionId", partitionId);
+        return typedQuery.getResultList();
+    }
+
     public Dataset findByGlobalId(String globalId) {
 
         String protocol = "";
@@ -98,7 +123,7 @@ public class DatasetServiceBean implements java.io.Serializable {
         String separator = settingsService.getValueForKey(SettingsServiceBean.Key.DoiSeparator, nonNullDefaultIfKeyNotFound);        
         int index2 = globalId.indexOf(separator, index1 + 1);
         int index3 = 0;
-        if (index1 == -1) {
+        if (index1 == -1) {            
             throw new EJBException("Error parsing identifier: " + globalId + ". ':' not found in string");
         } else {
             protocol = globalId.substring(0, index1);
@@ -133,7 +158,7 @@ public class DatasetServiceBean implements java.io.Serializable {
             query.setParameter("authority", authority);
             foundDataset = (Dataset) query.getSingleResult();
         } catch (javax.persistence.NoResultException e) {
-            System.out.print("no ds found: " + globalId);
+            logger.info("no ds found: " + globalId);
             // DO nothing, just return null.
         }
         return foundDataset;
@@ -352,12 +377,12 @@ public class DatasetServiceBean implements java.io.Serializable {
 
         DatasetVersionUser ddu = null;
         Query query = em.createQuery("select object(o) from DatasetVersionUser as o "
-                + "where o.datasetversionid =:versionId and o.userIdentifier =:userId");
+                + "where o.datasetVersion.id =:versionId and o.authenticatedUser.id =:userId");
         query.setParameter("versionId", version.getId());
-        query.setParameter("userId", user.getIdentifier());
-        System.out.print("versionId: " + version.getId());
-        System.out.print("userId: " + user.getIdentifier());
-        System.out.print(query.toString());
+        String identifier = user.getIdentifier();
+        identifier = identifier.startsWith("@") ? identifier.substring(1) : identifier;
+        AuthenticatedUser au = authentication.getAuthenticatedUser(identifier);
+        query.setParameter("userId", au.getId());
         try {
             ddu = (DatasetVersionUser) query.getSingleResult();
         } catch (javax.persistence.NoResultException e) {
@@ -416,5 +441,37 @@ public class DatasetServiceBean implements java.io.Serializable {
              }
              */
         }
+    }
+    
+    
+    public boolean isDatasetCardImageAvailable(DatasetVersion datasetVersion, User user) {        
+        if (datasetVersion == null) {
+            return false; 
+        }
+                
+        // First, check if this dataset has a designated thumbnail image: 
+        
+        if (datasetVersion.getDataset() != null) {
+            DataFile dataFile = datasetVersion.getDataset().getThumbnailFile();
+            if (dataFile != null) {
+                return ImageThumbConverter.isThumbnailAvailable(dataFile, 48);
+            }
+        }
+        
+        // If not, we'll try to use one of the files in this dataset version:
+        // (the first file with an available thumbnail, really)
+        
+        List<FileMetadata> fileMetadatas = datasetVersion.getFileMetadatas();
+
+        for (FileMetadata fileMetadata : fileMetadatas) {
+            DataFile dataFile = fileMetadata.getDataFile();
+            
+            if (fileService.isThumbnailAvailable(dataFile, user)) {
+                return true;
+            }
+ 
+        }
+        
+        return false;
     }
 }

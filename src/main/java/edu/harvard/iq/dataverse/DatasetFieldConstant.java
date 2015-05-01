@@ -33,7 +33,7 @@ public class DatasetFieldConstant implements java.io.Serializable  {
     public final static String series = "series";
     public final static String datasetVersion = "datasetVersion";
     
-    public final static String description = "description";
+    public final static String description = "dsDescription";
     public final static String keyword = "keyword";
     public final static String topicClassification = "topicClassification";
     public final static String geographicBoundingBox = "geographicBoundingBox";
@@ -85,13 +85,13 @@ public class DatasetFieldConstant implements java.io.Serializable  {
     public final static String seriesInformation="seriesInformation";
     public final static String datasetVersionValue="datasetVersionValue";
     public final static String versionDate="versionDate";
-    public final static String keywordValue="keyword";
+    public final static String keywordValue="keywordValue";
     public final static String keywordVocab="keywordVocab";
     public final static String keywordVocabURI="keywordVocabURI";
     public final static String topicClassValue="topicClassValue";
     public final static String topicClassVocab="topicClassVocab";
     public final static String topicClassVocabURI="topicClassVocabURI";
-    public final static String descriptionText="dsDescription";
+    public final static String descriptionText="dsDescriptionValue";
     public final static String descriptionDate="descriptionDate";
     public final static String timePeriodCoveredStart="timePeriodCoveredStart";
     public final static String timePeriodCoveredEnd="timePeriodCoveredEnd";
@@ -99,6 +99,7 @@ public class DatasetFieldConstant implements java.io.Serializable  {
     public final static String dateOfCollectionEnd="dateOfCollectionEnd";
     public final static String country="country";
     public final static String geographicCoverage="geographicCoverage";
+    public final static String otherGeographicCoverage="otherGeographicCoverage";
     public final static String geographicUnit="geographicUnit";
     public final static String westLongitude="westLongitude";
     public final static String eastLongitude="eastLongitude";

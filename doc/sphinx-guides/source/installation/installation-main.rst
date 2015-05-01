@@ -19,6 +19,8 @@ Solr Configuration
 
 Dataverse requires a specific Solr schema file called `schema.xml` that can be found in the Dataverse distribution. It should replace the default `example/solr/collection1/conf/schema.xml` file that ships with Solr.
 
+If ``WARN  org.eclipse.jetty.http.HttpParser  – HttpParser Full for /127.0.0.1:8983`` appears in the Solr log, adding ``<Set name="requestHeaderSize">8192</Set>`` (or a higher number of bytes) to Solr's jetty.xml in the section matching the XPath expression ``//Call[@name='addConnector']/Arg/New[@class='org.eclipse.jetty.server.bio.SocketConnector']`` may resolve the issue.  See also https://support.lucidworks.com/hc/en-us/articles/201424796-Error-when-submitting-large-query-strings-
+
 Solr Security
 -------------
 
@@ -27,19 +29,33 @@ Solr must be firewalled off from all hosts except the server(s) running Datavers
 Settings
 ++++++++
 
+ApplicationPrivacyPolicyUrl
+---------------------------
+
+Specify a URL where users can read your Privacy Policy.
+
+``curl -X PUT -d http://best-practices.dataverse.org/harvard-policies/harvard-privacy-policy.html http://localhost:8080/api/s/settings/:ApplicationPrivacyPolicyUrl``
+
+ApiTermsOfUse
+-------------
+
+Upload a text file containing the API Terms of Use.
+
+``curl -X PUT -d@/tmp/api-tos.txt http://localhost:8080/api/s/settings/:ApiTermsOfUse``
+
 SolrHostColonPort
 -----------------
 
 Set ``SolrHostColonPort`` to override ``localhost:8983``.
 
-``curl -X PUT http://localhost:8080/api/s/settings/:SolrHostColonPort/localhost:8983``
+``curl -X PUT -d localhost:8983 http://localhost:8080/api/s/settings/:SolrHostColonPort``
 
 ShibEnabled
 -----------
 
 Set ``ShibEnabled`` to ``true`` to enable Shibboleth login.
 
-``curl -X PUT http://localhost:8080/api/s/settings/:ShibEnabled/true``
+``curl -X PUT -d true http://localhost:8080/api/s/settings/:ShibEnabled``
 
 DataDepositApiMaxUploadInBytes
 ------------------------------
@@ -54,13 +70,28 @@ JVM Options
 dataverse.fqdn
 --------------
 
-If you need to change the hostname the Data Deposit API returns:
+If the Dataverse server has multiple DNS names, this option specifies the one to be used as the "official" host name. For example, you may want to have dataverse.foobar.edu, and not the less appealling server-123.socsci.foobar.edu to appear exclusively in all the registered global identifiers, Data Deposit API records, etc. 
+
+To change the option on the command line: 
 
 ``asadmin delete-jvm-options "-Ddataverse.fqdn=old.example.com"``
 
 ``asadmin create-jvm-options "-Ddataverse.fqdn=dataverse.example.com"``
 
 The ``dataverse.fqdn`` JVM option also affects the password reset feature.
+
+| Do note that whenever the system needs to form a service URL, by default, it will be formed with ``https://`` and port 443. I.e., 
+| ``https://{dataverse.fqdn}/``
+| If that does not suit your setup, you can define an additional option - 
+
+dataverse.siteUrl
+-----------------
+
+| and specify the alternative protocol and port number. 
+| For example, configured in domain.xml:
+| ``<jvm-options>-Ddataverse.fqdn=dataverse.foobar.edu</jvm-options>``
+| ``<jvm-options>-Ddataverse.siteUrl=http://${dataverse.fqdn}:8080</jvm-options>``
+
 
 dataverse.auth.password-reset-timeout-in-minutes
 ------------------------------------------------
@@ -99,102 +130,6 @@ Dropbox Configuration
 ``asadmin create-jvm-options "-Ddataverse.dropbox.key=<Enter your dropbox key here>"``
 
 
-Shobboleth SP 
-++++++++++++++++++++++
-Requirements: Apache HTTPD, Apache SSL Certs from Trusted Certificate Authority, Shibboleth.
-
-Apache HTTPD Installation and Configuration
--------------------------------------------
-$ yum install -y httpd mod_ssl; service httpd start
-
-- Download and Copy SSL Certs from Trusted Certificate Authority to:
-
-.. code-block:: guess
-
-	SSL Certificate File (described as "X509 Certificate only, Base64 encoded") to ``/etc/pki/tls/certs/<servername>.crt``
-	Server Certificate Chain (described as "X509 Intermediates/root only, Base64 	encoded"):``/etc/pki/tls/certs/<servername>chain.crt``
-	Server Private Key (SSLCertificateKeyFile) to ``/etc/pki/tls/private/<servername>.key``
-
-- Update /etc/httpd/conf.d/**ssl.conf** resplectively with the file locations from above                        
-- Update ServerName accessible through https /etc/httpd/conf.d/**ssl.conf** ``ServerName <servername>:443``                                                     
-- Configure Apache with ProxyPass 
-
-.. code-block:: guess
-
-	cd /etc/httpd/conf.d
-	wget https://raw.githubusercontent.com/IQSS/dataverse/master/conf/httpd/conf.d/dataverse.conf
-	service httpd restart
-
-
-Front Glassfish with Apache
--------------------------------
-
-- Move Glassfish HTTP from port 80 to 8080
-``asadmin set server-config.network-config.network-listeners.network-listener.http-listener-1.port=8080``
-
-- Move Glassfish HTTPS from 443 to 8181
-``asadmin set server-config.network-config.network-listeners.network-listener.http-listener-2.port=8181``
-
-- Set up connector Apache and Glassfish
-``asadmin create-network-listener --protocol http-listener-1 --listenerport 8009 --jkenabled true jk-connector``
-
-$ service glassfish restart
-
-Shibboleth Installation and Configuration
-------------------------------------------
-
-``sudo curl -k -o /etc/yum.repos.d/security:shibboleth.repo  http://download.opensuse.org/repositories/security://shibboleth/CentOS_CentOS-6/security:shibboleth.repo``
-$ yum install -y shibboleth shibboleth-embedded-ds
-
-Configure Shibboleth to authenticate against SP for TestShib IdP 
-****************************************************************
-
-- Set ShibEnabled to true to enable Shibboleth login
-``curl -X PUT http://localhost:8080/api/s/settings/:ShibEnabled/true``
-
-
-- Backup **shibboleth2.xml** and download shibboleth2.xml from dataverse repository
-$ cd /etc/shibboleth
-
-$ mv shibboleth2.xml shibboleth2.xml.orig
-
-``wget https://raw.githubusercontent.com/IQSS/dataverse/master/conf/vagrant/etc/shibboleth/shibboleth2.xml``
-
-Modify two lines in **shibboleth2.xml** to reflect your server name:
-
-``<ApplicationDefaults entityID="https://<servername>/shibboleth"``
-
-``<SSO discoveryProtocol="SAMLDS" discoveryURL="https://<servername>/loginpage.xhtml">``
-
-- Backup **attribute-map.xml** and download attribute-map.xml from Dataverse repository
-$ cd /etc/shibboleth/
-
-$ mv attribute-map.xml attribute-map.xml.orig  
-
-``wget https://raw.githubusercontent.com/IQSS/dataverse/master/conf/vagrant/etc/shibboleth/attribute-map.xml``
-
-- Download **dataverse-idp-metadata.xml** from Dataverse repository
-$ cd /etc/shibboleth/
-
-``wget https://raw.githubusercontent.com/IQSS/dataverse/master/conf/vagrant/etc/shibboleth/dataverse-idp-metadata.xml``
-
-- SE Linux (required if you have SE Linux enabled): 
-
-$ setenforce permissive
-
-$ service shibd restart
-
-To use "Permissive" mode permanently modify /etc/selinix/config to SELINUX=permisive 
-
-Register  with `TestShib <http://www.testshib.org/>`__ by uploading your server metadata
-******************************************************************************************
-
-- Go to https://<servername> and download your server metadata to your local machine
-``wget https://<servername>/Shibboleth.sso/Metadata``
-
-- Rename the metadata file to be exactly your server hostname ie: shibtest.dataverse.org
-
-- Upload the file to `Testshib <http://www.testshib.org/register.html>`__.
 
 
 

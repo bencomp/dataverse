@@ -1,9 +1,8 @@
 {
-    "firstName":"Admin",
-    "lastName":"Dataverse",
-    "userName":"admin",
-    "affiliation":"Dataverse",
+    "firstName":"Dataverse",
+    "lastName":"Admin",
+    "userName":"dataverseAdmin",
+    "affiliation":"Dataverse.org",
     "position":"Admin",
-    "email":"admin@malinator.com",
-    "phone":"(888) 888-8888"
+    "email":"support@dataverse.org"
 }

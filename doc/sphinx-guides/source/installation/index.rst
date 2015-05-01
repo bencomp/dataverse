@@ -12,6 +12,9 @@ Contents:
    :titlesonly:
    :maxdepth: 2
 
+  prerequisites
+  optionalpkg
   installation-main
+  r-rapache-tworavens
 
 

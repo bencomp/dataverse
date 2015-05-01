@@ -8,11 +8,13 @@ package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.authorization.Permission;
 import edu.harvard.iq.dataverse.authorization.users.User;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -101,6 +103,8 @@ public class MapLayerMetadataServiceBean {
         
         if (permissionService.userOn(user, mapLayerMetadata.getDataFile().getOwner()).has(Permission.EditDataset)) { 
             em.remove(em.merge(mapLayerMetadata));
+
+            this.deleteOlderMapThumbnails(mapLayerMetadata);
             return true;
         }
         return false;
@@ -134,16 +138,61 @@ public class MapLayerMetadataServiceBean {
     }    
     
     
-    private boolean deleteOlderMapThumbnails(MapLayerMetadata mapLayerMetadata) throws IOException {
+    /**
+     * Before downloading a file for map icons (see "retrieveMapImageForIcon" below),
+     * first remove any existing .img and .img.* files
+     * 
+     * e.g. delete all that start with (DataFile name) + ".img"
+     * 
+     * @param mapLayerMetadata
+     * @return
+     * @throws IOException 
+     */
+    private boolean deleteOlderMapThumbnails(MapLayerMetadata mapLayerMetadata) {
         if (mapLayerMetadata==null){
             logger.warning("mapLayerMetadata is null");
             return false;
         }
-        String iconBaseFilename = mapLayerMetadata.getDataFile().getFileSystemLocation().toString() +  ".img";
 
-        // look at files in dir
-        // delete all that start with (but not equal to) the iconBaseFilename
+        // Retrieve the data file
+        //
+        DataFile df = mapLayerMetadata.getDataFile();
+
+        // Get the parent directory
+        //
+        Path fileDirname = df.getFileSystemLocation().getParent();
+        if (fileDirname == null){
+            logger.warning("DataFile directory has null path.  Directory path: " + df.getFileSystemLocation().toString());
+            return false;
+        }
         
+        // Verify that the directory exists
+        //
+        File fileDirectory = new File(fileDirname.normalize().toString());
+        if (!(fileDirectory.isDirectory())){
+            logger.warning("DataFile directory is not actuall a directory.  Directory path: " + fileDirectory.toString());
+            return false;            
+        }
+        
+        /* Iterate through directory and delete any ".img" files for this DataFile
+           
+            Example:
+              Datafile name: 14a5e4abf7d-e7eebfb6474d
+              Types of files that would be deleted (if they exist):
+                    14a5e4abf7d-e7eebfb6474d.img
+                    14a5e4abf7d-e7eebfb6474d.img.thumb64
+                    14a5e4abf7d-e7eebfb6474d.img.thumb400
+        */
+        String iconBaseFilename = df.getFileSystemLocation().toString() +  ".img";
+        
+        for (File singleFile : fileDirectory.listFiles()) {
+            if (singleFile.toString().startsWith(iconBaseFilename)) {
+                //logger.info("file found: " + singleFile.toString());
+                singleFile.delete();
+                //results.add(file.getName());
+            }
+        }
+                
         return true;
     }
     
@@ -174,12 +223,19 @@ public class MapLayerMetadataServiceBean {
             logger.warning("mapLayerMetadata is null");
             return false;
         }
+        
+        this.deleteOlderMapThumbnails(mapLayerMetadata);
+        if (true){
+            // debug check
+            // return false;
+        }
         if ((mapLayerMetadata.getMapImageLink()==null)||mapLayerMetadata.getMapImageLink().isEmpty()){
             logger.warning("mapLayerMetadata does not have a 'map_image_link' attribute");
             return false;
         }
         
         String imageUrl = mapLayerMetadata.getMapImageLink();
+        imageUrl = imageUrl.replace("https:", "http:");
         logger.info("Attempt to retrieve map image: " + imageUrl);
         
         String destinationFile = mapLayerMetadata.getDataFile().getFileSystemLocation().toString() +  ".img";
@@ -190,11 +246,32 @@ public class MapLayerMetadataServiceBean {
         logger.info("retrieve url : " + imageUrl);
 
         logger.info("try to open InputStream");
-        InputStream is = url.openStream();
+        InputStream is = null;
         
-        logger.info("try to start OutputStream");
-        OutputStream os = new FileOutputStream(destinationFile);
-
+        try{
+            is = url.openStream();
+        }catch(IOException exio){
+            logger.warning("Error when retrieving map icon image. Exception: " + exio.getMessage());
+            if (is!=null){
+                try { is.close(); } catch (IOException ignore) {}
+            }
+            return false;
+            
+        }
+        
+        OutputStream os = null;
+        
+        try{
+            logger.info("try to start OutputStream");
+            os = new FileOutputStream(destinationFile);
+        } catch (Exception ex){
+            logger.warning("Error when retrieving map icon image. Exception: " + ex.getMessage());
+            if (os!=null){
+                try { os.close(); } catch (IOException ignore) {}
+            }
+            return false;
+        }
+        
         byte[] b = new byte[2048];
         int length;
 

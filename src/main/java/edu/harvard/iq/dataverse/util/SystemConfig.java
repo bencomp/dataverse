@@ -1,5 +1,6 @@
 package edu.harvard.iq.dataverse.util;
 
+import com.ocpsoft.pretty.PrettyContext;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -114,6 +115,13 @@ public class SystemConfig {
         hostUrl = "https://" + hostName;
         return hostUrl;
     }
+    
+    /**
+     * URL Tracking: 
+     */
+    public String getPageURLWithQueryString() {
+        return PrettyContext.getCurrentInstance().getRequestURL().toURL() + PrettyContext.getCurrentInstance().getRequestQueryString().toQueryString();
+    }
 
     /**
      * The "official" server's fully-qualified domain name: 
@@ -175,4 +183,34 @@ public class SystemConfig {
         
         return defaultZipUploadFilesLimit; 
     }
+
+    // curl -X PUT -d@/tmp/apptos.txt http://localhost:8080/api/s/settings/:ApplicationTermsOfUse
+    public String getApplicationTermsOfUse() {
+        String saneDefaultForAppTermsOfUse = "There are no Terms of Use for this Dataverse installation.";
+        String appTermsOfUse = settingsService.getValueForKey(SettingsServiceBean.Key.ApplicationTermsOfUse, saneDefaultForAppTermsOfUse);
+        return appTermsOfUse;
+    }
+
+    public String getApiTermsOfUse() {
+        String saneDefaultForApiTermsOfUse = "There are no API Terms of Use for this Dataverse installation.";
+        String apiTermsOfUse = settingsService.getValueForKey(SettingsServiceBean.Key.ApiTermsOfUse, saneDefaultForApiTermsOfUse);
+        return apiTermsOfUse;
+    }
+
+    public String getApplicationPrivacyPolicyUrl() {
+        String saneDefaultForPrivacyPolicyUrl = null;
+        String appPrivacyPolicyUrl = settingsService.getValueForKey(SettingsServiceBean.Key.ApplicationPrivacyPolicyUrl, saneDefaultForPrivacyPolicyUrl);
+        return appPrivacyPolicyUrl;
+    }
+
+    public boolean isShibEnabled() {
+        boolean safeDefaultIfKeyNotFound = false;
+        return settingsService.isTrueForKey(SettingsServiceBean.Key.ShibEnabled, safeDefaultIfKeyNotFound);
+    }
+
+    public boolean isDebugEnabled() {
+        boolean safeDefaultIfKeyNotFound = false;
+        return settingsService.isTrueForKey(SettingsServiceBean.Key.Debug, safeDefaultIfKeyNotFound);
+    }
+
 }

@@ -3,16 +3,19 @@ package edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.ip;
 import java.util.Arrays;
 
 /**
- * 128 BIT
- * 4 unsinged ints
- * 8 int
- * 2 unsigned long
- * 4 long
+ * 
  * @author michael
  */
  public class IPv6Address extends IpAddress implements Comparable<IPv6Address> {
     
     public static IPv6Address valueOf( String in ) {
+        if ( in.contains("%") ) {
+            // remove network interface name, if present.
+            in = in.split("%")[0];
+        }
+        if ( in.contains(".") ) {
+            return valueOfMapped( in );
+        }
         if ( in.contains("::") ) {
             // expand the :: abbreviation
             int existingFields = 0;
@@ -52,6 +55,22 @@ import java.util.Arrays;
         }
         
         return new IPv6Address( words, false );
+    }
+    
+    public static IPv6Address valueOfMapped( String in ) {
+        // Split parts
+        int lastColon = in.lastIndexOf(":");
+        String ipv4Part = in.substring(lastColon+1);
+        String ipv6Part = in.substring(0, lastColon+1) + "0:0";
+        
+        // Parse
+        short[] ipv4bytes = IPv4Address.valueOf(ipv4Part).bytes;
+        int[] ipv6words = IPv6Address.valueOf(ipv6Part).words;
+        
+        // merge
+        ipv6words[6]=(((int)ipv4bytes[0])<<8)+ipv4bytes[1];
+        ipv6words[7]=(((int)ipv4bytes[2])<<8)+ipv4bytes[3];
+        return new IPv6Address(ipv6words);
     }
     
     private final int[] words;

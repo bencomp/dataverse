@@ -2,6 +2,7 @@ package edu.harvard.iq.dataverse.api;
 
 import edu.harvard.iq.dataverse.Dataset;
 import edu.harvard.iq.dataverse.DatasetFieldServiceBean;
+import edu.harvard.iq.dataverse.DatasetFieldType;
 import edu.harvard.iq.dataverse.DatasetServiceBean;
 import edu.harvard.iq.dataverse.Dataverse;
 import edu.harvard.iq.dataverse.DataverseRoleServiceBean;
@@ -13,17 +14,20 @@ import edu.harvard.iq.dataverse.MetadataBlockServiceBean;
 import edu.harvard.iq.dataverse.PermissionServiceBean;
 import edu.harvard.iq.dataverse.RoleAssigneeServiceBean;
 import edu.harvard.iq.dataverse.UserServiceBean;
+import edu.harvard.iq.dataverse.actionlogging.ActionLogServiceBean;
 import edu.harvard.iq.dataverse.authorization.AuthenticationServiceBean;
 import edu.harvard.iq.dataverse.authorization.RoleAssignee;
-import edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.IpGroupsServiceBean;
+import edu.harvard.iq.dataverse.authorization.groups.GroupServiceBean;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.authorization.users.UserRequestMetadata;
 import edu.harvard.iq.dataverse.engine.command.Command;
 import edu.harvard.iq.dataverse.engine.command.exception.CommandException;
 import edu.harvard.iq.dataverse.engine.command.exception.IllegalCommandException;
 import edu.harvard.iq.dataverse.engine.command.exception.PermissionException;
+import edu.harvard.iq.dataverse.search.savedsearch.SavedSearchServiceBean;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import edu.harvard.iq.dataverse.util.json.JsonParser;
+import edu.harvard.iq.dataverse.validation.BeanValidationServiceBean;
 import java.net.URI;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
@@ -97,8 +101,17 @@ public abstract class AbstractApiBean {
     protected PermissionServiceBean permissionSvc;
     
     @EJB
-    protected IpGroupsServiceBean ipGroupsSvc;
+    protected GroupServiceBean groupSvc;
     
+    @EJB
+    protected ActionLogServiceBean actionLogSvc;
+
+    @EJB
+    protected BeanValidationServiceBean beanValidationSvc;
+
+    @EJB
+    protected SavedSearchServiceBean savedSearchSvc;
+
 	@PersistenceContext(unitName = "VDCNet-ejbPU")
 	protected EntityManager em;
     
@@ -116,7 +129,7 @@ public abstract class AbstractApiBean {
     private final LazyRef<JsonParser> jsonParserRef = new LazyRef<>(new Callable<JsonParser>() {
         @Override
         public JsonParser call() throws Exception {
-            return new JsonParser(datasetFieldSvc, metadataBlockSvc);
+            return new JsonParser(datasetFieldSvc, metadataBlockSvc,settingsSvc);
         }
     });
     
@@ -178,10 +191,17 @@ public abstract class AbstractApiBean {
         throw new WrappedResponse( errorResponse( Response.Status.BAD_REQUEST,errorMessage) );
     }
     
-    protected MetadataBlock findMetadataBlock(String idtf) throws NumberFormatException {
-        return isNumeric(idtf) ? metadataBlockSvc.findById(Long.parseLong(idtf))
-                : metadataBlockSvc.findByName(idtf);
+    protected MetadataBlock findMetadataBlock(Long id)  {
+        return metadataBlockSvc.findById(id);
     }
+    protected MetadataBlock findMetadataBlock(String idtf) throws NumberFormatException {
+        return metadataBlockSvc.findByName(idtf);
+    }
+    
+    protected DatasetFieldType findDatasetFieldType(String idtf) throws NumberFormatException {
+        return isNumeric(idtf) ? datasetFieldSvc.find(Long.parseLong(idtf))
+                : datasetFieldSvc.findByNameOpt(idtf);
+    }    
     
     protected <T> T execCommand( Command<T> com, String messageSeed ) throws WrappedResponse {
         try {
@@ -200,9 +220,9 @@ public abstract class AbstractApiBean {
     }
     
     protected Response okResponse( JsonArrayBuilder bld ) {
-        return Response.ok(Util.jsonObject2prettyString( Json.createObjectBuilder()
+        return Response.ok(Json.createObjectBuilder()
             .add("status", "OK")
-            .add("data", bld).build() )).build();
+            .add("data", bld).build()).build();
     }
     
     protected Response okResponse(JsonArrayBuilder bld, Format format) {
@@ -223,9 +243,9 @@ public abstract class AbstractApiBean {
     }
     
     protected Response okResponse( JsonObjectBuilder bld ) {
-        return Response.ok(Util.jsonObject2prettyString( Json.createObjectBuilder()
+        return Response.ok( Json.createObjectBuilder()
             .add("status", "OK")
-            .add("data", bld).build() ))
+            .add("data", bld).build() )
             .type(MediaType.APPLICATION_JSON)
             .build();
     }
@@ -271,6 +291,10 @@ public abstract class AbstractApiBean {
         return errorResponse(Status.NOT_FOUND, msg);
     }
     
+    protected Response badRequest( String msg ) {
+        return errorResponse( Status.BAD_REQUEST, msg );
+    }
+    
     protected Response badApiKey( String apiKey ) {
         return errorResponse(Status.UNAUTHORIZED, (apiKey != null ) ? "Bad api key '" + apiKey +"'" : "Please provide a key query parameter (?key=XXX)");
     }
@@ -282,7 +306,7 @@ public abstract class AbstractApiBean {
     protected Response errorResponse( Status sts, String msg ) {
         return Response.status(sts)
                 .entity( Json.createObjectBuilder().add("status", "ERROR")
-                        .add( "message", msg ).build())
+                        .add( "message", (msg!=null) ? msg : "<message was null>" ).build())
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .build();
     }

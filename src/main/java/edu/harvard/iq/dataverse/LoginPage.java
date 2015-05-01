@@ -3,11 +3,13 @@ package edu.harvard.iq.dataverse;
 import edu.harvard.iq.dataverse.authorization.AuthenticationProvider;
 import edu.harvard.iq.dataverse.authorization.AuthenticationProviderDisplayInfo;
 import edu.harvard.iq.dataverse.authorization.AuthenticationRequest;
+import edu.harvard.iq.dataverse.authorization.AuthenticationResponse;
 import edu.harvard.iq.dataverse.authorization.AuthenticationServiceBean;
 import edu.harvard.iq.dataverse.authorization.CredentialsAuthenticationProvider;
 import edu.harvard.iq.dataverse.authorization.exceptions.AuthenticationFailedException;
 import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinUserServiceBean;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
+import edu.harvard.iq.dataverse.passwordreset.PasswordResetServiceBean;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import edu.harvard.iq.dataverse.util.JsfHelper;
 import static edu.harvard.iq.dataverse.util.JsfHelper.JH;
@@ -69,6 +71,9 @@ public class LoginPage implements java.io.Serializable {
     @Inject DataverseSession session;    
     
     @EJB
+    DataverseServiceBean dataverseService;
+    
+    @EJB
     BuiltinUserServiceBean dataverseUserService;
     
     @EJB
@@ -79,7 +84,7 @@ public class LoginPage implements java.io.Serializable {
 
     @EJB
     SettingsServiceBean settingsService;
-
+    
     private String credentialsAuthProviderId;
     
     private List<FilledCredential> filledCredentials;
@@ -127,39 +132,55 @@ public class LoginPage implements java.io.Serializable {
     public String login() {
         
         AuthenticationRequest authReq = new AuthenticationRequest();
-        for ( FilledCredential fc : getFilledCredentials() ) {
+        List<FilledCredential> filledCredentialsList = getFilledCredentials();
+        if ( filledCredentialsList == null ) {
+            logger.info("Credential list is null!");
+            return null;
+        }
+        for ( FilledCredential fc : filledCredentialsList ) {
             if(fc.getValue()==null || fc.getValue().isEmpty()){
                 JH.addMessage(FacesMessage.SEVERITY_ERROR, "Please enter a "+fc.getCredential().getTitle());
-            }
-            if (fc.getCredential().getTitle().equals("Password")){
-                if (fc.getValue()!=null && fc.getValue().length()<6){
-                    JH.addMessage(FacesMessage.SEVERITY_ERROR,"Please enter a 6 character length password with at least one characters and one number ");
-                }
             }
             authReq.putCredential(fc.getCredential().getTitle(), fc.getValue());
         }
         authReq.setIpAddress( session.getUser().getRequestMetadata().getIpAddress() );
-        
         try {
             AuthenticatedUser r = authSvc.authenticate(credentialsAuthProviderId, authReq);
-            logger.log(Level.INFO, "User authenticated: {0}", r.getEmail());
+            logger.log(Level.FINE, "User authenticated: {0}", r.getEmail());
             session.setUser(r);
+            
+            if ("dataverse.xhtml".equals(redirectPage)) {
+                redirectPage = redirectPage + "&alias=" + dataverseService.findRootDataverse().getAlias();
+            }
             
             try {            
                 redirectPage = URLDecoder.decode(redirectPage, "UTF-8");
             } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(LoginPage.class.getName()).log(Level.SEVERE, null, ex);
-                redirectPage = "dataverse.xhtml";
+                redirectPage = "dataverse.xhtml&alias=" + dataverseService.findRootDataverse().getAlias();
             }
 
-            logger.log(Level.INFO, "Sending user to = " + redirectPage);
+            logger.log(Level.FINE, "Sending user to = {0}", redirectPage);
 
-            return redirectPage + (redirectPage.indexOf("?") == -1 ? "?" : "&") + "faces-redirect=true";
+            return redirectPage + (!redirectPage.contains("?") ? "?" : "&") + "faces-redirect=true";
 
             
         } catch (AuthenticationFailedException ex) {
-            JH.addMessage(FacesMessage.SEVERITY_ERROR, "The username and/or password you entered is invalid. Contact support@dataverse.org if you need assistance accessing your account.", ex.getResponse().getMessage());
-            return null;
+            AuthenticationResponse response = ex.getResponse();
+            switch ( response.getStatus() ) {
+                case FAIL:
+                    JsfHelper.addErrorMessage(JH.localize("login.invaliduserpassword"));
+                    return null;
+                case ERROR:
+                    JsfHelper.addErrorMessage(JH.localize("login.error"));
+                    logger.log( Level.WARNING, "Error logging in: " + response.getMessage(), response.getError() );
+                    return null;
+                case BREAKOUT:
+                    return response.getMessage();
+                default:
+                    JsfHelper.addErrorMessage("INTERNAL ERROR");
+                    return null;
+            }
         }
         
     }
@@ -189,11 +210,6 @@ public class LoginPage implements java.io.Serializable {
         this.filledCredentials = filledCredentials;
     }
 
-    public boolean isShibEnabled() {
-        boolean safeDefaultIfKeyNotFound = false;
-        return settingsService.isTrueForKey(SettingsServiceBean.Key.ShibEnabled, safeDefaultIfKeyNotFound);
-    }
-    
     public boolean isMultipleProvidersAvailable() {
         return authSvc.getAuthenticationProviderIds().size()>1;
     }

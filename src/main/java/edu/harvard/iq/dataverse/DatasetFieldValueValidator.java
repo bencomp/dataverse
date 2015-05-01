@@ -5,9 +5,10 @@
  */
 package edu.harvard.iq.dataverse;
 
+import edu.harvard.iq.dataverse.DatasetFieldType.FieldType;
+import edu.harvard.iq.dataverse.util.StringUtil;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -18,6 +19,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -39,7 +43,7 @@ public class DatasetFieldValueValidator implements ConstraintValidator<ValidateD
         boolean lengthOnly = false;
         
         DatasetFieldType dsfType = value.getDatasetField().getDatasetFieldType();
-        String fieldType = dsfType.getFieldType();
+        FieldType fieldType = dsfType.getFieldType();
         
         if (value.getDatasetField().getTemplate() != null){
             lengthOnly = true;
@@ -55,18 +59,53 @@ public class DatasetFieldValueValidator implements ConstraintValidator<ValidateD
         }
         
         
-        if (fieldType.equals("date") && !lengthOnly) {
+        if (fieldType.equals(FieldType.DATE) && !lengthOnly) {
             boolean valid = false;
+            String testString = value.getValue();
+
             if (!valid) {  
-                valid = isValidDate(value.getValue(), "yyyy-MM-dd");
+                valid = isValidDate(testString, "yyyy-MM-dd");
             }
             if (!valid) {
-                valid = isValidDate(value.getValue(), "yyyy-MM");
+                valid = isValidDate(testString, "yyyy-MM");
             }
+            
+            //If AD must be a 4 digit year
+            if (value.getValue().contains("AD")) {
+                testString =  (testString.substring(0, testString.indexOf("AD"))).trim();            
+            }
+            
             String YYYYformat = "yyyy";
             if (!valid ) {
-                valid = isValidDate(value.getValue(), YYYYformat);
+                valid = isValidDate(testString, YYYYformat);
+                if(!StringUtils.isNumeric(testString)){
+                    valid = false;
+                }
             }
+            
+            //If BC must be numeric
+            if(!valid && value.getValue().contains("BC") ){
+                testString =  (testString.substring(0, testString.indexOf("BC"))).trim(); 
+                if(StringUtils.isNumeric(testString)){
+                    valid = true;
+                }
+            }
+            
+            // Validate Bracket entries
+            // Must start with "[", end with "?]" and not start with "[-"
+            
+            if (!valid && value.getValue().startsWith("[") && value.getValue().endsWith("?]") && !value.getValue().startsWith("[-")) {
+                testString = value.getValue().replace("[", " ").replace("?]", " ").replace("-", " ").replace("BC", " ").replace("AD", " ").trim();
+                if (value.getValue().contains("BC") && StringUtils.isNumeric(testString)) {
+                    valid = true;
+                } else {
+                    valid = isValidDate(testString, YYYYformat);
+                    if (!StringUtils.isNumeric(testString)) {
+                        valid = false;
+                    }
+                }
+            }
+                       
             if (!valid) {
                 // TODO: 
                 // This is a temporary fix for the early beta! 
@@ -86,7 +125,7 @@ public class DatasetFieldValueValidator implements ConstraintValidator<ValidateD
             }
         } 
         
-        if (fieldType.equals("float") && !lengthOnly) {
+        if (fieldType.equals(FieldType.FLOAT) && !lengthOnly) {
             try {
                 Double.parseDouble(value.getValue());
             } catch (Exception e) {
@@ -96,7 +135,7 @@ public class DatasetFieldValueValidator implements ConstraintValidator<ValidateD
             }
         }
         
-        if (fieldType.equals("int") && !lengthOnly) {
+        if (fieldType.equals(FieldType.INT) && !lengthOnly) {
             try {
                 Integer.parseInt(value.getValue());
             } catch (Exception e) {
@@ -104,32 +143,21 @@ public class DatasetFieldValueValidator implements ConstraintValidator<ValidateD
                 return false;
             }
         }
-        
-        if (fieldType.equals("text")  && value.getValue().length() > 255) {
-                 context.buildConstraintViolationWithTemplate(dsfType.getDisplayName() + " may not be more than 255 characters.").addConstraintViolation(); 
-                 return false;
-        }
-        
-        if (fieldType.equals("url") && !lengthOnly) {
+        // Note, length validation for FieldType.TEXT was removed to accommodate migrated data that is greater than 255 chars.
+                
+        if (fieldType.equals(FieldType.URL) && !lengthOnly) {
             try {
                 URL url = new URL(value.getValue());
             } catch (MalformedURLException e) {
-                context.buildConstraintViolationWithTemplate(dsfType.getDisplayName() + " is not a valid URL.").addConstraintViolation();
+                context.buildConstraintViolationWithTemplate(dsfType.getDisplayName() + " " + value.getValue()+"  is not a valid URL.").addConstraintViolation();
                 return false;
             }
         }
 
-        if (fieldType.equals("email") && !lengthOnly) {
-            //Pattern p =  Pattern.compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
-            //updated to allow dashes
-            Pattern p =  Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
-            
-            Matcher m = p.matcher(value.getValue());
-            boolean matchFound = m.matches();
-            if (!matchFound) {
-                context.buildConstraintViolationWithTemplate(dsfType.getDisplayName() + " is not a valid email address.").addConstraintViolation();
-                return false;
-            }
+        if (fieldType.equals(FieldType.EMAIL) && !lengthOnly) {
+
+            return EMailValidator.isEmailValid(value.getValue(), context);
+
         }
                
         return true;
@@ -138,11 +166,11 @@ public class DatasetFieldValueValidator implements ConstraintValidator<ValidateD
         private boolean isValidDate(String dateString, String pattern) {
         boolean valid=true;
         Date date;
-        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);       
         sdf.setLenient(false);
         try {
             dateString = dateString.trim();
-            date = sdf.parse(dateString);
+            date = sdf.parse(dateString);           
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             int year = calendar.get(Calendar.YEAR);

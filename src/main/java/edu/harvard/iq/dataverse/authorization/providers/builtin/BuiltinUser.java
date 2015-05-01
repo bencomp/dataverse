@@ -1,16 +1,18 @@
 package edu.harvard.iq.dataverse.authorization.providers.builtin;
 
-import edu.harvard.iq.dataverse.authorization.RoleAssigneeDisplayInfo;
+import edu.harvard.iq.dataverse.ValidateEmail;
+import edu.harvard.iq.dataverse.authorization.AuthenticatedUserDisplayInfo;
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -39,10 +41,12 @@ public class BuiltinUser implements Serializable {
     @NotBlank(message = "Please enter a username.")
     @Size(min=2, max=60, message ="Username must be between 2 and 60 characters.")
     @Pattern(regexp = "[a-zA-Z0-9\\_]*", message = "Found an illegal character(s). Valid characters are a-Z, 0-9, and '_'.")
+    @Column(nullable = false, unique=true)  
     private String userName;
 
     @NotBlank(message = "Please enter a valid email address.")
-    @Email(message = "Please enter a valid email address.")
+    @ValidateEmail(message = "Please enter a valid email address.")
+    @Column(nullable = false, unique=true)    
     private String email;
 
     @NotBlank(message = "Please enter your first name.")
@@ -51,9 +55,15 @@ public class BuiltinUser implements Serializable {
     @NotBlank(message = "Please enter your last name.")
     private String lastName;
     
+    private int passwordEncryptionVersion; 
     private String encryptedPassword;
     private String affiliation;
     private String position;
+    
+    public void updateEncryptedPassword( String encryptedPassword, int algorithmVersion ) {
+        setEncryptedPassword(encryptedPassword);
+        setPasswordEncryptionVersion(algorithmVersion);
+    }
     
     public Long getId() {
         return id;
@@ -98,7 +108,15 @@ public class BuiltinUser implements Serializable {
     public String getEncryptedPassword() {
         return encryptedPassword;
     }
-
+    
+    /**
+     * JPA-use only. Humans should call {@link #updateEncryptedPassword(java.lang.String, int)}
+     * and update the password and the algorithm at the same time.
+     * 
+     * @param encryptedPassword
+     * @deprecated
+     */
+    @Deprecated()
     public void setEncryptedPassword(String encryptedPassword) {
         this.encryptedPassword = encryptedPassword;
     }
@@ -123,8 +141,8 @@ public class BuiltinUser implements Serializable {
         return this.getFirstName() + " " + this.getLastName(); 
     }
     
-    public RoleAssigneeDisplayInfo createDisplayInfo() {
-        return new RoleAssigneeDisplayInfo(getDisplayName(), getEmail(), getAffiliation() );
+    public AuthenticatedUserDisplayInfo getDisplayInfo() {
+        return new AuthenticatedUserDisplayInfo(getFirstName(), getLastName(), getEmail(), getAffiliation(), getPosition() );
     }
 
     @Override
@@ -148,8 +166,12 @@ public class BuiltinUser implements Serializable {
 		return "BuiltinUser{" + "id=" + id + ", userName=" + userName + ", email=" + email + '}';
 	}
 
-    RoleAssigneeDisplayInfo getDisplayInfo() {
-        return new RoleAssigneeDisplayInfo(getDisplayName(), getEmail(), getAffiliation());
+    public int getPasswordEncryptionVersion() {
+        return passwordEncryptionVersion;
     }
-   
+
+    public void setPasswordEncryptionVersion(int passwordEncryptionVersion) {
+        this.passwordEncryptionVersion = passwordEncryptionVersion;
+    }
+    
 }

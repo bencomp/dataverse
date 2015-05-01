@@ -1,12 +1,16 @@
 package edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress;
 
 import edu.harvard.iq.dataverse.RoleAssigneeServiceBean;
+import edu.harvard.iq.dataverse.actionlogging.ActionLogRecord;
+import edu.harvard.iq.dataverse.actionlogging.ActionLogServiceBean;
 import edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.ip.IPv4Address;
 import edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.ip.IPv6Address;
 import edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.ip.IpAddress;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Named;
@@ -15,24 +19,59 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
- *
+ * Provides CRUD tools to efficiently manage IP groups in a Java EE container.
+ * 
  * @author michael
  */
 @Named
 @Stateless
 public class IpGroupsServiceBean {
     
+    private static final Logger logger = Logger.getLogger(IpGroupsServiceBean.class.getName());
+    
     @PersistenceContext(unitName = "VDCNet-ejbPU")
 	protected EntityManager em;
+    
+    @EJB
+    ActionLogServiceBean actionLogSvc;
 	
     @EJB
     RoleAssigneeServiceBean roleAssigneeSvc;
     
     public IpGroup store( IpGroup grp ) {
-        if ( grp.getId() == null ) {
-            em.persist( grp );
-            return grp;
+        ActionLogRecord alr = new ActionLogRecord(ActionLogRecord.ActionType.GlobalGroups, "ipCreate");
+        if ( grp.getGroupProvider() != null ) {
+            alr.setInfo( grp.getIdentifier());
         } else {
+            alr.setInfo( grp.getDisplayName() );
+        }
+        alr.setInfo( alr.getInfo() + "// " + grp.getRanges() );
+        
+        if ( grp.getId() == null ) {
+            if ( grp.getPersistedGroupAlias() != null ) {
+                IpGroup existing = getByGroupName( grp.getPersistedGroupAlias() );
+                if ( existing == null ) {
+                    // new group
+                    em.persist( grp );
+                    actionLogSvc.log( alr );
+                    return grp;
+                    
+                } else {
+                    logger.log(Level.INFO, "Updating ip group {0}", grp.getPersistedGroupAlias());
+                    existing.setDescription(grp.getDescription());
+                    existing.setDisplayName( grp.getDisplayName() );
+                    existing.setIpv4Ranges( grp.getIpv4Ranges() );
+                    existing.setIpv6Ranges( grp.getIpv6Ranges() );
+                    actionLogSvc.log( alr.setActionSubType("ipUpdate") );
+                    return em.merge(existing);
+                }
+            } else {
+                actionLogSvc.log( alr );
+                em.persist( grp );
+                return grp;
+            }
+        } else {
+             actionLogSvc.log( alr.setActionSubType("ipUpdate") );
             return em.merge(grp);
         }
     }
@@ -41,10 +80,10 @@ public class IpGroupsServiceBean {
        return em.find( IpGroup.class, id);
     }
     
-    public IpGroup getByAlias( String alias ) {
+    public IpGroup getByGroupName( String alias ) {
         try {
-            return em.createNamedQuery("IpGroup.findByAlias", IpGroup.class)
-              .setParameter("alias", alias)
+            return em.createNamedQuery("IpGroup.findByPersistedGroupAlias", IpGroup.class)
+              .setParameter("persistedGroupAlias", alias)
               .getSingleResult();
         } catch ( NoResultException nre ) {
             return null;
@@ -85,11 +124,18 @@ public class IpGroupsServiceBean {
      * @see RoleAssigneeServiceBean#getAssignmentsFor(java.lang.String) 
      */
     public void deleteGroup( IpGroup grp ) {
+        ActionLogRecord alr = new ActionLogRecord(ActionLogRecord.ActionType.GlobalGroups, "ipDelete");
+        alr.setInfo( grp.getIdentifier() );
         if ( roleAssigneeSvc.getAssignmentsFor(grp.getIdentifier()).isEmpty() ) {
             em.remove( grp );
-            // TODO when adding explicit groups, need to check for group membership as well.
+            actionLogSvc.log(alr);
+            
         } else {
-            throw new IllegalArgumentException("Group " + grp.getAlias() + " has assignments and thus can't be deleted.");
+            String failReason = "Group " + grp.getAlias() + " has assignments and thus can't be deleted.";
+            alr.setActionResult(ActionLogRecord.Result.BadRequest);
+            alr.setInfo( alr.getInfo() + "// " + failReason);
+            actionLogSvc.log(alr);
+            throw new IllegalArgumentException(failReason);
         }
     }
 }

@@ -1,7 +1,7 @@
 {
     "alias":"curator",
     "name":"Curator",
-    "description":"Curator.",
+    "description":"For datasets, a person who can edit License + Terms, edit Permissions, and publish datasets.",
     "permissions":[
         "ViewUnpublishedDataset",
         "EditDataset",

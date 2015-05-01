@@ -43,10 +43,25 @@ public class TemplateServiceBean {
         return (Template) query.getSingleResult();
     }
 
-    public List<Template> findByOwnerId(Long ownerId) {
-        Query query = em.createQuery("select object(o) from Dataverse as o where o.owner.id =:ownerId order by o.name");
-        query.setParameter("ownerId", ownerId);
+    
+    public List<Dataverse> findDataversesByDefaultTemplateId(Long defaultTemplateId) {
+        Query query = em.createQuery("select object(o) from Dataverse as o where o.defaultTemplate.id =:defaultTemplateId order by o.name");
+        query.setParameter("defaultTemplateId", defaultTemplateId);
         return query.getResultList();
     }
+    
+    public void incrementUsageCount(Long templateId) {
 
+        Long usageCount = (Long) em.createNativeQuery(
+                "select usageCount from  Template  "
+                + "WHERE id=" + templateId
+        ).getSingleResult();
+        
+        usageCount++;
+        
+        em.createNativeQuery(
+                "update Template SET  usagecount = " + usageCount + " "
+                + "WHERE id=" + templateId
+        ).executeUpdate();
+    }
 }

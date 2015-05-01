@@ -77,6 +77,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -93,6 +94,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -112,7 +115,12 @@ import org.primefaces.push.PushContextFactory;
 import javax.faces.application.FacesMessage;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJBException;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -122,8 +130,9 @@ import org.apache.commons.io.FileUtils;
  * New service for handling ingest tasks
  * 
  */
-@ManagedBean
-@Stateless
+//@Stateless
+@Startup
+@Singleton
 @Named
 public class IngestServiceBean {
     private static final Logger logger = Logger.getLogger(IngestServiceBean.class.getCanonicalName());
@@ -167,7 +176,39 @@ public class IngestServiceBean {
     private static String timeFormat_hmsS = "HH:mm:ss.SSS";
     private static String dateTimeFormat_ymdhmsS = "yyyy-MM-dd HH:mm:ss.SSS";
     private static String dateFormat_ymd = "yyyy-MM-dd";
-      
+    
+    
+    @PostConstruct
+    public void init() {
+        logger.info("Initializing the Ingest Service.");
+        try {
+            List<DataFile> ingestsInProgress = fileService.findIngestsInProgress();
+            if (ingestsInProgress != null && ingestsInProgress.size() > 0) {
+                logger.log(Level.INFO, "Ingest Service: {0} files are in the queue.", ingestsInProgress.size());
+                // go through the queue, remove the "ingest in progress" flags and the 
+                // any dataset locks found:
+                Iterator dfit = ingestsInProgress.iterator();
+                while (dfit.hasNext()) {
+                    DataFile datafile = (DataFile)dfit.next();
+                    logger.log(Level.INFO, "Ingest Service: removing ingest-in-progress status on datafile {0}", datafile.getId());
+                    datafile.setIngestDone();
+                    datafile = fileService.save(datafile);
+
+                    if (datafile.getOwner() != null && datafile.getOwner().isLocked()) {
+                        if (datafile.getOwner().getId() != null) {
+                            logger.log(Level.FINE, "Ingest Servioce: removing lock on dataset {0}", datafile.getOwner().getId());
+                            datasetService.removeDatasetLock(datafile.getOwner().getId());
+                        }
+                    }
+                }
+            } else {
+                logger.info("Ingest Service: zero files in the ingest queue.");
+            }
+        } catch ( EJBException ex ) {
+            logger.log(Level.WARNING, "Error initing the IngestServiceBean: {0}", ex.getMessage());
+        }
+    }
+    
     @Deprecated
     // All the parts of the app should use the createDataFiles() method instead, 
     // that returns a list of DataFiles. 
@@ -233,7 +274,7 @@ public class IngestServiceBean {
                 }
             }
             
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             logger.warning("Failed to run the file utility mime type check on file " + fileName);
         }
         
@@ -297,10 +338,53 @@ public class IngestServiceBean {
             int fileNumberLimit = systemConfig.getZipUploadFilesLimit();
             
             try {
-                unZippedIn = new ZipInputStream(new FileInputStream(tempFile.toFile()));
-                int counter = 0; 
-
-                while ((zipEntry = unZippedIn.getNextEntry()) != null) {
+                Charset charset = null;
+                /*
+                TODO: (?)
+                We may want to investigate somehow letting the user specify 
+                the charset for the filenames in the zip file...
+                - otherwise, ZipInputStream bails out if it encounteres a file 
+                name that's not valid in the current charest (i.e., UTF-8, in 
+                our case). It would be a bit trickier than what we're doing for 
+                SPSS tabular ingests - with the lang. encoding pulldown menu - 
+                because this encoding needs to be specified *before* we upload and
+                attempt to unzip the file. 
+                        -- L.A. 4.0 beta12
+                logger.info("default charset is "+Charset.defaultCharset().name());
+                if (Charset.isSupported("US-ASCII")) {
+                    logger.info("charset US-ASCII is supported.");
+                    charset = Charset.forName("US-ASCII");
+                    if (charset != null) {
+                        logger.info("was able to obtain charset for US-ASCII");
+                    }
+                    
+                }
+                */
+                
+                if (charset != null) {
+                    unZippedIn = new ZipInputStream(new FileInputStream(tempFile.toFile()), charset);
+                } else {
+                    unZippedIn = new ZipInputStream(new FileInputStream(tempFile.toFile()));
+                } 
+                                                                
+                while (true) { 
+                    try {
+                        zipEntry = unZippedIn.getNextEntry();
+                    } catch (IllegalArgumentException iaex) {
+                        // Note: 
+                        // ZipInputStream documentation doesn't even mention that 
+                        // getNextEntry() throws an IllegalArgumentException!
+                        // but that's what happens if the file name of the next
+                        // entry is not valid in the current CharSet. 
+                        //      -- L.A.
+                        warningMessage = "Failed to unpack Zip file. (Unknown Character Set used in a file name?) Saving the file as is.";
+                        logger.warning(warningMessage);
+                        throw new IOException();
+                    } 
+                    
+                    if (zipEntry == null) {
+                        break;
+                    }
                     // Note that some zip entries may be directories - we 
                     // simply skip them:
                     
@@ -314,19 +398,28 @@ public class IngestServiceBean {
                         }
 
                         String fileEntryName = zipEntry.getName();
+                        logger.fine("ZipEntry, file: "+fileEntryName);
 
                         if (fileEntryName != null && !fileEntryName.equals("")) {
 
-                            fileEntryName = fileEntryName.replaceFirst("^.*[\\/]", "");
+                            String shortName = fileEntryName.replaceFirst("^.*[\\/]", "");
 
                             // Check if it's a "fake" file - a zip archive entry 
                             // created for a MacOS X filesystem element: (these 
                             // start with "._")
-                            if (!fileEntryName.startsWith("._") && !fileEntryName.startsWith(".DS_Store")) {
+                            if (!shortName.startsWith("._") && !shortName.startsWith(".DS_Store") && !"".equals(shortName)) {
                                 // OK, this seems like an OK file entry - we'll try 
                                 // to read it and create a DataFile with it:
 
-                                DataFile datafile = createSingleDataFile(version, unZippedIn, fileEntryName, MIME_TYPE_UNDETERMINED_DEFAULT, false);
+                                DataFile datafile = createSingleDataFile(version, unZippedIn, shortName, MIME_TYPE_UNDETERMINED_DEFAULT, false);
+
+                                if (!fileEntryName.equals(shortName)) {
+                                    String categoryName = fileEntryName.replaceFirst("[\\/][^\\/]*$", "");
+                                    if (!"".equals(categoryName)) {
+                                        logger.fine("setting category to " + categoryName);
+                                        datafile.getFileMetadata().setCategory(categoryName.replaceAll("[\\/]", "-"));
+                                    }
+                                }
                                 
                                 if (datafile != null) {
                                     // We have created this datafile with the mime type "unknown";
@@ -336,12 +429,12 @@ public class IngestServiceBean {
                                     String tempFileName = getFilesTempDirectory() + "/" + datafile.getFileSystemName();
                                     
                                     try {
-                                        recognizedType = FileUtil.determineFileType(new File(tempFileName), fileEntryName);
+                                        recognizedType = FileUtil.determineFileType(new File(tempFileName), shortName);
                                         logger.fine("File utility recognized unzipped file as " + recognizedType);
                                         if (recognizedType != null && !recognizedType.equals("")) {
                                             datafile.setContentType(recognizedType);
                                         }
-                                    } catch (IOException ex) {
+                                    } catch (Exception ex) {
                                         logger.warning("Failed to run the file utility mime type check on file " + fileName);
                                     }
                                     
@@ -349,8 +442,9 @@ public class IngestServiceBean {
                                 }
                             }
                         }
-                    }
+                    } 
                     unZippedIn.closeEntry(); 
+                    
                 }
                 
             } catch (IOException ioex) {
@@ -358,6 +452,9 @@ public class IngestServiceBean {
                 // ingest default to creating a single DataFile out
                 // of the unzipped file. 
                 logger.warning("Unzipping failed; rolling back to saving the file as is.");
+                if (warningMessage == null) {
+                    warningMessage = "Failed to unzip the file. Saving the file as is.";
+                }
                 
                 datafiles.clear();
             } finally {
@@ -376,7 +473,18 @@ public class IngestServiceBean {
                     }
                     version.getFileMetadatas().add(datafile.getFileMetadata());
                     datafile.getFileMetadata().setDatasetVersion(version);
+                    if (datafile.getFileMetadata().getCategory() != null) {
+                        datafile.getFileMetadata().addCategoryByName(datafile.getFileMetadata().getCategory());
+                        datafile.getFileMetadata().setCategory(null);
+                    }
                     version.getDataset().getFiles().add(datafile);
+                }
+                // remove the uploaded zip file: 
+                try {
+                    Files.delete(tempFile);
+                } catch (IOException ioex) {
+                    // do nothing - it's just a temp file.
+                    logger.warning("Could not remove temp file "+tempFile.getFileName().toString());
                 }
                 // and return:
                 return datafiles;
@@ -454,11 +562,7 @@ public class IngestServiceBean {
             }
         
             if (warningMessage != null) {
-                IngestReport errorReport = new IngestReport();
-                errorReport.setFailure();
-                errorReport.setReport(warningMessage);
-                errorReport.setDataFile(datafile);
-                datafile.setIngestReport(errorReport);
+                createIngestFailureReport(datafile, warningMessage);
                 datafile.SetIngestProblem();
             }
             datafiles.add(datafile);
@@ -613,7 +717,7 @@ public class IngestServiceBean {
         String contentType;
         try {
             contentType = FileUtil.determineFileType(fileObject, fileObject.getName());
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             logger.warning("FileUtil.determineFileType failed for file with name: " + fileObject.getName());
             contentType = null;
         }
@@ -831,11 +935,19 @@ public class IngestServiceBean {
                         if (writeChannel != null) {try{writeChannel.close();}catch(IOException e){}}
                     }
 
+                    // delete the temporary file: 
                     try {
                         logger.fine("Will attempt to delete the temp file "+tempLocationPath.toString());
+                        // also, delete a temporary thumbnail image file, if exists:
+                        // (TODO: probably not a very good style, that the size of the thumbnail 
+                        // is hard-coded here; it may change in the future...)
+                        Path tempThumbnailPath = Paths.get(tempLocationPath.toString() + ".thumb64");
                         Files.delete(tempLocationPath);
+                        if (tempThumbnailPath.toFile().exists()) {
+                            Files.delete(tempThumbnailPath);
+                        }
                     } catch (IOException ex) {
-                        // (non-fatal)
+                        // (non-fatal - it's just a temp file.)
                         logger.warning("Failed to delete temp file "+tempLocationPath.toString());
                     }
                     // Any necessary post-processing: 
@@ -903,17 +1015,22 @@ public class IngestServiceBean {
     // -- L.A. 4.0 post-beta. 
     public void startIngestJobs(Dataset dataset, AuthenticatedUser user) {
         int count = 0;
+        List<DataFile> scheduledFiles = new ArrayList<>();
+        
         IngestMessage ingestMessage = null;
+        
         for (DataFile dataFile : dataset.getFiles()) {
             if (dataFile.isIngestScheduled()) {
-                dataFile.SetIngestInProgress();
+                // todo: investigate why when calling save with the file object
+                // gotten from the loop, the roles assignment added at create is removed
+                // (switching to refinding via id resolves that)                
+                dataFile = fileService.find(dataFile.getId());
+                dataFile.SetIngestInProgress();               
                 dataFile = fileService.save(dataFile);
 
-                if (ingestMessage == null) {
-                    ingestMessage = new IngestMessage(IngestMessage.INGEST_MESAGE_LEVEL_INFO);
-                }
-                ingestMessage.addFileId(dataFile.getId());
-                logger.info("Attempting to queue the file " + dataFile.getFileMetadata().getLabel() + "(" + dataFile.getFileMetadata().getDescription() + ") for ingest.");
+                scheduledFiles.add(dataFile);
+                
+                logger.fine("Attempting to queue the file " + dataFile.getFileMetadata().getLabel() + " for ingest.");
                 //asyncIngestAsTabular(dataFile);
                 count++;
             }
@@ -921,12 +1038,33 @@ public class IngestServiceBean {
 
         if (count > 0) {
             String info = "Attempting to ingest " + count + " tabular data file(s).";
+            logger.info(info);
             if (user != null) {
                 datasetService.addDatasetLock(dataset.getId(), user.getId(), info);
             } else {
                 datasetService.addDatasetLock(dataset.getId(), null, info);
             }
 
+            DataFile[] scheduledFilesArray = (DataFile[])scheduledFiles.toArray(new DataFile[count]);
+            scheduledFiles = null; 
+            
+            // Sort ingest jobs by file size: 
+            Arrays.sort(scheduledFilesArray, new Comparator<DataFile>() {
+                @Override
+                public int compare(DataFile d1, DataFile d2) {
+                    long a = d1.getFilesize();
+                    long b = d2.getFilesize();
+                    return Long.valueOf(a).compareTo(b);
+                }
+            });
+            
+            ingestMessage = new IngestMessage(IngestMessage.INGEST_MESAGE_LEVEL_INFO);
+            
+            for (int i = 0; i < count; i++) {
+                ingestMessage.addFileId(scheduledFilesArray[i].getId());
+                logger.fine("Sorted order: "+i+" (size="+scheduledFilesArray[i].getFilesize()+")");
+            }
+            
             QueueConnection conn = null;
             QueueSession session = null;
             QueueSender sender = null;
@@ -965,22 +1103,6 @@ public class IngestServiceBean {
             }
         }
     }
-    
-    /*
-    public void startIngestJobs (DatasetVersion datasetVersion) {
-        for (FileMetadata fileMetadata : datasetVersion.getFileMetadatas()) {
-            DataFile dataFile = fileMetadata.getDataFile();
-            
-            if (dataFile != null && dataFile.isIngestScheduled()) {
-                dataFile.SetIngestInProgress();
-                dataFile = fileService.save(dataFile);
-                logger.info("Attempting to queue the file " + dataFile.getFileMetadata().getLabel() + "(" + dataFile.getFileMetadata().getDescription() + ") for ingest.");
-                asyncIngestAsTabular(dataFile);
-            }
-        }
-
-    }
-    */
     
     public void produceSummaryStatistics(DataFile dataFile) throws IOException {
         /*
@@ -1145,55 +1267,6 @@ public class IngestServiceBean {
         }
     }
     
-    /*
-    public boolean asyncIngestAsTabular(DataFile dataFile) {
-        boolean ingestSuccessful = true;
-
-        QueueConnection conn = null;
-        QueueSession session = null;
-        QueueSender sender = null;
-        try {
-            conn = factory.createQueueConnection();
-            session = conn.createQueueSession(false, 0);
-            sender = session.createSender(queue);
-
-            IngestMessage ingestMessage = new IngestMessage(IngestMessage.INGEST_MESAGE_LEVEL_INFO);
-            //ingestMessage.addFile(new File(tempFileLocation));
-            ingestMessage.addFileId(dataFile.getId());
-            
-            Message message = session.createObjectMessage(ingestMessage);
-
-            try {
-                sender.send(message);
-            } catch (Exception ex) {
-                ingestSuccessful = false; 
-                ex.printStackTrace();
-            }
-
-        } catch (JMSException ex) {
-            ingestSuccessful = false;
-            ex.printStackTrace();
-        } finally {
-            try {
-
-                if (sender != null) {
-                    sender.close();
-                }
-                if (session != null) {
-                    session.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (JMSException ex) {
-                ingestSuccessful = false;
-                ex.printStackTrace();
-            }
-        }
-
-        return ingestSuccessful;
-    }
-    */
     public boolean ingestAsTabular(Long datafile_id) { //DataFile dataFile) throws IOException {
         DataFile dataFile = fileService.find(datafile_id);
         if (dataFile != null) {
@@ -1222,7 +1295,6 @@ public class IngestServiceBean {
         // -- L.A. 12 Aug. 2014
         
         boolean ingestSuccessful = false;
-        IngestReport errorReport = null;
         Long datafile_id = dataFile == null ? null : dataFile.getId();
 
         PushContext pushContext = PushContextFactory.getDefault().getPushContext();
@@ -1240,31 +1312,24 @@ public class IngestServiceBean {
 
         if (ingestPlugin == null) {
             dataFile.SetIngestProblem();
-            errorReport = new IngestReport();
-            errorReport.setFailure();
-            errorReport.setReport("No ingest plugin found for file type "+dataFile.getContentType());
-            errorReport.setDataFile(dataFile);
-            dataFile.setIngestReport(errorReport);
+            createIngestFailureReport(dataFile, "No ingest plugin found for file type "+dataFile.getContentType());
             dataFile = fileService.save(dataFile);
             FacesMessage facesMessage = new FacesMessage("ingest failed");
             pushContext.push("/ingest"+dataFile.getOwner().getId(), facesMessage);
-            Logger.getLogger(IngestServiceBean.class.getName()).log(Level.INFO, "Ingest failure: Sent push notification to the page.");
+            logger.info("Ingest failure: Sent push notification to the page.");
             //throw new IOException("Could not find ingest plugin for the file " + fileName);
             return false; 
         }
 
         FileInputStream tempFileInputStream = null; 
+        File additionalData = null; 
         
         try {
             tempFileInputStream = new FileInputStream(new File(tempFileLocation));
         } catch (FileNotFoundException notfoundEx) {
             dataFile.SetIngestProblem();
             
-            errorReport = new IngestReport();
-            errorReport.setFailure();
-            errorReport.setReport("IO Exception occured while trying to open the file for reading.");
-            errorReport.setDataFile(dataFile);
-            dataFile.setIngestReport(errorReport);
+            createIngestFailureReport(dataFile, "IO Exception occured while trying to open the file for reading.");
             dataFile = fileService.save(dataFile);
             
             dataFile = fileService.save(dataFile);
@@ -1275,16 +1340,28 @@ public class IngestServiceBean {
             //throw new IOException("Could not open temp file "+tempFileLocation);
         }
         
+        IngestRequest ingestRequest = dataFile.getIngestRequest();
+        if (ingestRequest != null) {
+            if (ingestRequest.getTextEncoding() != null 
+                    && !ingestRequest.getTextEncoding().equals("") ) {
+                logger.fine("Setting language encoding to "+ingestRequest.getTextEncoding());
+                ingestPlugin.setDataLanguageEncoding(ingestRequest.getTextEncoding());
+            }
+            if (ingestRequest.getLabelsFile() != null) {
+                additionalData = new File(ingestRequest.getLabelsFile());
+            }
+        } 
+        
         TabularDataIngest tabDataIngest = null; 
         try {
-            tabDataIngest = ingestPlugin.read(new BufferedInputStream(tempFileInputStream), null);
+            if (additionalData != null) {
+                tabDataIngest = ingestPlugin.read(new BufferedInputStream(tempFileInputStream), additionalData);
+            } else {
+                tabDataIngest = ingestPlugin.read(new BufferedInputStream(tempFileInputStream), null);
+            }
         } catch (IOException ingestEx) {
             dataFile.SetIngestProblem();
-            errorReport = new IngestReport();
-            errorReport.setFailure();
-            errorReport.setReport(ingestEx.getMessage());
-            errorReport.setDataFile(dataFile);
-            dataFile.setIngestReport(errorReport);
+            createIngestFailureReport(dataFile, ingestEx.getMessage());
             dataFile = fileService.save(dataFile);
             
             dataFile = fileService.save(dataFile);
@@ -1296,11 +1373,7 @@ public class IngestServiceBean {
             // this is a bit of a kludge, to make sure no unknown exceptions are
             // left uncaught.
             dataFile.SetIngestProblem();
-            errorReport = new IngestReport();
-            errorReport.setFailure();
-            errorReport.setReport(unknownEx.getMessage());
-            errorReport.setDataFile(dataFile);
-            dataFile.setIngestReport(errorReport);
+            createIngestFailureReport(dataFile, unknownEx.getMessage());
             dataFile = fileService.save(dataFile);
             
             dataFile = fileService.save(dataFile);
@@ -1319,10 +1392,10 @@ public class IngestServiceBean {
                         && tabFile != null
                         && tabFile.exists()) {
 
-                    Logger.getLogger(IngestServiceBean.class.getName()).log(Level.INFO, "Tabular data successfully ingested; DataTable with "
+                    logger.info("Tabular data successfully ingested; DataTable with "
                             + tabDataIngest.getDataTable().getVarQuantity() + " variables produced.");
 
-                    Logger.getLogger(IngestServiceBean.class.getName()).log(Level.INFO, "Tab-delimited file produced: " + tabFile.getAbsolutePath());
+                    logger.info("Tab-delimited file produced: " + tabFile.getAbsolutePath());
 
                     if (MIME_TYPE_CSV_ALT.equals(dataFile.getContentType())) {
                         tabDataIngest.getDataTable().setOriginalFileFormat(MIME_TYPE_CSV);
@@ -1334,10 +1407,13 @@ public class IngestServiceBean {
                     try {
                         saveIngestedOriginal(dataFile, new FileInputStream(new File(tempFileLocation)));
                     } catch (IOException iox) {
-                        Logger.getLogger(IngestServiceBean.class.getName()).log(Level.INFO, "Failed to save the ingested original! " + iox.getMessage());
+                        logger.info("Failed to save the ingested original! " + iox.getMessage());
                     }
 
                     Files.copy(Paths.get(tabFile.getAbsolutePath()), dataFile.getFileSystemLocation(), StandardCopyOption.REPLACE_EXISTING);
+                    // delete the temp tab-file:
+                    tabFile.delete();
+                    
 
                     // and change the mime type to "tabular" on the final datafile, 
                     // and replace (or add) the extension ".tab" to the filename: 
@@ -1350,15 +1426,24 @@ public class IngestServiceBean {
                     produceSummaryStatistics(dataFile);
 
                     dataFile.setIngestDone();
+                    // delete the ingest request, if exists:
+                    if (dataFile.getIngestRequest() != null) {
+                        dataFile.getIngestRequest().setDataFile(null);
+                        dataFile.setIngestRequest(null);
+                    }
                     dataFile = fileService.save(dataFile);
-                    FacesMessage facesMessage = new FacesMessage("ingest done");
-                    pushContext.push("/ingest" + dataFile.getOwner().getId(), facesMessage);
-                    logger.info("Ingest (" + dataFile.getFileMetadata().getDescription() + "); Sent push notification to the page.");
+                    FacesMessage facesMessage = new FacesMessage("Success " + dataFile.getFileMetadata().getLabel());
+                    pushContext.push("/ingest" + dataFile.getOwner().getId(), "Success " + dataFile.getFileMetadata().getLabel()); //facesMessage);
+                    logger.info("Ingest (" + dataFile.getFileMetadata().getLabel() + "); Sent push notification to the page.");
 
+                    if (additionalData != null) {
+                        // remove the extra tempfile, if there was one:
+                        additionalData.delete();
+                    }
                     ingestSuccessful = true;
                 }
             } else {
-                Logger.getLogger(IngestServiceBean.class.getName()).log(Level.INFO, "Ingest failed to produce data obect; notification NOT sent to the page.");
+                logger.info("Ingest failed to produce data obect; notification NOT sent to the page.");
             }
         } catch (IOException postIngestEx) {
             // TODO: 
@@ -1366,11 +1451,7 @@ public class IngestServiceBean {
             // from file save errors;
             // -- L.A. Aug. 2014
             dataFile.SetIngestProblem();
-            errorReport = new IngestReport();
-            errorReport.setFailure();
-            errorReport.setReport("Ingest failed to produce Summary Statistics and/or UNF signatures; "+postIngestEx.getMessage());
-            errorReport.setDataFile(dataFile);
-            dataFile.setIngestReport(errorReport);
+            createIngestFailureReport(dataFile, "Ingest failed to produce Summary Statistics and/or UNF signatures; "+postIngestEx.getMessage());
             
             dataFile = fileService.save(dataFile);
             
@@ -1378,18 +1459,14 @@ public class IngestServiceBean {
         } catch (Exception unknownEx) {
             // this probably means that an error occurred while saving the datafile
             // in the database. 
-            Logger.getLogger(IngestServiceBean.class.getName()).log(Level.INFO, "Ingest failure: Failed to save tabular data (datatable, datavariables, etc.) in the database. Clearing the datafile object.");
+            logger.info("Ingest failure: Failed to save tabular data (datatable, datavariables, etc.) in the database. Clearing the datafile object.");
 
             dataFile = null; 
             dataFile = fileService.find(datafile_id);
             
             if (dataFile != null) {
                 dataFile.SetIngestProblem();
-                errorReport = new IngestReport();
-                errorReport.setFailure();
-                errorReport.setReport("Ingest produced tabular data, but failed to save it in the database; " + unknownEx.getMessage() + " No further information is available.");
-                errorReport.setDataFile(dataFile);
-                dataFile.setIngestReport(errorReport);
+                createIngestFailureReport(dataFile, "Ingest produced tabular data, but failed to save it in the database; " + unknownEx.getMessage() + " No further information is available.");
 
                 // blank the datatable that may have already been attached to the
                 // datafile (it may have something "unsave-able" in it!)
@@ -1398,13 +1475,9 @@ public class IngestServiceBean {
                     tabDataIngest.getDataTable().setDataFile(null);
                 }
 
-                ////try {
                 dataFile = fileService.save(dataFile);
-                ////} catch (Exception unknownEx2) {
-                ////    logger.info("Another unknown exception occured while saving the datafile.");
-                ////}
                 FacesMessage facesMessage = new FacesMessage("ingest failed");
-                pushContext.push("/ingest" + dataFile.getOwner().getId(), facesMessage);
+                pushContext.push("/ingest" + dataFile.getOwner().getId(), "failure");
                 logger.info("Unknown excepton saving ingested file; Sent push notification to the page.");
             } else {
                 // ??
@@ -1415,6 +1488,19 @@ public class IngestServiceBean {
         return ingestSuccessful;
     }
 
+    private void createIngestFailureReport(DataFile dataFile, String message) {
+        createIngestReport(dataFile, IngestReport.INGEST_STATUS_FAILURE, message);
+    }
+    
+    private void createIngestReport (DataFile dataFile, int status, String message) {
+        IngestReport errorReport = new IngestReport();
+        if (status == IngestReport.INGEST_STATUS_FAILURE) {
+                errorReport.setFailure();
+                errorReport.setReport(message);
+                errorReport.setDataFile(dataFile);
+                dataFile.setIngestReport(errorReport);
+        }
+    }
     public boolean ingestableAsTabular(DataFile dataFile) {
         /* 
          * In the final 4.0 we'll be doing real-time checks, going through the 

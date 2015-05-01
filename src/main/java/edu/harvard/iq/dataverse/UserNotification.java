@@ -1,20 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
@@ -22,9 +21,11 @@ import javax.persistence.Transient;
  * @author xyang
  */
 @Entity
+@Table(indexes = {@Index(columnList="user_id")})
+
 public class UserNotification implements Serializable {
     public enum Type {
-        CREATEDV, CREATEDS, CREATEACC, MAPLAYERUPDATED
+        CREATEDV, CREATEDS, CREATEACC, MAPLAYERUPDATED, SUBMITTEDDS, RETURNEDDS, PUBLISHEDDS, REQUESTFILEACCESS, GRANTFILEACCESS, REJECTFILEACCESS
     };
     
     private static final long serialVersionUID = 1L;
@@ -34,10 +35,13 @@ public class UserNotification implements Serializable {
     private Long id;
 
     @ManyToOne
+    @JoinColumn( nullable = false )
     private AuthenticatedUser user;
     private Timestamp sendDate;
     private boolean readNotification;
+    
     @Enumerated
+    @Column( nullable = false )
     private Type type;
     private Long objectId;
 
@@ -91,6 +95,17 @@ public class UserNotification implements Serializable {
 
     public void setObjectId(Long objectId) {
         this.objectId = objectId;
+    }
+    
+    @Transient 
+    private Object theObject;
+
+    public Object getTheObject() {
+        return theObject;
+    }
+
+    public void setTheObject(Object theObject) {
+        this.theObject = theObject;
     }
         
     public boolean isDisplayAsRead() {

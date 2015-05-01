@@ -11,10 +11,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -50,6 +53,7 @@ public class Template implements Serializable {
 
     @NotBlank(message = "Please add in a name for the dataset template.")
     @Size(max = 255, message = "Name must be at most 255 characters.")
+    @Column( nullable = false )
     private String name;
 
     public String getName() {
@@ -71,6 +75,7 @@ public class Template implements Serializable {
     }
 
     @Temporal(value = TemporalType.TIMESTAMP)
+    @Column( nullable = false )
     private Date createTime;
 
     public Date getCreateTime() {
@@ -97,6 +102,29 @@ public class Template implements Serializable {
     private Map<MetadataBlock, List<DatasetField>> metadataBlocksForView = new HashMap();
     @Transient
     private Map<MetadataBlock, List<DatasetField>> metadataBlocksForEdit = new HashMap();
+    
+    @Transient
+    private boolean isDefaultForDataverse;
+
+    public boolean isIsDefaultForDataverse() {
+        return isDefaultForDataverse;
+    }
+
+    public void setIsDefaultForDataverse(boolean isDefaultForDataverse) {
+        this.isDefaultForDataverse = isDefaultForDataverse;
+    }
+    
+    @Transient
+    private List<Dataverse> dataversesHasAsDefault;
+
+    public List<Dataverse> getDataversesHasAsDefault() {
+        return dataversesHasAsDefault;
+    }
+
+    public void setDataversesHasAsDefault(List<Dataverse> dataversesHasAsDefault) {
+        this.dataversesHasAsDefault = dataversesHasAsDefault;
+    }
+    
 
     public Map<MetadataBlock, List<DatasetField>> getMetadataBlocksForView() {
         return metadataBlocksForView;
@@ -114,7 +142,8 @@ public class Template implements Serializable {
         this.metadataBlocksForEdit = metadataBlocksForEdit;
     }
 
-    @Transient
+    @ManyToOne
+    @JoinColumn(nullable=true)
     private Dataverse dataverse;
 
     public Dataverse getDataverse() {
@@ -203,7 +232,22 @@ public class Template implements Serializable {
         //TODO: A lot of clean up on the logic of this method
         metadataBlocksForView.clear();
         metadataBlocksForEdit.clear();
-        for (MetadataBlock mdb : this.getDataverse().getMetadataBlocks()) {
+        List<DatasetField> filledInFields = this.getDatasetFields(); 
+        
+        
+        List <MetadataBlock> actualMDB = new ArrayList();
+            
+        actualMDB.addAll(this.getDataverse().getMetadataBlocks());
+        for (DatasetField dsfv : filledInFields) {
+            if (!dsfv.isEmptyForDisplay()) {
+                MetadataBlock mdbTest = dsfv.getDatasetFieldType().getMetadataBlock();
+                if (!actualMDB.contains(mdbTest)) {
+                    actualMDB.add(mdbTest);
+                }
+            }
+        }       
+        
+        for (MetadataBlock mdb : actualMDB) {
             List<DatasetField> datasetFieldsForView = new ArrayList();
             List<DatasetField> datasetFieldsForEdit = new ArrayList();
             for (DatasetField dsf : this.getDatasetFields()) {

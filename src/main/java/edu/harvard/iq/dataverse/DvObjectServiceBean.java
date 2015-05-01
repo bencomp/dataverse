@@ -4,11 +4,14 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.REQUIRES_NEW;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  * Your goto bean for everything {@link DvObject}, that's not tied to any
@@ -48,25 +51,21 @@ public class DvObjectServiceBean implements java.io.Serializable {
         return em.createNamedQuery("DvObject.findAll", DvObject.class).getResultList();
     }
 
-    /**
-     * @todo Rename this to updateContentIndexTime (or something) to
-     * differentiate it from permissions. Content Solr docs vs. permission Solr
-     * docs.
-     */
-    public DvObject updateIndexTime(DvObject dvObject) {
+    public DvObject updateContentIndexTime(DvObject dvObject) {
         /**
          * @todo to avoid a possible OptimisticLockException, should we merge
          * dvObject before we try to setIndexTime? See
          * https://github.com/IQSS/dataverse/commit/6ad0ebb272c8cb46368cb76784b55dbf33eea947
          */
-        dvObject.setIndexTime(new Timestamp(new Date().getTime()));
-        DvObject savedDvObject = em.merge(dvObject);
+        DvObject dvObjectToModify = findDvObject(dvObject.getId());
+        dvObjectToModify.setIndexTime(new Timestamp(new Date().getTime()));
+        DvObject savedDvObject = em.merge(dvObjectToModify);
         return savedDvObject;
     }
 
     /**
-     * @todo DRY! We could probably merge this with the older updateIndexTime
-     * method (which should be renamed)
+     * @todo DRY! Perhaps we should merge this with the older
+     * updateContentIndexTime method.
      */
     public DvObject updatePermissionIndexTime(DvObject dvObject) {
         /**
@@ -74,9 +73,17 @@ public class DvObjectServiceBean implements java.io.Serializable {
          * dvObject before we try to set this timestamp? See
          * https://github.com/IQSS/dataverse/commit/6ad0ebb272c8cb46368cb76784b55dbf33eea947
          */
-        dvObject.setPermissionIndexTime(new Timestamp(new Date().getTime()));
-        DvObject savedDvObject = em.merge(dvObject);
+        DvObject dvObjectToModify = findDvObject(dvObject.getId());
+        dvObjectToModify.setPermissionIndexTime(new Timestamp(new Date().getTime()));
+        DvObject savedDvObject = em.merge(dvObjectToModify);
         return savedDvObject;
+    }
+
+    @TransactionAttribute(REQUIRES_NEW)
+    public int clearAllIndexTimes() {
+        Query clearIndexTimes = em.createQuery("UPDATE DvObject o SET o.indexTime = NULL, o.permissionIndexTime = NULL");
+        int numRowsUpdated = clearIndexTimes.executeUpdate();
+        return numRowsUpdated;
     }
 
 }

@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package edu.harvard.iq.dataverse;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,12 +12,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Version;
 import org.hibernate.validator.constraints.NotBlank;
-//import org.hibernate.validator.Pattern;
 import javax.validation.constraints.Pattern;
 
 
@@ -30,20 +27,22 @@ import javax.validation.constraints.Pattern;
  *
  * @author skraffmiller
  */
+@Table(indexes = {@Index(columnList="datafile_id"), @Index(columnList="datasetversion_id")} )
 @Entity
 public class FileMetadata implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private static final Logger logger = Logger.getLogger(FileMetadata.class.getCanonicalName());
 
-    //@NotBlank(message = "Please specify a file name.")
     @Pattern(regexp="^[^:<>;#/\"\\*\\|\\?\\\\]*$", message = "File Name cannot contain any of the following characters: \\ / : * ? \" < > | ; # .")    
     @NotBlank(message = "Please specify a file name.")
+    @Column( nullable=false )
     private String label = "";
     @Column(columnDefinition = "TEXT")
     private String description = "";
     @Column(columnDefinition="TEXT")
     private String category = ""; // TODO: remove! -- L.A. 4.0 beta 10
+    private boolean restricted;
 
     @ManyToOne
     @JoinColumn(nullable=false)
@@ -78,10 +77,20 @@ public class FileMetadata implements Serializable {
         this.category = category;
     }
 
+    public boolean isRestricted() {
+        return restricted;
+    }
+
+    public void setRestricted(boolean restricted) {
+        this.restricted = restricted;
+    }
+    
+
     /* 
      * File Categories to which this version of the DataFile belongs: 
      */
-    @ManyToMany (cascade = {CascadeType.REMOVE, CascadeType.MERGE,CascadeType.PERSIST})
+    @ManyToMany (cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(indexes = {@Index(columnList="filecategories_id"),@Index(columnList="filemetadatas_id")})
     private List<DataFileCategory> fileCategories;
     
     public List<DataFileCategory> getCategories() {
@@ -112,12 +121,12 @@ public class FileMetadata implements Serializable {
     // alternative, experimental method: 
 
     public void setCategoriesByName(List<String> newCategoryNames) {
-        setCategories(null);
+        setCategories(null); // ?? TODO: investigate! 
 
         if (newCategoryNames != null) {
 
             for (int i = 0; i < newCategoryNames.size(); i++) {
-                    // Dataset.getCategoryByName() will check if such a category 
+                // Dataset.getCategoryByName() will check if such a category 
                 // already exists for the parent dataset; it will be created 
                 // if not. The method will return null if the supplied 
                 // category name is null or empty. -- L.A. 4.0 beta 10
@@ -136,10 +145,11 @@ public class FileMetadata implements Serializable {
             }
         }
     }
-    /*
+    
+    /* 
+        note that this version only *adds* new categories, but does not 
+        remove the ones that has been unchecked!
     public void setCategoriesByName(List<String> newCategoryNames) {
-                setCategories(null);
-
         if (newCategoryNames != null) {
             Collection<String> oldCategoryNames = getCategoriesByName();
             
@@ -162,13 +172,11 @@ public class FileMetadata implements Serializable {
                         this.addCategory(fileCategory);
                         fileCategory.addFileMetadata(this);
                     }
-                } else {
-                    // don't do anything - this file metadata is already in 
-                    // this category.
-                }
+                } 
             }
         }
-    }*/
+    }
+    */
     
     public void addCategoryByName(String newCategoryName) {
         if (newCategoryName != null && !newCategoryName.equals("")) {
@@ -189,12 +197,12 @@ public class FileMetadata implements Serializable {
 
                 
                 if (fileCategory != null) {
-                    logger.info("Found file category for "+newCategoryName);
+                    logger.log(Level.FINE, "Found file category for {0}", newCategoryName);
 
                     this.addCategory(fileCategory);
                     fileCategory.addFileMetadata(this);
                 } else {
-                    logger.info("Could not find file category for "+newCategoryName);
+                    logger.log(Level.INFO, "Could not find file category for {0}", newCategoryName);
                 }
             } else {
                 // don't do anything - this file metadata already belongs to
@@ -274,22 +282,53 @@ public class FileMetadata implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        // (Also, note that it returns "true" when comparing 2 filemetadatas 
-        // with id == null; in other words, 2 not-yet-saved filemetadatas 
-        // always compare as equal! -- L.A. 4.0 alpha)
         if (!(object instanceof FileMetadata)) {
             return false;
         }
         FileMetadata other = (FileMetadata) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-        // Something like this would seem like a better choice:
-        //if ((this.id == null) || (!this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
+    /* 
+     * An experimental method for comparing 2 file metadatas *by content*; i.e., 
+     * this would be for checking 2 metadatas from 2 different versions, to 
+     * determine if any of the actual metadata fields have changed between 
+     * versions. 
+    */
+    public boolean contentEquals(FileMetadata other) {
+        if (other == null) {
+            return false; 
+        }
+        
+        if (this.getLabel() != null) {
+            if (!this.getLabel().equals(other.getLabel())) {
+                return false;
+            }
+        } else if (other.getLabel() != null) {
+            return false;
+        }
+        
+        if (this.getDescription() != null) {
+            if (!this.getDescription().equals(other.getDescription())) {
+                return false;
+            }
+        } else if (other.getDescription() != null) {
+            return false;
+        }
+        
+        /* 
+         * we could also compare the sets of file categories; but since this 
+         * functionality is for deciding whether to index an extra filemetadata, 
+         * we're not doing it, as of now; because the categories are not indexed
+         * and not displayed on the search cards. 
+         * -- L.A. 4.0 beta12
+        */
+        
+        return true;
+    }
+    
+    
     @Override
     public String toString() {
         return "edu.harvard.iq.dvn.core.study.FileMetadata[id=" + id + "]";

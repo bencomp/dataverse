@@ -3,8 +3,9 @@ package edu.harvard.iq.dataverse;
 import edu.harvard.iq.dataverse.engine.command.Command;
 import edu.harvard.iq.dataverse.engine.command.exception.CommandException;
 import edu.harvard.iq.dataverse.engine.command.impl.UpdateDataverseCommand;
-import edu.harvard.iq.dataverse.engine.command.impl.UpdateDateverseTemplateCommand;
+import edu.harvard.iq.dataverse.engine.command.impl.UpdateDataverseTemplateCommand;
 import edu.harvard.iq.dataverse.util.JsfHelper;
+import static edu.harvard.iq.dataverse.util.JsfHelper.JH;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Set;
@@ -97,11 +98,7 @@ public class TemplatePage implements java.io.Serializable {
     public void init() {
         if (templateId != null) { // edit or view existing for a template  
             dataverse = dataverseService.find(ownerId);
-            for (Template dvTemp : dataverse.getTemplates()) {
-                if (dvTemp.getId().longValue() == templateId) {
-                    template = dvTemp;
-                }
-            }
+            template = templateService.find(templateId);
             template.setDataverse(dataverse);
             template.setMetadataValueBlocks();
             updateDatasetFieldInputLevels();
@@ -117,21 +114,16 @@ public class TemplatePage implements java.io.Serializable {
     }
     
     private void updateDatasetFieldInputLevels(){
-        Long dvIdForInputLevel = ownerId;
-        
+        Long dvIdForInputLevel = ownerId;        
         if (!dataverseService.find(ownerId).isMetadataBlockRoot()){
             dvIdForInputLevel = dataverseService.find(ownerId).getMetadataRootId();
-        }
-        
+        }        
         
         for (DatasetField dsf: template.getFlatDatasetFields()){ 
            DataverseFieldTypeInputLevel dsfIl = dataverseFieldTypeInputLevelService.findByDataverseIdDatasetFieldTypeId(dvIdForInputLevel, dsf.getDatasetFieldType().getId());
-           if (dsfIl != null){
-               dsf.setRequired(dsfIl.isRequired());
-               dsf.getDatasetFieldType().setRequiredDV(dsfIl.isRequired());               
+           if (dsfIl != null){              
                dsf.setInclude(dsfIl.isInclude());
            } else {
-               dsf.setRequired(dsf.getDatasetFieldType().isRequired());
                dsf.setInclude(true);
            } 
         }
@@ -170,7 +162,7 @@ public class TemplatePage implements java.io.Serializable {
             return "";
         }
         boolean create = false;
-        Command<Dataverse> cmd;
+        Command cmd;
         try {
             if (editMode == EditMode.CREATE) {
                 template.setCreateTime(new Timestamp(new Date().getTime()));
@@ -180,7 +172,7 @@ public class TemplatePage implements java.io.Serializable {
                 create = true;
                 commandEngine.submit(cmd);
             } else {
-                cmd = new UpdateDateverseTemplateCommand(dataverse, template, session.getUser());
+                cmd = new UpdateDataverseTemplateCommand(dataverse, template, session.getUser());
                 commandEngine.submit(cmd);
             }
 
@@ -195,15 +187,18 @@ public class TemplatePage implements java.io.Serializable {
                 error.append(cause.getMessage() + " ");
             }
             //
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Template Save Failed", " - " + error.toString()));
+            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Template Save Failed", " - " + error.toString()));
             System.out.print("dataverse " + dataverse.getName());
             System.out.print("Ejb exception");
             System.out.print(error.toString());
+            JH.addMessage(FacesMessage.SEVERITY_FATAL, "Template Save Failed");
             return null;
         } catch (CommandException ex) {
             System.out.print("command exception");
             System.out.print(ex.toString());
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Template Save Failed", " - " + ex.toString()));
+            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Template Save Failed", " - " + ex.toString()));
+            JH.addMessage(FacesMessage.SEVERITY_FATAL, "Template Save Failed");
+            return null;
             //logger.severe(ex.getMessage());
         }
         editMode = null;

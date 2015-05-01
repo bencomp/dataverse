@@ -11,6 +11,7 @@ package edu.harvard.iq.dataverse;
  */
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -23,15 +24,21 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 
 @Entity
 @ValidateDatasetFieldType
+@Table(indexes = {@Index(columnList="datasetfieldtype_id"),@Index(columnList="datasetversion_id"),
+    @Index(columnList="parentdatasetfieldcompoundvalue_id"),@Index(columnList="template_id")})
 public class DatasetField implements Serializable {
     private static final long serialVersionUID = 1L;
     
@@ -185,7 +192,8 @@ public class DatasetField implements Serializable {
         this.datasetFieldValues = datasetFieldValues;
     }
 
-    @OneToMany(cascade = {CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @JoinTable(indexes = {@Index(columnList="datasetfield_id"),@Index(columnList="controlledvocabularyvalues_id")})
     private List<ControlledVocabularyValue> controlledVocabularyValues = new ArrayList();
 
     public List<ControlledVocabularyValue> getControlledVocabularyValues() {
@@ -243,7 +251,7 @@ public class DatasetField implements Serializable {
         String returnString = "";
         for (String value : getValues()) {
             if(value == null) value="";
-            returnString += (returnString.equals("") ? "" : "; ") + value;
+            returnString += (returnString.equals("") ? "" : "; ") + value.trim();
         }
         return returnString;
     }
@@ -254,7 +262,7 @@ public class DatasetField implements Serializable {
             for (DatasetField dsf : dscv.getChildDatasetFields()) {
                 for (String value : dsf.getValues()) {
                     if (!(value == null)) {
-                        returnString += (returnString.equals("") ? "" : "; ") + value;
+                        returnString += (returnString.equals("") ? "" : "; ") + value.trim();
                     }
                 }
             }
@@ -278,17 +286,32 @@ public class DatasetField implements Serializable {
         return returnList;
     }
 
+    public List<String> getValuesWithoutNaValues() {
+        List<String> returnList = getValues();
+        returnList.removeAll(Arrays.asList(NA_VALUE));
+        return returnList;
+    }
+    
     public boolean isEmpty() {
+        return isEmpty(false);
+    }
+    
+    public boolean isEmptyForDisplay() {
+        return isEmpty(true);
+    }
+
+
+    private boolean isEmpty(boolean forDisplay) {
         if (datasetFieldType.isPrimitive()) { // primitive
             for (String value : getValues()) {
-                if (value != null && !value.trim().isEmpty()) {
+                if (!StringUtils.isBlank(value) && !(forDisplay && DatasetField.NA_VALUE.equals(value))) {
                     return false;
                 }
             }
         } else { // compound
             for (DatasetFieldCompoundValue cv : datasetFieldCompoundValues) {
                 for (DatasetField subField : cv.getChildDatasetFields()) {
-                    if (!subField.isEmpty()) {
+                    if (!subField.isEmpty(forDisplay)) {
                         return false;
                     }
                 }
@@ -310,15 +333,65 @@ public class DatasetField implements Serializable {
     }
     
     @Transient 
-    private boolean required;
-    
-    public void setRequired(boolean required){
-        this.required = required;
+    private Boolean required;
+       
+    public boolean isRequired() {
+        if (required == null) {
+            required = false;
+            if (this.datasetFieldType.isPrimitive() && this.datasetFieldType.isRequired()) {
+                required = true;
+            }
+
+            if (this.datasetFieldType.isHasRequiredChildren()) {
+                required = true;
+            }
+
+            Dataverse dv = getDataverse();
+            while (!dv.isMetadataBlockRoot()) {
+                if (dv.getOwner() == null) {
+                    break; // we are at the root; which by defintion is metadata blcok root, regarldess of the value
+                }
+                dv = dv.getOwner();
+            }
+
+            List<DataverseFieldTypeInputLevel> dftilListFirst = dv.getDataverseFieldTypeInputLevels();
+            if (!getDatasetFieldType().isHasChildren()) {
+                for (DataverseFieldTypeInputLevel dsftil : dftilListFirst) {
+                    if (dsftil.getDatasetFieldType().equals(this.datasetFieldType)) {
+                        required = dsftil.isRequired();
+                    }
+                }
+            }
+
+            if (getDatasetFieldType().isHasChildren() && (!dftilListFirst.isEmpty())) {
+                for (DatasetFieldType child : getDatasetFieldType().getChildDatasetFieldTypes()) {
+                    for (DataverseFieldTypeInputLevel dftilTest : dftilListFirst) {
+                        if (child.equals(dftilTest.getDatasetFieldType())) {
+                            if (dftilTest.isRequired()) {
+                                required = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        // System.out.print("at return  " + this.datasetFieldType.getDisplayName() + " " + required);
+        return required;
     }
     
-    public boolean isRequired(){
-        return this.required;
+    public Dataverse getDataverse() {
+        if (datasetVersion != null) {
+            return datasetVersion.getDataset().getOwner();
+        } else if (parentDatasetFieldCompoundValue != null) {
+            return parentDatasetFieldCompoundValue.getParentDatasetField().getDataverse();
+        } else if (template != null) {
+            return template.getDataverse();
+        } else {
+            throw new IllegalStateException("DatasetField is in an illegal state: no dataset version, compound value, or template is set as its parent.");
+        }
     }
+
     
     @Transient 
     private boolean include;
@@ -393,16 +466,22 @@ public class DatasetField implements Serializable {
     }
 
     public boolean removeBlankDatasetFieldValues() {
-        if (this.getDatasetFieldType().isPrimitive() && !this.getDatasetFieldType().isControlledVocabulary()) {
-            Iterator<DatasetFieldValue> dsfvIt = this.getDatasetFieldValues().iterator();
-            while (dsfvIt.hasNext()) {
-                DatasetFieldValue dsfv = dsfvIt.next();
-                if (StringUtils.isBlank(dsfv.getValue())) {
-                    dsfvIt.remove();
+        if (this.getDatasetFieldType().isPrimitive()) {
+            if (!this.getDatasetFieldType().isControlledVocabulary()) {
+                Iterator<DatasetFieldValue> dsfvIt = this.getDatasetFieldValues().iterator();
+                while (dsfvIt.hasNext()) {
+                    DatasetFieldValue dsfv = dsfvIt.next();
+                    if (StringUtils.isBlank(dsfv.getValue())) {
+                        dsfvIt.remove();
+                    }
                 }
-            }
-            if (this.getDatasetFieldValues().isEmpty()) {
-                return true;
+                if (this.getDatasetFieldValues().isEmpty()) {
+                    return true;
+                }
+            } else { // controlled vocab
+                if (this.getControlledVocabularyValues().isEmpty()) {
+                    return true;
+                }                 
             }
         } else if (this.getDatasetFieldType().isCompound()) {
             Iterator<DatasetFieldCompoundValue> cvIt = this.getDatasetFieldCompoundValues().iterator();
