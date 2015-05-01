@@ -76,44 +76,9 @@ Create a dataset with an Atom entry
 
 ``curl -u $API_TOKEN: --data-binary "@path/to/atom-entry-study.xml" -H "Content-Type: application/atom+xml" https://$HOSTNAME/dvn/api/data-deposit/v1.1/swordv2/collection/dataverse/$DATAVERSE_ALIAS``
 
-Example Atom entry (XML)::
+Example Atom entry (XML)
 
-    <?xml version="1.0"?>
-    <entry xmlns="http://www.w3.org/2005/Atom"
-           xmlns:dcterms="http://purl.org/dc/terms/">
-       <!-- some embedded metadata -->
-       <dcterms:title>Roasting at Home</dcterms:title>
-       <dcterms:creator>Peets, John</dcterms:creator>
-       <dcterms:creator affiliation="Coffee Bean State University">Stumptown, Jane</dcterms:creator>
-       <!-- Producer with financial or admin responsibility of the data -->
-       <dcterms:publisher>Coffee Bean State University</dcterms:publisher>
-       <!-- related publications -->
-       <dcterms:isReferencedBy holdingsURI="http://dx.doi.org/10.1038/dvn333" agency="DOI" IDNo="10.1038/dvn333">Peets, J., &amp; Stumptown, J. (2013). Roasting at Home. New England Journal of Coffee, 3(1), 22-34.</dcterms:isReferencedBy>
-       <!-- production date -->
-       <dcterms:date>2013-07-11</dcterms:date>
-       <!-- Other Identifier for the data in this study (or potentially global id if unused) -->
-       <!--
-       <dcterms:identifier>hdl:1XXZY.1/XYXZ</dcterms:identifier>
-       -->
-       <dcterms:description>Considerations before you start roasting your own coffee at home.</dcterms:description>
-       <!-- keywords -->
-       <dcterms:subject>coffee</dcterms:subject>
-       <dcterms:subject>beverage</dcterms:subject>
-       <dcterms:subject>caffeine</dcterms:subject>
-       <!-- geographic coverage -->
-       <dcterms:coverage>United States</dcterms:coverage>
-       <dcterms:coverage>Canada</dcterms:coverage>
-       <!-- kind of data -->
-       <dcterms:type>aggregate data</dcterms:type>
-       <!-- List of sources of the data collection-->
-       <dcterms:source>Stumptown, Jane. 2011. Home Roasting. Coffeemill Press.</dcterms:source>
-       <!-- license and restrictions -->
-       <dcterms:license>NONE</dcterms:license>
-       <dcterms:rights>Downloader will not use the Materials in any way prohibited by applicable laws.</dcterms:rights>
-       <!-- related materials -->
-       <dcterms:relation>Peets, John. 2010. Roasting Coffee at the Coffee Shop. Coffeemill Press</dcterms:relation>
-       <dcterms:contributor type="Funder">CaffeineForAll</dcterms:contributor>
-    </entry>
+.. literalinclude:: sword-atom-entry.xml
 
 Dublin Core Terms (DC Terms) Qualified Mapping - Dataverse DB Element Crosswalk
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -137,17 +102,11 @@ Dublin Core Terms (DC Terms) Qualified Mapping - Dataverse DB Element Crosswalk
 +-----------------------------+----------------------------------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |dcterms:type                 |                  kindOfData                  |              |  Type of data included in the file: survey data, census/enumeration data, aggregate data, clinical.                                                         |
 +-----------------------------+----------------------------------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|dcterms:language             |                   language                   |              |  Language of the dataset (not the metadata). `Controlled Vocabulary list <http://guides.dataverse.org/en/latest/user/appendix.html#metadata-references>`_.  |                                                                                                                                               
-+-----------------------------+----------------------------------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|dcterms:identifier           |                 otherIdValue                 |              |  Other ID's that directly belong to dataset. If attribute="agency" is included map value to otherIdAgency (e.g., DOI, arXiv, handle, etc).                  |                              
-+-----------------------------+----------------------------------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |dcterms:source               |                 dataSources                  |              |  List of books, articles, data files if any that served as the sources for the Dataset.                                                                     |
 +-----------------------------+----------------------------------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |dcterms:relation             |               relatedMaterial                |              |  Any related material (journal article citation is not included here - see: dcterms:isReferencedBy below).                                                  |
 +-----------------------------+----------------------------------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |dcterms:coverage             |              otherGeographicCoverage         |              |  General information on the geographic coverage of the Dataset.                                                                                             |
-+-----------------------------+----------------------------------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|dcterms:spatial              |              otherGeographicCoverage         |              |  General information on the geographic coverage of the Dataset.                                                                                             |
 +-----------------------------+----------------------------------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |dcterms:license              |                   license                    |              |  Set the license to CC0 (default in Dataverse for new Datasets), otherwise enter "NONE" and fill in the dcterms:rights field.                               |                
 +-----------------------------+----------------------------------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+

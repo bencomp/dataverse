@@ -19,9 +19,10 @@ For more details about what Citation and Domain specific metadata is supported p
 File Handling + Uploading
 ===============================
 
-All file formats are supported, up to a few GB per file but some files types are supported by additional functionality, 
-including downloading in different formats, subsets, file-level metadata preservation, file-level data citation; and exploration 
-through data visualization and analysis.
+All file formats are supported, up to a few GB per file. You can also add descriptions and categorize each of them by adding tags.
+
+The file types listed below are supported by additional functionality, which can include downloading in different formats, subsets, file-level metadata preservation, file-level data citation; and exploration 
+through data visualization and analysis. 
 
 Tabular
 --------------------
@@ -54,6 +55,12 @@ Metadata found in the header section of `Flexible Image Transport System (FITS) 
 aggregated and displayed in the Astronomy Domain-Specific Metadata of the Dataset that the file belongs to. This FITS file metadata, is therefore searchable
 and browsable (facets) at the Dataset-level.
 
+Compressed Files: tar & zip
+----------------------------------------
+
+Compressed files in tar and zip format are unpacked automatically. If it fails to unpack, for whatever reason, it will upload as 
+is. If the number of files inside are more than a set limit (1,000), you will get an error message and the file will uploads as is.
+
 
 Adding a New Dataset
 ============================
@@ -79,12 +86,12 @@ you will have the following options:
 
 - Files (Upload or Edit Data): to add or edit files in this dataset.
 - Metadata: to add/edit metadata including additional metadata than was not previously available during Dataset Creation.
-- Terms: to view or modify the License, Terms of Use, Terms of Access and Guestbook of this dataset.
+- Terms: to view or modify the Waiver (if using CC0), Terms of Use, Terms of Access and Guestbook of this dataset.
 - Permissions: to view or modify the permissions and roles of this dataset and for individual files within.
 - Delete Dataset (only available before your Dataset is published)
 - Deaccession Dataset (only when your Dataset is published, see below)
 
-You can also directly select the Files, Metadata, License + Terms or Versions tabs found below the dataset summary information
+You can also directly select the Files, Metadata, Terms or Versions tabs found below the dataset summary information
 to specifically edit any of those parts of your dataset.
 
 .. _license-terms:
@@ -108,7 +115,8 @@ your own custom Terms of Use for your Datasets.
 Setting up Custom Terms of Use for Datasets
 --------------------------------------------
 
-If you are unable to use a CC0 waiver for your datasets you are able to set your own custom terms of use. To do so, select "No, do not apply CC0.." and a Terms of Use textbox will show up allowing you to enter your own custom terms of use for your dataset. To add more information about the Terms of Use, click on "Additional Information \[+]".
+If you are unable to use a CC0 waiver for your datasets you are able to set your own custom terms of use. To do so, select 
+"No, do not apply CC0 - "Public Domain Dedication" and a Terms of Use textbox will show up allowing you to enter your own custom terms of use for your dataset. To add more information about the Terms of Use, click on "Additional Information \[+]".
 
 Here is an `example of a Data Usage Agreement <http://best-practices.dataverse.org/harvard-policies/sample-dua.html>`_ for datasets that have de-identified human subject data.
 
@@ -128,25 +136,44 @@ Permissions
 =============================
 
 Dataset-Level 
----------------
+-----------------
 
-Dataset permissions are located under the Edit button on a dataset page. The dataset permissions page has two sections: Users/Groups and Roles.
+Dataset permissions are located under Permissions in the Edit button on a dataset page. The dataset permissions page has two 
+sections: Users/Groups and Roles.
 
-To give someone access to view your unpublished dataset or edit your published or unpublished dataset, click on the Assign Roles to Users/Groups button in the Users/Groups section. 
+To give someone access to view your unpublished dataset or edit your published or unpublished dataset, click on the Assign 
+Roles to Users/Groups button in the Users/Groups section. 
 
 File-Level
 ----------------------
 
+If you have restricted specific files the file-level permissions is where you will need to go to grant users/groups access to
+specific restricted files. Dataset file permissions are located under Permissions in the Edit button on a dataset page. 
+The file permissions page has two sections: Users/Groups and Files.
+
+To give someone access to your restricted files, click on the Grant Access to Users/Groups button in the Users/Groups section. 
 
 Publish Dataset
 ====================
 
-When you publish a dataset (available to an admin, curator, or any custom role which has this level of permission assigned), you make it available to the public so that other users can browse or search for it. Once your dataset is ready to go public, go to your dataset page and click on the "Publish" button on the right hand side of the page. A pop-up will appear to confirm that you are ready to actually Publish since once a dataset is made public it can no longer be unpublished. 
+When you publish a dataset (available to an Admin, Curator, or any custom role which has this level of permission assigned), you make it available to the public so that other users can browse or search for it. Once your dataset is ready to go public, go to your dataset page and click on the "Publish" button on the right hand side of the page. A pop-up will appear to confirm that you are ready to actually Publish since once a dataset is made public it can no longer be unpublished. 
 
 Whenever you edit your dataset, you are able to publish a new version of the dataset. The publish dataset button will reappear whenever you edit the metadata of the dataset or add a file.
 
 Note: Prior to publishing your dataset the Data Citation will indicate that this is a draft but the "DRAFT VERSION" text
 will be removed as soon as you Publish.
+
+Submit for Review
+=====================
+
+If you have a Contributor role (can edit metadata, upload files, and edit files, edit Terms, Guestbook, and Submit datasets 
+for review) in a Dataverse you can submit your dataset for review when you have finished uploading your files
+and filling in all of the relevant metadata fields. To Submit for Review, go to your dataset and click on the "Submit for Review" button, 
+which is located next to the "Edit" button on the upper-right. Once Submitted for Review: the Admin or Curator for this Dataverse will be notified to review this
+dataset before they decide to either "Publish" the dataset or "Return to Author". If the dataset is published the contributor
+will be notified that it is now published. If the dataset is returned to the author, the contributor of this dataset will be 
+notified that they need to make modifications before it can be submitted for review again.
+
 
 Dataset Versioning
 ======================
@@ -156,7 +183,11 @@ Versioning is important for long term-research data management where metadata an
 Once you have published a dataset, any metadata or file changes (e.g, by uploading a new file, changing file metadata, adding 
 or editing metadata) will be tracked in our versioning feature. For example if you were at version 1 of your dataset, and you
 edit your dataset a new draft version of this dataset will be created. To get to the already published version 1 of your dataset,
-click on the blue "View Published Version" button on the top right of your dataset. To go back to the unpublished version click on the orange "View Unpublished Version" button. Once you are ready to publish this new version of your dataset, select the "Publish Dataset" button on the top right side of the page. If you were at version 1 of your dataset, and depending on the types of changes you have made, you will be asked to select to publish your draft as either version 1.1 or version 2.0 (**important note**: if you add a file, your dataset will automatically be bumped up to version 2.0). 
+click on the "View Dataset Versions" button on the top left section of your dataset. To go back to the unpublished version
+click on the same button. Once you are ready to publish this new version of your dataset, select the "Publish Dataset" button 
+on the top right side of the page. If you were at version 1 of your dataset, and depending on the types of changes you have 
+made, you will be asked to select to publish your draft as either version 1.1 or version 2.0 (**important note**: if you add 
+a file, your dataset will automatically be bumped up to a major version (example: if you were at 1.0 you will go to 2.0). 
 
 |image3|
 

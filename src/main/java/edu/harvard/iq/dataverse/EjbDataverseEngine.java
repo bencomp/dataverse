@@ -22,9 +22,15 @@ import edu.harvard.iq.dataverse.search.SolrIndexServiceBean;
 import edu.harvard.iq.dataverse.search.savedsearch.SavedSearchServiceBean;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import java.util.EnumSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJBException;
+import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.REQUIRES_NEW;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 /**
  * An EJB capable of executing {@link Command}s in a JEE environment.
@@ -34,7 +40,8 @@ import javax.persistence.PersistenceContext;
 @Stateless
 @Named
 public class EjbDataverseEngine {
-
+    private static final Logger logger = Logger.getLogger(EjbDataverseEngine.class.getCanonicalName());
+    
     @EJB
     DatasetServiceBean datasetService;
 
@@ -87,6 +94,9 @@ public class EjbDataverseEngine {
     DOIEZIdServiceBean doiEZId;
     
     @EJB
+    HandlenetServiceBean handleNet;
+    
+    @EJB
     SettingsServiceBean settings;
     
     @EJB
@@ -120,6 +130,11 @@ public class EjbDataverseEngine {
     ActionLogServiceBean logSvc;
 
     private CommandContext ctxt;
+    
+    @TransactionAttribute(REQUIRES_NEW)
+    public <R> R submitInNewTransaction(Command<R> aCommand) throws CommandException {
+        return submit(aCommand);
+    }
 
     public <R> R submit(Command<R> aCommand) throws CommandException {
         
@@ -163,13 +178,30 @@ public class EjbDataverseEngine {
                 return aCommand.execute(getContext());
                 
             } catch ( EJBException ejbe ) {
-                logRec.setActionResult(ActionLogRecord.Result.InternalError);
+                logRec.setActionResult(ActionLogRecord.Result.InternalError);                
                 throw new CommandException("Command " + aCommand.toString() + " failed: " + ejbe.getMessage(), ejbe.getCausedByException(), aCommand);
             }
             
         } catch ( RuntimeException re ) {
             logRec.setActionResult(ActionLogRecord.Result.InternalError);
-            logRec.setInfo( re.getMessage() );
+            logRec.setInfo( re.getMessage() );   
+            
+            Throwable cause = re;          
+            while (cause != null) {
+                if (cause instanceof ConstraintViolationException) {
+                    StringBuilder sb = new StringBuilder(); 
+                    sb.append("Unexpected bean validation constraint exception:"); 
+                    ConstraintViolationException constraintViolationException = (ConstraintViolationException) cause;
+                    for (ConstraintViolation<?> violation : constraintViolationException.getConstraintViolations()) {
+                        sb.append(" Invalid value: <<<").append(violation.getInvalidValue()).append(">>> for ").append(violation.getPropertyPath()).append(" at ").append(violation.getLeafBean()).append(" - ").append(violation.getMessage());
+                    }
+                    logger.log(Level.SEVERE, sb.toString());
+                    // set this more detailed info in action log
+                    logRec.setInfo( sb.toString() );
+                }
+                cause = cause.getCause();
+            }           
+            
             throw re;
             
         } finally {
@@ -268,6 +300,11 @@ public class EjbDataverseEngine {
                 @Override
                 public DOIEZIdServiceBean doiEZId() {
                     return doiEZId;
+                }
+                
+                @Override
+                public HandlenetServiceBean handleNet() {
+                    return handleNet;
                 }
 
                 @Override

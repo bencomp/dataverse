@@ -142,10 +142,15 @@ public class DatasetVersion implements Serializable {
     private Dataset dataset;
 
     @OneToMany(mappedBy = "datasetVersion", cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
-    @OrderBy("category") // this is not our preferred ordering, which is with the AlphaNumericComparator, but does allow the files to be grouped by category
+    @OrderBy("label") // this is not our preferred ordering, which is with the AlphaNumericComparator, but does allow the files to be grouped by category
     private List<FileMetadata> fileMetadatas = new ArrayList();
 
     public List<FileMetadata> getFileMetadatas() {
+        return fileMetadatas;
+    }
+    
+    public List<FileMetadata> getFileMetadatasSorted() {
+        Collections.sort(fileMetadatas, FileMetadata.compareByLabel);
         return fileMetadatas;
     }
 
@@ -291,9 +296,6 @@ public class DatasetVersion implements Serializable {
     }
 
     public void setTermsOfUse(String termsOfUse) {
-        if (termsOfUse != null){
-            termsOfUse = stripScriptTags(termsOfUse);
-        }
         this.termsOfUse = termsOfUse;
     }
 
@@ -302,9 +304,6 @@ public class DatasetVersion implements Serializable {
     }
 
     public void setTermsOfAccess(String termsOfAccess) {
-        if (termsOfAccess != null){
-            termsOfAccess = stripScriptTags(termsOfAccess);
-        }
         this.termsOfAccess = termsOfAccess;
     }
     

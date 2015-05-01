@@ -181,6 +181,15 @@ public class DatasetPage implements java.io.Serializable {
     private Map<String, Boolean> datasetPermissionMap = new HashMap<>(); // { Permission human_name : Boolean }
     private Map<Long, Boolean> fileDownloadPermissionMap = new HashMap<>(); // { FileMetadata.id : Boolean }
 
+    private DataFile selectedDownloadFile;
+
+    public DataFile getSelectedDownloadFile() {
+        return selectedDownloadFile;
+    }
+
+    public void setSelectedDownloadFile(DataFile selectedDownloadFile) {
+        this.selectedDownloadFile = selectedDownloadFile;
+    }
     public Dataverse getLinkingDataverse() {
         return linkingDataverse;
     }
@@ -941,18 +950,27 @@ public class DatasetPage implements java.io.Serializable {
             
            DatasetVersionServiceBean.RetrieveDatasetVersionResponse retrieveDatasetVersionResponse = null;
            
-           // ---------------------------------------
-           // Set the workingVersion and Dataset
-           // ---------------------------------------
-           if (dataset.getId() != null || versionId != null) {
-               retrieveDatasetVersionResponse = datasetVersionService.retrieveDatasetVersionById(dataset.getId(), versionId);                     
-              
-           }else if (persistentId != null) {
-               // Set Working Version and Dataset by PersistentID
+            // ---------------------------------------
+            // Set the workingVersion and Dataset
+            // ---------------------------------------           
+            if (persistentId != null) {
+                // Set Working Version and Dataset by PersistentID
                retrieveDatasetVersionResponse = datasetVersionService.retrieveDatasetVersionByPersistentId(persistentId, version);                     
-           }
+
+            } else if (dataset.getId() != null){
+               // Set Working Version and Dataset by Datasaet Id and Version
+               retrieveDatasetVersionResponse = datasetVersionService.retrieveDatasetVersionById(dataset.getId(), version);
+
+            } else if (versionId != null) {
+               // Set Working Version and Dataset by DatasaetVersion Id
+               retrieveDatasetVersionResponse = datasetVersionService.retrieveDatasetVersionByVersionId(versionId);                     
+              
+            } else if (retrieveDatasetVersionResponse == null){
+               return "/404.xhtml";
+            }
            
-           if (retrieveDatasetVersionResponse == null){
+                   
+            if (retrieveDatasetVersionResponse == null){
                return "/404.xhtml";
             }
 
@@ -1095,20 +1113,38 @@ public class DatasetPage implements java.io.Serializable {
             
         Command cmd;
         try {
-            cmd = new CreateGuestbookResponseCommand(session.getUser(), this.guestbookResponse, dataset);
-            commandEngine.submit(cmd);
+            if (this.guestbookResponse != null) {
+                if (!type.equals("multiple")) {
+                    cmd = new CreateGuestbookResponseCommand(session.getUser(), this.guestbookResponse, dataset);
+                    commandEngine.submit(cmd);
+                } else {
+                    for (FileMetadata fmd : this.selectedFiles) {
+                        DataFile df = fmd.getDataFile();
+                        if (df != null) {
+                            this.guestbookResponse.setDataFile(df);
+                            cmd = new CreateGuestbookResponseCommand(session.getUser(), this.guestbookResponse, dataset);
+                            commandEngine.submit(cmd);
+                        }
+                    }
+                }
+            }
         } catch (CommandException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Guestbook Response Save Failed", " - " + ex.toString()));
             logger.severe(ex.getMessage());
-
         }
         
-        if (guestbookResponse.getDataFile() != null && type.equals("download")) {
-            return callDownloadServlet(downloadFormat, guestbookResponse.getDataFile().getId());
+        if (type.equals("multiple")){
+            //return callDownloadServlet(getSelectedFilesIdsString());
+            callDownloadServlet(getSelectedFilesIdsString());
+        }
+       
+        if ((type.equals("download") || type.isEmpty())) {
+            //return callDownloadServlet(downloadFormat, this.selectedDownloadFile.getId());
+            callDownloadServlet(downloadFormat, this.selectedDownloadFile.getId());
         }
 
-        if (guestbookResponse.getDataFile() != null && type.equals("explore")) {
-            String retVal = getDataExploreURLComplete(guestbookResponse.getDataFile().getId());
+        if (type.equals("explore")) {
+            String retVal = getDataExploreURLComplete(this.selectedDownloadFile.getId());
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect(retVal);
                 return retVal;
@@ -1130,24 +1166,38 @@ public class DatasetPage implements java.io.Serializable {
         return "";
     }
     
-    private String callDownloadServlet( String downloadType, Long fileId){
+    //private String callDownloadServlet(String multiFileString){
+    private void callDownloadServlet(String multiFileString){
+
+        String fileDownloadUrl = "/api/access/datafiles/" + multiFileString;
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect(fileDownloadUrl);
+        } catch (IOException ex) {
+            logger.info("Failed to issue a redirect to file download url.");
+        }
+
+        //return fileDownloadUrl;
+    }
+    
+    //private String callDownloadServlet( String downloadType, Long fileId){
+    private void callDownloadServlet( String downloadType, Long fileId){
         
         String fileDownloadUrl = "/api/access/datafile/" + fileId;
                     
         if (downloadType != null && downloadType.equals("bundle")){
-            fileDownloadUrl = "/api/access/datafile/bundle/" + guestbookResponse.getDataFile().getId();
+            fileDownloadUrl = "/api/access/datafile/bundle/" + this.selectedDownloadFile.getId();
         }
         if (downloadType != null && downloadType.equals("original")){
-            fileDownloadUrl = "/api/access/datafile/" + guestbookResponse.getDataFile().getId() + "?format=original";
+            fileDownloadUrl = "/api/access/datafile/" + this.selectedDownloadFile.getId() + "?format=original";
         }
         if (downloadType != null && downloadType.equals("RData")){
-            fileDownloadUrl = "/api/access/datafile/" + guestbookResponse.getDataFile().getId() + "?format=RData";
+            fileDownloadUrl = "/api/access/datafile/" + this.selectedDownloadFile.getId() + "?format=RData";
         }
         if (downloadType != null && downloadType.equals("var")){
-            fileDownloadUrl = "/api/meta/datafile/" + guestbookResponse.getDataFile().getId();
+            fileDownloadUrl = "/api/meta/datafile/" + this.selectedDownloadFile.getId();
         }
         if (downloadType != null && downloadType.equals("tab")){
-            fileDownloadUrl = "/api/access/datafile/" + guestbookResponse.getDataFile().getId()+ "?format=tab";
+            fileDownloadUrl = "/api/access/datafile/" + this.selectedDownloadFile.getId()+ "?format=tab";
         }
                     logger.fine("Returning file download url: " + fileDownloadUrl);
         try {
@@ -1155,8 +1205,7 @@ public class DatasetPage implements java.io.Serializable {
         } catch (IOException ex) {
             logger.info("Failed to issue a redirect to file download url.");
         }
-            return fileDownloadUrl;       
-
+        //return fileDownloadUrl;       
     }
 
     public String getApiTokenKey() {
@@ -1521,6 +1570,19 @@ public class DatasetPage implements java.io.Serializable {
 
     public void setSelectedFiles(List<FileMetadata> selectedFiles) {
         this.selectedFiles = selectedFiles;
+    }
+    
+    // helper Method
+    public String getSelectedFilesIdsString() {        
+        String downloadIdString = "";
+        for (FileMetadata fmd : this.selectedFiles){
+            if (!StringUtil.isEmpty(downloadIdString)) {
+                downloadIdString += ",";
+            }
+            downloadIdString += fmd.getDataFile().getId();
+        }
+        return downloadIdString;
+      
     }
 
     public String saveLinkedDataset() {
@@ -2187,12 +2249,14 @@ public class DatasetPage implements java.io.Serializable {
         this.datasetVersionDifference = datasetVersionDifference;
     }
     
-    private void createSilentGuestbookEntry(FileMetadata fileMetadata, String format){
+   private void createSilentGuestbookEntry(FileMetadata fileMetadata, String format){
         initGuestbookResponse(fileMetadata, format);
         Command cmd;
         try {
-            cmd = new CreateGuestbookResponseCommand(session.getUser(), guestbookResponse, dataset);
-            commandEngine.submit(cmd);
+            if (this.guestbookResponse != null) {
+                cmd = new CreateGuestbookResponseCommand(session.getUser(), guestbookResponse, dataset);
+                commandEngine.submit(cmd);
+            }
         } catch (CommandException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Guestbook Response Save Failed", " - " + ex.toString()));
             logger.severe(ex.getMessage());
@@ -2200,9 +2264,28 @@ public class DatasetPage implements java.io.Serializable {
         
     }
     
-    public String startFileDownload(FileMetadata fileMetadata, String format) {
+    //public String startMultipleFileDownload (){
+    public void startMultipleFileDownload (){
+        if (this.selectedFiles.isEmpty() ){
+            return;
+        }
+        
+        for (FileMetadata fmd : this.selectedFiles){
+            DataFile df = fmd.getDataFile();
+            // todo: cleanup this: "create" method doesn't necessarily
+            // mean a response wikk be created (e.g. when dataset in draft)
+            createSilentGuestbookEntry(df.getFileMetadata(), "");
+        }
+
+        //return 
+        callDownloadServlet(getSelectedFilesIdsString());
+
+    }
+    
+    //public String startFileDownload(FileMetadata fileMetadata, String format) {
+    public void startFileDownload(FileMetadata fileMetadata, String format) {
         createSilentGuestbookEntry(fileMetadata, format);
-        return callDownloadServlet(format, fileMetadata.getDataFile().getId());
+        callDownloadServlet(format, fileMetadata.getDataFile().getId());
     }
     
     private String downloadFormat;
@@ -2226,14 +2309,28 @@ public class DatasetPage implements java.io.Serializable {
     }
     
   
-    public void initGuestbookResponse(FileMetadata fileMetadata){
+   public void initGuestbookResponse(FileMetadata fileMetadata){
          initGuestbookResponse(fileMetadata, "");
+    }
+    
+    public void initGuestbookMultipleResponse(){
+         initGuestbookResponse(null, "download");
     }
 
     public void initGuestbookResponse(FileMetadata fileMetadata, String downloadFormat) {
+        if (fileMetadata != null){
+           this.setSelectedDownloadFile(fileMetadata.getDataFile());
+        }
         setDownloadFormat(downloadFormat);
-        setDownloadType("download");
-        
+        if (fileMetadata == null){
+            setDownloadType("multiple");
+        } else {
+            setDownloadType("download");
+        }
+        if(this.workingVersion != null && this.workingVersion.isDraft()){
+            this.guestbookResponse = null;
+            return;
+        }
         this.guestbookResponse = new GuestbookResponse();
         
         User user = session.getUser();
@@ -2253,9 +2350,15 @@ public class DatasetPage implements java.io.Serializable {
                 this.guestbookResponse.setPosition(aUser.getPosition());
                 this.guestbookResponse.setSessionId(session.toString());
             }
-            this.guestbookResponse.setDataFile(fileMetadata.getDataFile());
+            if (fileMetadata != null){
+                this.guestbookResponse.setDataFile(fileMetadata.getDataFile());
+            }            
         } else {
-            this.guestbookResponse = guestbookServiceBean.initDefaultGuestbookResponse(dataset, fileMetadata.getDataFile(), user, session);
+            if (fileMetadata != null){
+                 this.guestbookResponse = guestbookServiceBean.initDefaultGuestbookResponse(dataset, fileMetadata.getDataFile(), user, session);
+            } else {
+                 this.guestbookResponse = guestbookServiceBean.initDefaultGuestbookResponse(dataset, null, user, session);
+            }          
         }
         if (this.dataset.getGuestbook() != null && !this.dataset.getGuestbook().getCustomQuestions().isEmpty()) {
             this.guestbookResponse.setCustomQuestionResponses(new ArrayList());
@@ -2899,7 +3002,12 @@ public class DatasetPage implements java.io.Serializable {
     public boolean isDownloadPopupRequired() {
         // Each of these conditions is sufficient reason to have to 
         // present the user with the popup: 
-
+        
+        //0. if version is draft then Popup "not required"    
+        if (!workingVersion.isReleased()){
+            return false;
+        }
+        
         // 1. License and Terms of Use:
         if (!DatasetVersion.License.CC0.equals(workingVersion.getLicense())
                 && !(workingVersion.getTermsOfUse() == null
@@ -2920,86 +3028,7 @@ public class DatasetPage implements java.io.Serializable {
         return false;
     }
 
-    private Set<Long> downloadSelection = new HashSet<>();
 
-    /*
-     public DownloadSelection getDownloadSelection(Long fileId) {
-     if (downloadSelection.contains(fileId)) {
-     return new DownloadSelection(fileId, true);
-     }
-     return new DownloadSelection(fileId, false);
-        
-     }
-     */
-    /*
-     public String getSelectedDownloadIds() {
-     if (this.selectedFiles == null) {
-     return null; 
-     }
-        
-     Iterator itr = this.selectedFiles.iterator();
-     String retlist = null;
-     while (itr.hasNext()) {
-     FileMetadata fileMetadata= (FileMetadata)itr.next();
-     if (retlist == null) {
-     retlist = fileMetadata.getDataFile().getId().toString();
-     } else {
-     retlist = retlist + "," + fileMetadata.getDataFile().getId().toString();
-     }
-     }
-     logger.info("ret list: "+retlist);
-     if (retlist == null) {
-     return "";
-     }
-     return retlist;
-     }
-     */
-    public String getSelectedDownloadIds() {
-        if (this.downloadSelection == null || this.downloadSelection.size() < 1) {
-            return null;
-        }
-
-        Iterator itr = this.downloadSelection.iterator();
-        String retlist = null;
-        while (itr.hasNext()) {
-            Long fileId = (Long) itr.next();
-            if (retlist == null) {
-                retlist = fileId.toString();
-            } else {
-                retlist = retlist + "," + fileId.toString();
-            }
-        }
-        logger.fine("ret list: " + retlist);
-        return retlist;
-    }
-
-    public void updateDownloadSelected(ValueChangeEvent event) {
-        logger.fine("entering updateDownloadSelected");
-
-        Boolean checked = (Boolean) event.getNewValue();
-
-        logger.fine("value of checked is" + checked);
-
-        Long fileId = (Long) ((UIInput) event.getSource()).getAttributes().get("fileId");
-
-        logger.fine("file id is " + fileId);
-
-        if (fileId != null) {
-            if (checked != null) {
-                if (checked.booleanValue()) {
-                    logger.fine("adding " + fileId + " to the download list;");
-                    if (!downloadSelection.contains(fileId)) {
-                        downloadSelection.add(fileId);
-                    }
-                } else {
-                    logger.fine("removing " + fileId + " from the download list;");
-                    if (downloadSelection.contains(fileId)) {
-                        downloadSelection.remove(fileId);
-                    }
-                }
-            }
-        }
-    }
 
     public void requestAccess(DataFile file) {
         file.getFileAccessRequesters().add((AuthenticatedUser) session.getUser());

@@ -3,6 +3,7 @@ package edu.harvard.iq.dataverse;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,8 +41,8 @@ public class FileMetadata implements Serializable {
     private String label = "";
     @Column(columnDefinition = "TEXT")
     private String description = "";
-    @Column(columnDefinition="TEXT")
-    private String category = ""; // TODO: remove! -- L.A. 4.0 beta 10
+    //@Column(columnDefinition="TEXT")
+    //private String category = ""; // TODO: remove! -- L.A. 4.0 beta 10
     private boolean restricted;
 
     @ManyToOne
@@ -69,13 +70,13 @@ public class FileMetadata implements Serializable {
     }
 
     // TODO: remove the following 2 methods: -- L.A. beta 10
-    public String getCategory() {
-        return category;
-    }
+    //public String getCategory() {
+    //    return category;
+    //}
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+    //public void setCategory(String category) {
+    //    this.category = category;
+    //}
 
     public boolean isRestricted() {
         return restricted;
@@ -334,4 +335,10 @@ public class FileMetadata implements Serializable {
         return "edu.harvard.iq.dvn.core.study.FileMetadata[id=" + id + "]";
     }
     
+    public static final Comparator<FileMetadata> compareByLabel = new Comparator<FileMetadata>() {
+        @Override
+        public int compare(FileMetadata o1, FileMetadata o2) {
+            return o1.getLabel().toUpperCase().compareTo(o2.getLabel().toUpperCase());
+        }
+    };    
 }

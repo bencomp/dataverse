@@ -66,6 +66,17 @@ public class Dataset extends DvObjectContainer {
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "guestbook_id", unique = false, nullable = true, insertable = true, updatable = true)
     private Guestbook guestbook;
+    
+    @OneToMany(mappedBy="dataset", cascade={CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
+    private List<DatasetLinkingDataverse> datasetLinkingDataverses;
+
+    public List<DatasetLinkingDataverse> getDatasetLinkingDataverses() {
+        return datasetLinkingDataverses;
+    }
+
+    public void setDatasetLinkingDataverses(List<DatasetLinkingDataverse> datasetLinkingDataverses) {
+        this.datasetLinkingDataverses = datasetLinkingDataverses;
+    }
 
     private boolean fileAccessRequest;
     @OneToMany(mappedBy = "dataset", orphanRemoval = true, cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
@@ -265,7 +276,7 @@ public class Dataset extends DvObjectContainer {
                 // the "category" will be removed, shortly. 
                 // (replaced by multiple, tag-like categories of 
                 // type DataFileCategory) -- L.A. beta 10
-                newFm.setCategory(fm.getCategory());
+                //newFm.setCategory(fm.getCategory());
                 // yep, these are the new categories:
                 newFm.setCategories(fm.getCategories());
                 newFm.setDescription(fm.getDescription());
