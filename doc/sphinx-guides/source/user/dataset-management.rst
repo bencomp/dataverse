@@ -14,12 +14,12 @@ A dataset contains three levels of metadata:
 #. **Domain specific Metadata**: with specific support currently for Social Science, Life Science, Geospatial, and Astronomy datasets; and
 #. **File-level Metadata**: varies depending on the type of data file - see *File Handling and Uploading* section below for more details). 
 
-For more details about what Citation and Domain specific metadata is supported please see our `Appendix <http://guides.dataverse.org/en/latest/user/appendix.html#metadata-references>`_.
+For more details about what Citation and Domain specific metadata is supported please see our `Appendix <../user/appendix.html#metadata-references>`_.
 
 File Handling + Uploading
 ===============================
 
-All file formats are supported, up to a few GB per file. You can also add descriptions and categorize each of them by adding tags.
+All file formats are supported, up to 10GB per file for the Harvard Dataverse. Please contact support@dataverse.org if you need to upload a file that is larger than 10GB. You can also add descriptions and categorize each of them by adding tags.
 
 The file types listed below are supported by additional functionality, which can include downloading in different formats, subsets, file-level metadata preservation, file-level data citation; and exploration 
 through data visualization and analysis. 
@@ -28,11 +28,11 @@ Tabular
 --------------------
 
 Tabular files of recognized formats (Stata, SPSS, RData, Excel, CSV) can be further explored and manipulated through 
-`TwoRavens <http://guides.dataverse.org/en/latest/user/data-exploration/tworavens.html>`_ (a statistical data exploration application integrated with Dataverse) by performing various statistical analyses and downloading subsets of variables.
+`TwoRavens <../user/data-exploration/tworavens.html>`_ (a statistical data exploration application integrated with Dataverse) by performing various statistical analyses and downloading subsets of variables.
 To perform various statistical analyses on the data (including summary statistics) click on the "Explore" button, found next to 
-each relevant tabular file and this will take you to the `TwoRavens <http://guides.dataverse.org/en/latest/user/data-exploration/tworavens.html>`_ application in a new window. To download subsets of variables click on the "Download" button found next
+each relevant tabular file and this will take you to the `TwoRavens <../user/data-exploration/tworavens.html>`_ application in a new window. To download subsets of variables click on the "Download" button found next
 to a relevant tabular file and select "Data Subset" in the dropdown menu, which will open a new window that is powered by 
-TwoRavens for you to create your subset. For more information on `TwoRavens <http://guides.dataverse.org/en/latest/user/data-exploration/tworavens.html>`_ please read their `documentation <http://guides.dataverse.org/en/latest/user/data-exploration/tworavens.html>`_. Furthermore,
+TwoRavens for you to create your subset. For more information on `TwoRavens <../user/data-exploration/tworavens.html>`_ please read their `documentation <../user/data-exploration/tworavens.html>`_. Furthermore,
 within the "Download" button for tabular data you will find additional options including downloading: in the original file format,
 RDATA Format, Variable Metadata (`DDI Codebook <http://www.ddialliance.org/Specification/DDI-Codebook/>`_ XML file), Data Subset (as described earlier) and Data File Citation (currently in either RIS format or EndNote XML).
 
@@ -42,7 +42,7 @@ Geospatial
 --------------------
 
 Geospatial `shapefiles <http://en.wikipedia.org/wiki/Shapefile>`_ can be further explored and manipulated through our integration
-with `WorldMap <http://guides.dataverse.org/en/latest/user/data-exploration/worldmap.html>`_, a geospatial data visualization
+with `WorldMap <../user/data-exploration/worldmap.html>`_, a geospatial data visualization
 and analysis tool developed by the `Center for Geographic Analysis <http://gis.harvard.edu/>`_ at Harvard University. Once you publish 
 your dataset with your shape files, you will be able to use the "Map Data" button using `GeoConnect <https://github.com/IQSS/geoconnect>`_ to visualize and manipulate these files
 for users to Explore this geospatial data using the `WorldMap <http://worldmap.harvard.edu/>`_ interface.
@@ -55,11 +55,20 @@ Metadata found in the header section of `Flexible Image Transport System (FITS) 
 aggregated and displayed in the Astronomy Domain-Specific Metadata of the Dataset that the file belongs to. This FITS file metadata, is therefore searchable
 and browsable (facets) at the Dataset-level.
 
-Compressed Files: tar & zip
+Compressed Files
 ----------------------------------------
 
-Compressed files in tar and zip format are unpacked automatically. If it fails to unpack, for whatever reason, it will upload as 
+Compressed files in zip format are unpacked automatically. If it fails to unpack, for whatever reason, it will upload as 
 is. If the number of files inside are more than a set limit (1,000), you will get an error message and the file will uploads as is.
+
+Support for unpacking tar files will be added when this ticket is closed: https://github.com/IQSS/dataverse/issues/2195.
+
+Advanced Options
+---------------------------------------------
+There are several advanced options available for certain file types.
+
+- Image files: jpgs, pngs, and tiff files are able to be selected as the default thumbnail for a dataset. The selected thumbnail will appear on the search result card for that dataset.
+- SPSS files: SPSS files can be tagged with the language they were originally coded in. This is found by clicking on Advanced Options and selecting the language from the list provided.
 
 
 Adding a New Dataset
@@ -75,8 +84,14 @@ Adding a New Dataset
    description and tags (via the "Edit Tag" button) for each file. Additionally, an MD5 checksum will be added for each file. If you upload a tabular file a :ref:`Universal Numerical Fingerprint (UNF) <unf>` will be added to this file.
 #. Click the "Add Dataset" button when you are done. Your unpublished dataset is now created. 
 
-Note: You can add additional metadata once you have completed the initial dataset creation by going to Edit Dataset > Metadata. 
+Note 1: You can add additional metadata once you have completed the initial dataset creation by going to Edit Dataset > Metadata. 
 
+Supported HTML Fields
+------------------------
+
+We currently only support the following HTML tags for any of our textbox meatdata fields (i.e., Description) : <a>, <b>, <blockquote>, 
+<br>, <code>, <del>, <dd>, <dl>, <dt>, <em>, <hr>, <h1>-<h3>, <i>, <img>, <kbd>, <li>, <ol>, <p>, <pre>, <s>, <sup>, <sub>, 
+<strong>, <strike>, <ul>.
 
 Edit Dataset
 ==================
@@ -99,7 +114,10 @@ to specifically edit any of those parts of your dataset.
 Terms
 =======================
 
-In the Terms tab, which can also be found by clicking on the Edit dropdown button, you can set the Terms for your dataset. More specifically, there you can set a CC0 waiver or create your own custom Terms of Use, edit any Terms of Access you may have (restricted files only) and enable a Guestbook for your dataset. 
+In the Terms tab, which can also be found by clicking on the Edit dropdown button of a Dataset, you can setup how users can use your data 
+once they have downloaded it (CC0 waiver or custom Terms of Use), how they can access your data if you have files that 
+are restricted (terms of access), and enable a Guestbook for your dataset so that you can track who is using your data and for
+what purposes. These are explained in further detail below:
 
 CC0 Waiver + Dataset Terms of Use 
 ---------------------------------------------------------------
@@ -128,7 +146,7 @@ If you restrict any files in your dataset, you will be prompted by a pop-up to e
 Guestbook
 --------------
 
-This is where you will enable a particular Guestbook for your dataset, which is setup at the Dataverse-level. For specific instructions please visit the Dataverse Management Guide > `Dataset Guestbook section <http://guides.dataverse.org/en/latest/user/dataverse-management.html#dataset-guestbooks>`_.
+This is where you will enable a particular Guestbook for your dataset, which is setup at the Dataverse-level. For specific instructions please visit the Dataverse Management Guide > `Dataset Guestbook section <../user/dataverse-management.html#dataset-guestbooks>`_.
 
 .. _permissions:
 

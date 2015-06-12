@@ -13,8 +13,8 @@ Contents:
    :maxdepth: 2
 
   prerequisites
-  optionalpkg
+  installer-script
   installation-main
   r-rapache-tworavens
-
-
+  shibboleth
+  administration

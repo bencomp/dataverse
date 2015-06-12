@@ -55,7 +55,7 @@ New features as of v1.1
 
 - "Contact E-mail" is automatically populated from dataset owners email.
 
-- "Subject" is automatically populated with "N/A".
+- "Subject" uses our controlled vocabulary list of subjects. This list is in the Citation Metadata of our User Guide > `Metadata References <http://guides.dataverse.org/en/latest/user/appendix.html#metadata-references>`_. Otherwise, if a term does not match our controlled vocabulary list, it will put any subject terms in "Keyword". If Subject is empty it is automatically populated with "N/A".
 
 - Zero-length files are now allowed (but not necessarily encouraged).
 
@@ -82,7 +82,6 @@ Example Atom entry (XML)
 
 Dublin Core Terms (DC Terms) Qualified Mapping - Dataverse DB Element Crosswalk
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 +-----------------------------+----------------------------------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |DC (terms: namespace)        |                Dataverse DB Element          |   Required   |                                                                     Note                                                                                    |
 +=============================+==============================================+==============+=============================================================================================================================================================+

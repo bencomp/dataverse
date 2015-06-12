@@ -81,15 +81,6 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
-    <filter>
-        <filter-name>ShibFilter</filter-name>
-        <filter-class>edu.harvard.iq.dataverse.authorization.providers.shib.ShibFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>ShibFilter</filter-name>
-        <url-pattern>/resources/*</url-pattern>
-        <url-pattern>/javax.faces.resource/*</url-pattern>
-    </filter-mapping>
     <servlet-mapping>
         <servlet-name>Push Servlet</servlet-name>
         <url-pattern>/primepush/*</url-pattern>
@@ -114,7 +105,11 @@
     </mime-mapping>
     <mime-mapping>
         <extension>woff</extension>
-        <mime-type>application/x-font-woff</mime-type>
+        <mime-type>application/font-woff</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>woff2</extension>
+        <mime-type>application/font-woff2</mime-type>
     </mime-mapping>
     <mime-mapping>
         <extension>svg</extension>
