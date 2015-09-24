@@ -2,6 +2,7 @@ package edu.harvard.iq.dataverse;
 
 import static edu.harvard.iq.dataverse.util.JsfHelper.JH;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -49,7 +50,7 @@ public class SendFeedbackDialog implements java.io.Serializable {
     }
     
     public void initUserInput(ActionEvent ae) {
-        System.out.println("initUserInput()");
+        logger.fine("initUserInput()");
         userEmail="";
         userMessage="";
         messageTo="";
@@ -105,7 +106,7 @@ public class SendFeedbackDialog implements java.io.Serializable {
     }
 
     public void setUserMessage (String mess) {
-        System.out.println("setUserMessage: "+mess);
+        logger.log(Level.FINE, "setUserMessage: {0}", mess);
         userMessage = mess;
     }
     

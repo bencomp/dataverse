@@ -32,6 +32,8 @@ import javax.persistence.PersistenceContext;
 @Named
 public class ManageGuestbooksPage implements java.io.Serializable {
 
+    private static final Logger logger = Logger.getLogger(ManageGuestbooksPage.class.getCanonicalName());
+
     @EJB
     DataverseServiceBean dvService;
 
@@ -110,7 +112,7 @@ public class ManageGuestbooksPage implements java.io.Serializable {
                 JH.addMessage(FacesMessage.SEVERITY_FATAL, failMessage);
             }
         } else {
-            System.out.print("Selected Guestbook is null");
+            logger.warning("Tried to delete a null Guestbook");
         }
     }
 

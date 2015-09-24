@@ -30,6 +30,8 @@ import javax.persistence.PersistenceContext;
 @Named
 public class ManageTemplatesPage implements java.io.Serializable {
 
+    private static final Logger logger = Logger.getLogger(ManageTemplatesPage.class.getCanonicalName());
+
     @EJB
     DataverseServiceBean dvService;
 
@@ -130,7 +132,7 @@ public class ManageTemplatesPage implements java.io.Serializable {
             dataverse.getTemplates().remove(selectedTemplate);  
             dataverseWDefaultTemplate = templateService.findDataversesByDefaultTemplateId(selectedTemplate.getId());
         } else {
-            System.out.print("selected template is null");
+            logger.warning("Tried to delete a null Template");
         }
         try {
             engineService.submit(new DeleteTemplateCommand(dvRequestService.getDataverseRequest(), getDataverse(), selectedTemplate, dataverseWDefaultTemplate  ));
