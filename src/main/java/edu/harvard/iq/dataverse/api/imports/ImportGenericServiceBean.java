@@ -191,8 +191,8 @@ public class ImportGenericServiceBean {
                     String dataverseFieldName = mappingDefined.getDatasetfieldName();
                     // Process attributes, if any are defined in the mapping:
                     if (mappingDefinedFieldType.isCompound()) {
-                        List<HashSet<FieldDTO>> compoundField = new ArrayList<>();
-                        HashSet<FieldDTO> set = new HashSet<>();
+                        List<Set<FieldDTO>> compoundField = new ArrayList<>();
+                        Set<FieldDTO> set = new HashSet<>();
                         for (ForeignMetadataFieldMapping childMapping : mappingDefined.getChildFieldMappings()) {
                             if (childMapping.isAttribute()) {
                                 String attributeName = childMapping.getForeignFieldXPath();
@@ -746,7 +746,7 @@ public class ImportGenericServiceBean {
     }    
      
 
-    private void addToSet(HashSet<FieldDTO> set, String typeName, String value ) {
+    private void addToSet(Set<FieldDTO> set, String typeName, String value ) {
         if (value!=null) {
             set.add(FieldDTO.createPrimitiveFieldDTO(typeName, value));
         }

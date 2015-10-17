@@ -155,15 +155,15 @@ public class FieldDTO {
         return values;
     }
 
-    public ArrayList<HashSet<FieldDTO>> getMultipleCompound() {
+    public List<Set<FieldDTO>> getMultipleCompound() {
         Gson gson = new Gson();
-        ArrayList<HashSet<FieldDTO>> fields = new ArrayList<HashSet<FieldDTO>>();
+        List<Set<FieldDTO>> fields = new ArrayList<>();
         JsonArray array = value.getAsJsonArray();
 
         Iterator<JsonElement> iter = array.iterator();
         while (iter.hasNext()) {
             JsonObject elem = (JsonObject) iter.next();
-            HashSet<FieldDTO> elemFields = new HashSet<FieldDTO>();
+            Set<FieldDTO> elemFields = new HashSet<>();
             fields.add(elemFields);
             Set<Map.Entry<String, JsonElement>> set = elem.entrySet();
 

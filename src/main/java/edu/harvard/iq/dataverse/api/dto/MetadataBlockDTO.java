@@ -1,7 +1,7 @@
 package edu.harvard.iq.dataverse.api.dto;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 
 /**
@@ -9,8 +9,8 @@ import java.util.List;
  * @author ellenk
  */
 public  class MetadataBlockDTO {
-         String displayName;
-         List<FieldDTO> fields = new ArrayList<FieldDTO>();
+        String displayName;
+        List<FieldDTO> fields = new ArrayList<>();
 
         public String getDisplayName() {
             return displayName;
@@ -40,7 +40,7 @@ public  class MetadataBlockDTO {
         } else {
             if (current.multiple) {
                if (newField.typeClass.equals("compound")) {
-                    ArrayList<HashSet<FieldDTO>> currentValue = current.getMultipleCompound();
+                    List<Set<FieldDTO>> currentValue = current.getMultipleCompound();
                     currentValue.addAll(newField.getMultipleCompound());
                     current.setMultipleCompound(currentValue);
                 } else if (newField.typeClass.equals("controlledVocabulary")) {
