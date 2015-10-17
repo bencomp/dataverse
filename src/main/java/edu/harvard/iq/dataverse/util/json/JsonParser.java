@@ -154,7 +154,7 @@ public class JsonParser {
         dataset.setDoiSeparator(obj.getString("doiSeparator", null) == null ? settingsService.getValueForKey(SettingsServiceBean.Key.DoiSeparator) : obj.getString("doiSeparator"));
         dataset.setIdentifier(obj.getString("identifier",null));
         DatasetVersion dsv = parseDatasetVersion(obj.getJsonObject("datasetVersion"));
-        LinkedList<DatasetVersion> versions = new LinkedList<>();
+        List<DatasetVersion> versions = new LinkedList<>();
         versions.add(dsv);
         dsv.setDataset(dataset);
 
@@ -260,10 +260,10 @@ public class JsonParser {
      * @throws JsonParseException 
      */
     private DatasetField remapGeographicCoverage(CompoundVocabularyException ex) throws JsonParseException{
-        List<HashSet<FieldDTO>> geoCoverageList = new ArrayList<>();
+        List<Set<FieldDTO>> geoCoverageList = new ArrayList<>();
         // For each exception, create HashSet of otherGeographic Coverage and add to list
         for (ControlledVocabularyException vocabEx : ex.getExList()) {
-            HashSet<FieldDTO> set = new HashSet<>();
+            Set<FieldDTO> set = new HashSet<>();
             set.add(FieldDTO.createPrimitiveFieldDTO(DatasetFieldConstant.otherGeographicCoverage, vocabEx.getStrValue()));
             geoCoverageList.add(set);
         }

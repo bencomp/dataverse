@@ -420,7 +420,7 @@ public class Dataset extends DvObjectContainer {
     }
 
     private Collection<String> getCategoryNames() {
-        ArrayList<String> ret = new ArrayList<>();
+        List<String> ret = new ArrayList<>();
         if (dataFileCategories != null) {
             for (int i = 0; i < dataFileCategories.size(); i++) {
                 ret.add(dataFileCategories.get(i).getName());

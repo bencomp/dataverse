@@ -186,7 +186,7 @@ public class Dataverses extends AbstractApiBean {
                     version.setMinorVersionNumber(null);
                     version.setVersionNumber(null);
                     version.setVersionState(DatasetVersion.VersionState.DRAFT);
-                    LinkedList<DatasetVersion> versions = new LinkedList<>();
+                    List<DatasetVersion> versions = new LinkedList<>();
                     versions.add(version);
                     version.setDataset(ds);
                     

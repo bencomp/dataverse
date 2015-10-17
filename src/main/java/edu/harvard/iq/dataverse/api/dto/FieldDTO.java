@@ -70,7 +70,7 @@ public class FieldDTO {
         field.setMultipleCompound(value);
         return field;
     } 
-    public static FieldDTO createMultipleCompoundFieldDTO(String typeName,List<HashSet<FieldDTO>> compoundList) {
+    public static FieldDTO createMultipleCompoundFieldDTO(String typeName, List<Set<FieldDTO>> compoundList) {
         FieldDTO field = new FieldDTO();
         field.typeName=typeName;
         field.setMultipleCompound(compoundList);
@@ -249,7 +249,7 @@ public class FieldDTO {
      * Set value to a list of compound fields (each member of the list is a set of fields)
      * @param compoundFieldList 
      */
-    public void setMultipleCompound(List<HashSet<FieldDTO>> compoundFieldList) {
+    public void setMultipleCompound(List<Set<FieldDTO>> compoundFieldList) {
          Gson gson = new Gson();
         this.typeClass = "compound";
         this.multiple = true;

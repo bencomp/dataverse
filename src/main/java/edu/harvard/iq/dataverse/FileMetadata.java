@@ -122,7 +122,7 @@ public class FileMetadata implements Serializable {
     }
 
     public List<String> getCategoriesByName() {
-        ArrayList<String> ret = new ArrayList<>();
+        List<String> ret = new ArrayList<>();
         if (fileCategories != null) {
             for (int i = 0; i < fileCategories.size(); i++) {
                 ret.add(fileCategories.get(i).getName());
