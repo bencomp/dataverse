@@ -32,8 +32,8 @@ import javax.persistence.Table;
 @Entity
 @Table(indexes = {@Index(columnList="datavariable_id")})
 public class VariableCategory  implements Comparable, Serializable {
-    /*
-     * Simple constructor: 
+    /**
+     * Simple constructor
      */
     public VariableCategory() {
     }
@@ -56,29 +56,29 @@ public class VariableCategory  implements Comparable, Serializable {
     @JoinColumn(nullable=false)
     private DataVariable dataVariable;
     
-    /*
-     * Category Value: 
+    /**
+     * Category Value 
      */
     private String value;
 
-    /*
-     * Category Label:  
+    /**
+     * Category Label  
      */
     private String label;
     
-    /*
+    /**
      * Is this a missing category?
      */
     private boolean missing;
     
-    /*
+    /**
      * If this is an "Ordered Categorical Variable", aka an "Ordinal", it 
-     * has an explicitly assigned order value:
+     * has an explicitly assigned order value
      */
     private int catOrder;
     
-    /*
-     * Frequency of this category:
+    /**
+     * Frequency of this category
      */
     private Double frequency;
     
