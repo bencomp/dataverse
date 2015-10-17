@@ -12,6 +12,7 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -28,6 +29,13 @@ public class FeaturedDataverseServiceBean {
         query.setParameter("dataverseId", dataverseId);
         return query.getResultList();
     }
+    
+    public List<Dataverse> findFeaturedDataversesByDataverse(Dataverse dataverse) {
+        TypedQuery<Dataverse> query = em.createQuery("select f.featuredDataverse from DataverseFeaturedDataverse f where f.dataverse = :dataverseId order by f.displayOrder", Dataverse.class);
+        query.setParameter("dataverseId", dataverse);
+        return query.getResultList();
+    }
+    
     public List<DataverseFeaturedDataverse> findByRootDataverse() {
         return em.createQuery("select object(o) from DataverseFeaturedDataverse as o where o.dataverse.id = 1 order by o.displayOrder").getResultList();
     }

@@ -6,6 +6,8 @@
 
 package edu.harvard.iq.dataverse.datavariable;
 
+import edu.harvard.iq.dataverse.DataFile;
+import edu.harvard.iq.dataverse.DataTable;
 import java.util.List;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -14,6 +16,7 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -44,6 +47,12 @@ public class VariableServiceBean {
     public List<DataVariable> findByDataFileId(Long fileId) {
          Query query = em.createQuery("select object(o) from DataVariable as o where o.dataTable.dataFile.id =:fileId order by o.fileOrder");
          query.setParameter("fileId", fileId);
+         return query.getResultList();
+    }    
+    
+    public List<DataVariable> findByDataTable(DataTable table) {
+         TypedQuery<DataVariable> query = em.createQuery("select v from DataTable t, IN (t.dataVariables) v where t = :table order by v.fileOrder", DataVariable.class);
+         query.setParameter("table", table);
          return query.getResultList();
     }
     

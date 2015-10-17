@@ -121,6 +121,12 @@ public class DataverseServiceBean implements java.io.Serializable {
         query.setParameter("ownerId", ownerId);
         return query.getResultList();
     }
+
+    public List<Dataverse> findByOwner(Dataverse owner) {
+        TypedQuery<Dataverse> query = em.createQuery("select d from Dataverse d JOIN d.owner o where o = :ownerId order by d.name", Dataverse.class);
+        query.setParameter("ownerId", owner);
+        return query.getResultList();
+    }
     
     public List<Dataverse> findPublishedByOwnerId(Long ownerId) {
         Query query = em.createQuery("select object(o) from Dataverse as o where o.owner.id =:ownerId and o.publicationDate is not null order by o.name");
