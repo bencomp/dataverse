@@ -808,8 +808,9 @@ class SubRegistry {
         poset.clear();
     }
 
-    public void finalize() {
+    public void finalize() throws Throwable {
         clear();
+        super.finalize();
     }
 }
 
