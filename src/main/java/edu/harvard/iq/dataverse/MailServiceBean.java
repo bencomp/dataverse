@@ -5,7 +5,6 @@
  */
 package edu.harvard.iq.dataverse;
 
-import com.sun.mail.smtp.SMTPSendFailedException;
 import edu.harvard.iq.dataverse.authorization.groups.Group;
 import edu.harvard.iq.dataverse.authorization.groups.GroupServiceBean;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
@@ -24,12 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
@@ -88,9 +89,9 @@ public class MailServiceBean implements java.io.Serializable {
             msg.setText(messageText);
             Transport.send(msg);
         } catch (AddressException ae) {
-            ae.printStackTrace(System.out);
+            logger.log(Level.WARNING, "Failed to parse the 'To' address " + to, ae);
         } catch (MessagingException me) {
-            me.printStackTrace(System.out);
+            logger.log(Level.WARNING, "Failed to send mail to " + to, me);
         }
     }
 
@@ -113,19 +114,18 @@ public class MailServiceBean implements java.io.Serializable {
                 try {
                     Transport.send(msg);
                     sent = true;
-                } catch (SMTPSendFailedException ssfe) {
-                    logger.warning("Failed to send mail to " + to + " (SMTPSendFailedException)");
+                } catch (SendFailedException ssfe) {
+                    logger.log(Level.WARNING, "Sending mail failed", ssfe);
+                    logger.warning("Failed to send mail to " + to + " (SendFailedException)");
                 }
             } else {
               // commenting out the warning so as not to clutter the log of installations that haven't set up mail  
               //  logger.warning("Skipping sending mail to " + to + ", because the \"no-reply\" address not set.");
             }
         } catch (AddressException ae) {
-            logger.warning("Failed to send mail to " + to);
-            ae.printStackTrace(System.out);
+            logger.log(Level.WARNING, "Failed to parse the 'To' address " + to, ae);
         } catch (MessagingException me) {
-            logger.warning("Failed to send mail to " + to);
-            me.printStackTrace(System.out);
+            logger.log(Level.WARNING, "Failed to send mail to " + to, me);
         }
         return sent;
     }
@@ -168,9 +168,9 @@ public class MailServiceBean implements java.io.Serializable {
 
             Transport.send(msg);
         } catch (AddressException ae) {
-            ae.printStackTrace(System.out);
+            logger.log(Level.WARNING, "Failed to parse the 'To' address " + to, ae);
         } catch (MessagingException me) {
-            me.printStackTrace(System.out);
+            logger.log(Level.WARNING, "Failed to send mail to " + to, me);
         }
     }
     
