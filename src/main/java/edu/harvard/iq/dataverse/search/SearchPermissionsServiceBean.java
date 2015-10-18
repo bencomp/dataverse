@@ -52,7 +52,7 @@ public class SearchPermissionsServiceBean {
     @EJB
     SettingsServiceBean settingsService;
 
-    LinkedHashMap<String, RoleAssignee> roleAssigneeCache = new LinkedHashMap<>(100, 0.7f, true);
+    Map<String, RoleAssignee> roleAssigneeCache = new LinkedHashMap<>(100, 0.7f, true);
     private static final int MAX_CACHE_SIZE = 2000;
 
     /**

@@ -51,7 +51,7 @@ public class MyDataFilterParams {
                                                     IndexServiceBean.getIN_REVIEW_STRING(),
                                                     IndexServiceBean.getDEACCESSIONED_STRING());*/
             
-    public static final HashMap<String, String> sqlToSolrSearchMap ;
+    public static final Map<String, String> sqlToSolrSearchMap ;
     static
     {
         sqlToSolrSearchMap = new HashMap<>();
@@ -60,7 +60,7 @@ public class MyDataFilterParams {
         sqlToSolrSearchMap.put(DvObject.DATAFILE_DTYPE_STRING, SearchConstants.FILES);
     }
     
-    public static final HashMap<String, String> userInterfaceToSqlSearchMap ;
+    public static final Map<String, String> userInterfaceToSqlSearchMap ;
     static
     {
         userInterfaceToSqlSearchMap = new HashMap<>();

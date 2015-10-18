@@ -374,7 +374,7 @@ public class SearchServiceBean {
             /**
              * @todo put all this in the constructor?
              */
-            List<String> states = (ArrayList<String>) solrDocument.getFieldValue(SearchFields.PUBLICATION_STATUS);
+            List<String> states = (List<String>) solrDocument.getFieldValue(SearchFields.PUBLICATION_STATUS);
             if (states != null) {
                 // set list of all statuses
                 // this method also sets booleans for individual statuses
@@ -419,7 +419,7 @@ public class SearchServiceBean {
                 /**
                  * @todo Could use getFieldValues (plural) here.
                  */
-                ArrayList<String> datasetDescriptions = (ArrayList<String>) solrDocument.getFieldValue(SearchFields.DATASET_DESCRIPTION);
+                List<String> datasetDescriptions = (List<String>) solrDocument.getFieldValue(SearchFields.DATASET_DESCRIPTION);
                 if (datasetDescriptions != null) {
                     String firstDatasetDescription = datasetDescriptions.get(0);
                     if (firstDatasetDescription != null) {
@@ -436,7 +436,7 @@ public class SearchServiceBean {
                     logger.info("No title indexed. Setting to empty string to prevent NPE. Dataset id " + entityid + " and version id " + datasetVersionId);
                     solrSearchResult.setTitle("");
                 }
-                List<String> authors = (ArrayList) solrDocument.getFieldValues(DatasetFieldConstant.authorName);
+                List<String> authors = (List) solrDocument.getFieldValues(DatasetFieldConstant.authorName);
                 if (authors != null) {
                     solrSearchResult.setDatasetAuthors(authors);
                 }

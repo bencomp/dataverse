@@ -477,7 +477,7 @@ public class ImportGenericServiceBean {
         DatasetDTO  datasetDTO = new DatasetDTO();
         DatasetVersionDTO datasetVersionDTO = new DatasetVersionDTO();
         datasetDTO.setDatasetVersion(datasetVersionDTO);
-        HashMap<String, MetadataBlockDTO> metadataBlocks = new HashMap<>();
+        Map<String, MetadataBlockDTO> metadataBlocks = new HashMap<>();
         datasetVersionDTO.setMetadataBlocks(metadataBlocks);
         
         datasetVersionDTO.getMetadataBlocks().put("citation", new MetadataBlockDTO());

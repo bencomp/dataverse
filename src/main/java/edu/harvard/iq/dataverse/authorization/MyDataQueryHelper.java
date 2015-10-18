@@ -7,6 +7,7 @@ package edu.harvard.iq.dataverse.authorization;
 
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -15,9 +16,9 @@ import java.util.ArrayList;
 public class MyDataQueryHelper {
 
     private AuthenticatedUser user;
-    private ArrayList<String> dvObjectTypes;
-    private ArrayList<Long> directIds;
-    private ArrayList<Long> parentIds;
+    private List<String> dvObjectTypes;
+    private List<Long> directIds;
+    private List<Long> parentIds;
     private final MyDataQueryHelperServiceBean myDataQueryHelperService;
 
     public MyDataQueryHelper(AuthenticatedUser user, MyDataQueryHelperServiceBean injectedBean) {
@@ -32,14 +33,14 @@ public class MyDataQueryHelper {
     }
 
     private void initializeParentIds() {
-        parentIds = new ArrayList();
+        parentIds = new ArrayList<>();
         parentIds.addAll(myDataQueryHelperService.getParentIds("Dataverse", "DataFile",  this.user));
         parentIds.addAll(myDataQueryHelperService.getParentIds("Dataset", "DataFile",  this.user));
         parentIds.addAll(myDataQueryHelperService.getParentIds("Dataverse", "Dataset",  this.user));
     }
 
     private void initializeDirectIds() {
-        directIds = new ArrayList();
+        directIds = new ArrayList<>();
         directIds.addAll(myDataQueryHelperService.getDirectQuery(this.user).getResultList());
     }
 
@@ -77,19 +78,19 @@ public class MyDataQueryHelper {
         this.user = user;
     }
 
-    public ArrayList<String> getDvObjectTypes() {
+    public List<String> getDvObjectTypes() {
         return dvObjectTypes;
     }
 
-    public void setDvObjectTypes(ArrayList<String> dvObjectTypes) {
+    public void setDvObjectTypes(List<String> dvObjectTypes) {
         this.dvObjectTypes = dvObjectTypes;
     }
 
-    public ArrayList<Long> getParentIds() {
+    public List<Long> getParentIds() {
         return parentIds;
     }
 
-    public void setParentIds(ArrayList<Long> parentIds) {
+    public void setParentIds(List<Long> parentIds) {
         this.parentIds = parentIds;
     }
 

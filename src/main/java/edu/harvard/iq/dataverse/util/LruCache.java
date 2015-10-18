@@ -1,6 +1,7 @@
 package edu.harvard.iq.dataverse.util;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -14,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @param <V> Class for the cache values
  */
 public class LruCache<K,V> {
-    private final LinkedHashMap<K, V> cache = new LinkedHashMap<>(10, 0.75f, true);
+    private final Map<K, V> cache = new LinkedHashMap<>(10, 0.75f, true);
     private final ReentrantLock cacheLock = new ReentrantLock();
     private long maxSize = 128;
     

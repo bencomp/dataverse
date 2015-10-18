@@ -84,7 +84,7 @@ public class ShapefileHandler{
     private List<String> filesListInDir = new ArrayList<>();
 
     // Hash of file names and byte sizes {  "file name" : bytes }  example: { "water.shp" : 541234 }
-    private HashMap<String, Long> filesizeHash = new HashMap<>();   
+    private Map<String, Long> filesizeHash = new HashMap<>();   
     
     // Hash of file basenames and a list of extensions. 
     /*   e.g.  { "subway_shapefile" : [ ".dbf", ".prj", ".sbn", ".sbx", ".shp", ".shx"] 

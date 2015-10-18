@@ -99,7 +99,7 @@ public class DatasetFieldWalker {
     }
     
     static private <T> Iterable<T> sort( List<T> list, Comparator<T> cmp ) {
-        ArrayList<T> tbs = new ArrayList<>(list);
+        List<T> tbs = new ArrayList<>(list);
         Collections.sort(tbs, cmp);
         return tbs;
     }
