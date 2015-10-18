@@ -57,9 +57,8 @@ public class DatasetField implements Serializable {
     public static DatasetField createNewEmptyDatasetField(DatasetFieldType dsfType, Object dsv) {
         
         DatasetField dsfv = createNewEmptyDatasetField(dsfType);
-        //TODO - a better way to handle this?
-        if (dsv.getClass().getName().equals("edu.harvard.iq.dataverse.DatasetVersion")){
-                   dsfv.setDatasetVersion((DatasetVersion)dsv); 
+        if (dsv instanceof DatasetVersion){
+            dsfv.setDatasetVersion((DatasetVersion)dsv); 
         } else {
             dsfv.setTemplate((Template)dsv);
         }
@@ -444,7 +443,7 @@ public class DatasetField implements Serializable {
         dsf.setDatasetFieldType(datasetFieldType);
         
         if (version != null) {
-            if (version.getClass().getName().equals("edu.harvard.iq.dataverse.DatasetVersion")) {
+            if (version instanceof DatasetVersion) {
                 dsf.setDatasetVersion((DatasetVersion) version);               
             } else {
                 dsf.setTemplate((Template) version);
