@@ -24,9 +24,9 @@ import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -37,9 +37,7 @@ import java.security.PrivateKey;
 import net.handle.hdllib.AbstractMessage;
 import net.handle.hdllib.AbstractResponse;
 import net.handle.hdllib.AdminRecord;
-import net.handle.hdllib.ClientSessionTracker;
 import net.handle.hdllib.CreateHandleRequest;
-import net.handle.hdllib.DeleteHandleRequest;
 import net.handle.hdllib.Encoder;
 import net.handle.hdllib.HandleException;
 import net.handle.hdllib.HandleResolver;
@@ -47,7 +45,6 @@ import net.handle.hdllib.HandleValue;
 import net.handle.hdllib.ModifyValueRequest;
 import net.handle.hdllib.PublicKeyAuthenticationInfo;
 import net.handle.hdllib.ResolutionRequest;
-import net.handle.hdllib.ResolutionResponse;
 import net.handle.hdllib.Util;
 
 /**
@@ -121,8 +118,8 @@ public class HandlenetServiceBean {
                 } else {
                     logger.info("\nGot Error: \n" + response);
                 }
-            } catch (Throwable t) {
-                logger.fine("\nError: " + t);
+            } catch (UnsupportedEncodingException | HandleException ex) {
+                logger.log(Level.SEVERE, null, ex);
             }
         } else {
             // Create a new handle from scratch:
@@ -171,8 +168,8 @@ public class HandlenetServiceBean {
             } else {
                 logger.warning("Error response: \n" + response);
             }
-        } catch (Throwable t) {
-            logger.warning("\nError (caught exception): " + t);
+        } catch (UnsupportedEncodingException | HandleException ex) {
+            logger.log(Level.SEVERE, null, ex);
         }
     }
     
@@ -184,8 +181,7 @@ public class HandlenetServiceBean {
         try {
             response = resolver.processRequest(req);
         } catch (HandleException ex) {
-            logger.info("Caught exception trying to process lookup request");
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Caught exception trying to process lookup request", ex);
         }
         if((response!=null && response.responseCode==AbstractMessage.RC_SUCCESS)) {
             logger.info("Handle "+handle+" registered.");
@@ -242,6 +238,7 @@ public class HandlenetServiceBean {
             try {
                 hostName = InetAddress.getLocalHost().getCanonicalHostName();
             } catch (UnknownHostException e) {
+                logger.log(Level.SEVERE, null, e);
                 return null;
             }
         }
@@ -259,8 +256,8 @@ public class HandlenetServiceBean {
             while(n<key.length) {
                 key[n++] = (byte)fs.read();
             }
-        } catch (Throwable t){
-            logger.severe("Cannot read private key " + file +": " + t);
+        } catch (Exception ex){
+            logger.log(Level.SEVERE, "Cannot read private key", ex);
         }
         return key;
     }
@@ -276,8 +273,8 @@ public class HandlenetServiceBean {
             }
             key = Util.decrypt(key, secKey);
             privkey = Util.getPrivateKeyFromBytes(key, 0);
-        } catch (Throwable t){
-            logger.severe("Can't load private key in " + file +": " + t);
+        } catch (Exception ex){
+            logger.log(Level.SEVERE, "Cannot load private key", ex);
         }
         return privkey;
     }
