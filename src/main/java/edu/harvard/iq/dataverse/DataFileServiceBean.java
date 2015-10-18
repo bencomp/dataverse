@@ -10,6 +10,7 @@ import edu.harvard.iq.dataverse.authorization.Permission;
 import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.dataaccess.ImageThumbConverter;
 import edu.harvard.iq.dataverse.util.FileSortFieldAndOrder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -175,7 +176,7 @@ public class DataFileServiceBean implements java.io.Serializable {
         System.out.print(query.toString());
 
 
-        List <FileMetadata> retList = new ArrayList();
+        List <FileMetadata> retList = new ArrayList<>();
         for (Object o : query.getResultList()){
             Long pk = new Long(o.toString());
            retList.add( (FileMetadata) em.find(FileMetadata.class, pk));

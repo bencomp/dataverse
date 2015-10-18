@@ -28,6 +28,7 @@ import edu.harvard.iq.dataverse.export.DDIExportServiceBean;
 import edu.harvard.iq.dataverse.export.ddi.DdiExportUtil;
 import edu.harvard.iq.dataverse.util.json.JsonParseException;
 import static edu.harvard.iq.dataverse.util.json.JsonPrinter.json;
+import static edu.harvard.iq.dataverse.util.json.JsonPrinter.jsonAsDatasetDto;
 import static edu.harvard.iq.dataverse.util.json.JsonPrinter.jsonByBlocks;
 import static edu.harvard.iq.dataverse.util.json.JsonPrinter.jsonFileMetadatas;
 import java.io.ByteArrayOutputStream;
