@@ -1262,7 +1262,7 @@ public class DatasetPage implements java.io.Serializable {
             }
         } catch (CommandException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Guestbook Response Save Failed", " - " + ex.toString()));
-            logger.severe(ex.getMessage());
+            logger.log(Level.SEVERE, null, ex);
         }
         
         if (type.equals("multiple")){
@@ -1284,7 +1284,7 @@ public class DatasetPage implements java.io.Serializable {
                 FacesContext.getCurrentInstance().getExternalContext().redirect(retVal);
                 return retVal;
             } catch (IOException ex) {
-                logger.info("Failed to issue a redirect to file download url.");
+            logger.log(Level.SEVERE, "Failed to issue a redirect to file download url.", ex);
             }
         }
         return "";
@@ -1296,7 +1296,7 @@ public class DatasetPage implements java.io.Serializable {
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect(retVal);
         } catch (IOException ex) {
-            logger.info("Failed to issue a redirect to file download url.");
+            logger.log(Level.SEVERE, "Failed to issue a redirect to file download url.", ex);
         }
         return "";
     }
@@ -1308,7 +1308,7 @@ public class DatasetPage implements java.io.Serializable {
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect(fileDownloadUrl);
         } catch (IOException ex) {
-            logger.info("Failed to issue a redirect to file download url.");
+            logger.log(Level.SEVERE, "Failed to issue a redirect to file download url.", ex);
         }
 
         //return fileDownloadUrl;
@@ -1338,7 +1338,7 @@ public class DatasetPage implements java.io.Serializable {
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect(fileDownloadUrl);
         } catch (IOException ex) {
-            logger.info("Failed to issue a redirect to file download url.");
+            logger.log(Level.SEVERE, "Failed to issue a redirect to file download url.", ex);
         }
         //return fileDownloadUrl;       
     }
@@ -1482,7 +1482,7 @@ public class DatasetPage implements java.io.Serializable {
             dataset = commandEngine.submit(cmd);
         } catch (CommandException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Dataset Submission Failed", " - " + ex.toString()));
-            logger.severe(ex.getMessage());
+            logger.log(Level.SEVERE, null, ex);
             return "";
         }
         List<AuthenticatedUser> authUsers = permissionService.getUsersWithPermissionOn(Permission.PublishDataset, dataset);
@@ -1509,7 +1509,7 @@ public class DatasetPage implements java.io.Serializable {
             dataset = commandEngine.submit(cmd);
         } catch (CommandException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Dataset Submission Failed", " - " + ex.toString()));
-            logger.severe(ex.getMessage());
+            logger.log(Level.SEVERE, null, ex);
             return "";
         }
         List<AuthenticatedUser> authUsers = permissionService.getUsersWithPermissionOn(Permission.PublishDataset, dataset);
@@ -1567,7 +1567,7 @@ public class DatasetPage implements java.io.Serializable {
                 }
             }
         } catch (CommandException ex) {
-            logger.severe(ex.getMessage());
+            logger.log(Level.SEVERE, null, ex);
             JH.addMessage(FacesMessage.SEVERITY_FATAL, JH.localize("dataset.message.deaccessionFailure"));
         }
         JsfHelper.addSuccessMessage(JH.localize("datasetVersion.message.deaccessionSuccess"));
@@ -1636,7 +1636,7 @@ public class DatasetPage implements java.io.Serializable {
                 }
             } catch (CommandException ex) {
                 JH.addMessage(FacesMessage.SEVERITY_FATAL, JH.localize("dataset.message.publishFailure"));
-                logger.severe(ex.getMessage());
+                logger.log(Level.SEVERE, null, ex);
             }
         } else {
             JH.addMessage(FacesMessage.SEVERITY_ERROR, "Only authenticated users can release Datasets.");
@@ -1652,7 +1652,7 @@ public class DatasetPage implements java.io.Serializable {
             dataset = commandEngine.submit(cmd);
         } catch (CommandException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Dataset Registration Failed", " - " + ex.toString()));
-            logger.severe(ex.getMessage());
+            logger.log(Level.SEVERE, null, ex);
         }
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "DatasetRegistered", "Your dataset is now registered.");
         FacesContext.getCurrentInstance().addMessage(null, message);
@@ -1724,7 +1724,7 @@ public class DatasetPage implements java.io.Serializable {
             JsfHelper.addSuccessMessage(JH.localize("datasetVersion.message.deleteSuccess"));
         } catch (CommandException ex) {
             JH.addMessage(FacesMessage.SEVERITY_FATAL, JH.localize("dataset.message.deleteFailure"));
-            logger.severe(ex.getMessage());
+            logger.log(Level.SEVERE, "Could not delete dataset version", ex);
         }
 
         return returnToDatasetOnly();
@@ -1846,7 +1846,7 @@ public class DatasetPage implements java.io.Serializable {
 
         } catch (CommandException ex) {
             String msg = "There was a problem linking this dataset to yours: " + ex;
-            logger.severe(msg);
+            logger.log(Level.SEVERE, "Could not link dataverses", ex);
             /**
              * @todo how do we get this message to show up in the GUI?
              */
@@ -2347,7 +2347,7 @@ public class DatasetPage implements java.io.Serializable {
             }
         } catch (CommandException ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Guestbook Response Save Failed", " - " + ex.toString()));
-            logger.severe(ex.getMessage());
+            logger.log(Level.SEVERE, null, ex);
         }
         
     }
@@ -2606,7 +2606,7 @@ public class DatasetPage implements java.io.Serializable {
             out.flush();
             ctx.responseComplete();
         } catch (Exception e) {
-
+            logger.log(Level.SEVERE, null, e);
         }
     }
 
@@ -2648,7 +2648,7 @@ public class DatasetPage implements java.io.Serializable {
             out.flush();
             ctx.responseComplete();
         } catch (Exception e) {
-
+            logger.log(Level.SEVERE, null, e);
         }
     }
 
@@ -3107,6 +3107,7 @@ public class DatasetPage implements java.io.Serializable {
             try {
                 uploadStream = file.getInputstream();
             } catch (IOException ioex) {
+                logger.log(Level.SEVERE, null, ioex);
                 logger.warning("the file " + file.getFileName() + " failed to upload!");
                 FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "upload failure", "the file " + file.getFileName() + " failed to upload!");
                 FacesContext.getCurrentInstance().addMessage(null, message);
