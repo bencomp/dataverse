@@ -3,6 +3,7 @@ package edu.harvard.iq.dataverse;
 import edu.harvard.iq.dataverse.util.SystemConfig;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -49,6 +50,7 @@ public class AutoCompleteBean implements java.io.Serializable {
             items = resp.getTerms("text");
 //            items = resp.getTerms(solrFieldDatasetFieldDescription);
         } catch (SolrServerException e) {
+            logger.log(Level.WARNING, query, e);
             items = null;
         }
 
