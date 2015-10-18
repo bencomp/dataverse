@@ -111,7 +111,7 @@ public class ImportServiceBean {
         d.setDataverseType(Dataverse.DataverseType.RESEARCHERS);
         DataverseContact dc = new DataverseContact();
         dc.setContactEmail("pete@mailinator.com");
-        ArrayList<DataverseContact> dcList = new ArrayList<>();
+        List<DataverseContact> dcList = new ArrayList<>();
         dcList.add(dc);
         d.setDataverseContacts(dcList);
         try {
