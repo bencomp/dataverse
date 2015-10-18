@@ -17,7 +17,6 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import org.jboss.logging.Logger;
 
 /**
  * A bean providing the {@link ExplicitGroupProvider}s with container services,

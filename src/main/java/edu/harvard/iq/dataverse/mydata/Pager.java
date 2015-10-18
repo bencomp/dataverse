@@ -5,7 +5,6 @@
  */
 package edu.harvard.iq.dataverse.mydata;
 
-import com.google.gson.JsonArray;
 import edu.harvard.iq.dataverse.search.SearchConstants;
 import java.io.IOException;
 import static java.lang.Math.max;
@@ -16,10 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import org.primefaces.json.JSONException;
-import org.primefaces.json.JSONObject;
 
 /**
  *

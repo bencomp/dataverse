@@ -1,8 +1,8 @@
 package edu.harvard.iq.dataverse.api.dto;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 /**
  *

@@ -11,25 +11,26 @@ import edu.harvard.iq.dataverse.authorization.providers.AuthenticationProviderRo
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.engine.command.impl.PublishDataverseCommand;
 import edu.harvard.iq.dataverse.settings.Setting;
+import static edu.harvard.iq.dataverse.util.json.JsonPrinter.json;
+import static edu.harvard.iq.dataverse.util.json.JsonPrinter.jsonForAuthUser;
+import static edu.harvard.iq.dataverse.util.json.JsonPrinter.rolesToJson;
+import static edu.harvard.iq.dataverse.util.json.NullSafeJsonBuilder.jsonObjectBuilder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
-
-import static edu.harvard.iq.dataverse.util.json.NullSafeJsonBuilder.jsonObjectBuilder;
-import static edu.harvard.iq.dataverse.util.json.JsonPrinter.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ejb.Stateless;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 /**
  * Where the secure, setup API calls live.

@@ -19,32 +19,27 @@
  */
 package edu.harvard.iq.dataverse.ingest.tabulardata.impl.plugins.csv;
 
-import java.io.*;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.text.*;
-import java.util.logging.*;
-import java.util.*;
-import java.security.NoSuchAlgorithmException;
-
-import javax.inject.Inject;
-
 import edu.harvard.iq.dataverse.DataTable;
 import edu.harvard.iq.dataverse.datavariable.DataVariable;
-
-import edu.harvard.iq.dataverse.ingest.plugin.spi.*;
 import edu.harvard.iq.dataverse.ingest.tabulardata.TabularDataFileReader;
-import edu.harvard.iq.dataverse.ingest.tabulardata.spi.TabularDataFileReaderSpi;
 import edu.harvard.iq.dataverse.ingest.tabulardata.TabularDataIngest;
-import java.math.BigDecimal;
+import edu.harvard.iq.dataverse.ingest.tabulardata.spi.TabularDataFileReaderSpi;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.ArrayUtils;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 
 /**

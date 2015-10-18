@@ -1,12 +1,13 @@
 package edu.harvard.iq.dataverse.engine;
 
-import edu.harvard.iq.dataverse.authorization.Permission;
 import edu.harvard.iq.dataverse.DataFile;
 import edu.harvard.iq.dataverse.Dataset;
 import edu.harvard.iq.dataverse.Dataverse;
 import edu.harvard.iq.dataverse.DvObject;
+import edu.harvard.iq.dataverse.authorization.Permission;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

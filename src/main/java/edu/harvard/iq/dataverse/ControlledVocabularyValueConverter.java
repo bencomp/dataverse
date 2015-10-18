@@ -6,7 +6,6 @@
 package edu.harvard.iq.dataverse;
 
 import javax.ejb.EJB;
-
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;

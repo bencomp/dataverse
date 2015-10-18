@@ -1,16 +1,15 @@
 package edu.harvard.iq.dataverse.api;
 
 import edu.harvard.iq.dataverse.MetadataBlock;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
 import static edu.harvard.iq.dataverse.util.json.JsonPrinter.brief;
 import static edu.harvard.iq.dataverse.util.json.JsonPrinter.json;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import static edu.harvard.iq.dataverse.util.json.JsonPrinter.json;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 /**
  * Api bean for managing metadata blocks.

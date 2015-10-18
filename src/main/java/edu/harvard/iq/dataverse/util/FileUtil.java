@@ -29,19 +29,19 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
 import javax.activation.MimetypesFileTypeMap;
 import javax.ejb.EJBException;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.util.zip.GZIPInputStream;
 
 /**
  * a 4.0 implementation of the DVN FileUtil;

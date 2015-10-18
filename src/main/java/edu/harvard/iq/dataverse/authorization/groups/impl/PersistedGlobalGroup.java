@@ -1,7 +1,7 @@
 package edu.harvard.iq.dataverse.authorization.groups.impl;
 
-import edu.harvard.iq.dataverse.authorization.groups.Group;
 import edu.harvard.iq.dataverse.authorization.RoleAssigneeDisplayInfo;
+import edu.harvard.iq.dataverse.authorization.groups.Group;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;

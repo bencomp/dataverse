@@ -19,11 +19,9 @@
  */
 package edu.harvard.iq.dataverse.ingest.metadataextraction;
 
-import java.io.File;
-import edu.harvard.iq.dataverse.DataTable;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * An object that stores the metadata that was extracted

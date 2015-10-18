@@ -1,6 +1,5 @@
 package edu.harvard.iq.dataverse.authorization;
 
-import edu.harvard.iq.dataverse.search.IndexServiceBean;
 import edu.harvard.iq.dataverse.actionlogging.ActionLogRecord;
 import edu.harvard.iq.dataverse.actionlogging.ActionLogServiceBean;
 import edu.harvard.iq.dataverse.authorization.exceptions.AuthenticationFailedException;
@@ -15,6 +14,7 @@ import edu.harvard.iq.dataverse.authorization.providers.echo.EchoAuthenticationP
 import edu.harvard.iq.dataverse.authorization.providers.shib.ShibAuthenticationProvider;
 import edu.harvard.iq.dataverse.authorization.users.ApiToken;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
+import edu.harvard.iq.dataverse.search.IndexServiceBean;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;

@@ -53,15 +53,14 @@ package edu.harvard.iq.dataverse.ingest.plugin.spi;
 
 //package javax.imageio.spi;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * A registry for service provider instances.

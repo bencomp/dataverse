@@ -8,10 +8,10 @@ package edu.harvard.iq.dataverse.mydata;
 import edu.harvard.iq.dataverse.DvObject;
 import edu.harvard.iq.dataverse.DvObjectServiceBean;
 import edu.harvard.iq.dataverse.RoleAssigneeServiceBean;
-import edu.harvard.iq.dataverse.search.SolrQueryResponse;
-import edu.harvard.iq.dataverse.search.SolrSearchResult;
 import edu.harvard.iq.dataverse.authorization.DataverseRolePermissionHelper;
 import edu.harvard.iq.dataverse.search.SearchConstants;
+import edu.harvard.iq.dataverse.search.SolrQueryResponse;
+import edu.harvard.iq.dataverse.search.SolrSearchResult;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,7 +23,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Input:  dvObject id, parent Id, and dvObject type (from Solr)

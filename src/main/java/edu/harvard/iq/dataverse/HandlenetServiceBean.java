@@ -21,19 +21,16 @@
 package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.PrivateKey;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.security.PrivateKey;
-
-/* Handlenet imports: */
 import net.handle.hdllib.AbstractMessage;
 import net.handle.hdllib.AbstractResponse;
 import net.handle.hdllib.AdminRecord;

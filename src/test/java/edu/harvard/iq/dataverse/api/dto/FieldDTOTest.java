@@ -72,7 +72,7 @@ public class FieldDTOTest {
         Gson gson = new Gson();
         FieldDTO astroType = new FieldDTO();
         astroType.setTypeName("astroType");
-        ArrayList<String> value = new ArrayList<>();
+        List<String> value = new ArrayList<>();
         value.add("Image");
         value.add("Mosaic");
         value.add("EventList");

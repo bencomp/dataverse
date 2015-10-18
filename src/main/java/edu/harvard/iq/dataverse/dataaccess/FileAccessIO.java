@@ -21,26 +21,20 @@
 package edu.harvard.iq.dataverse.dataaccess;
 
 // java core imports:
-import java.io.IOException;
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream; 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-// NIO imports: 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Iterator; 
-
-
-// Dataverse imports:
 import edu.harvard.iq.dataverse.DataFile;
 import edu.harvard.iq.dataverse.datavariable.DataVariable;
+import java.io.File;
+import java.io.FileInputStream; 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.channels.Channel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths; 
 import java.nio.file.StandardCopyOption;
+import java.util.Iterator;
+import java.util.List;
 
 
 public class FileAccessIO extends DataFileIO {

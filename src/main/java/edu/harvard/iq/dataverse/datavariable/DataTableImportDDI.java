@@ -10,7 +10,6 @@ import edu.harvard.iq.dataverse.DataTable;
 import edu.harvard.iq.dataverse.util.StringUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;

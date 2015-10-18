@@ -6,13 +6,13 @@ import edu.harvard.iq.dataverse.DatasetFieldType;
 import edu.harvard.iq.dataverse.DatasetVersion;
 import edu.harvard.iq.dataverse.Dataverse;
 import edu.harvard.iq.dataverse.DataverseContact;
-import edu.harvard.iq.dataverse.authorization.DataverseRole;
 import edu.harvard.iq.dataverse.DvObject;
 import edu.harvard.iq.dataverse.MetadataBlock;
 import edu.harvard.iq.dataverse.RoleAssignment;
 import edu.harvard.iq.dataverse.api.dto.ExplicitGroupDTO;
 import edu.harvard.iq.dataverse.api.dto.RoleAssignmentDTO;
 import edu.harvard.iq.dataverse.api.dto.RoleDTO;
+import edu.harvard.iq.dataverse.authorization.DataverseRole;
 import edu.harvard.iq.dataverse.authorization.Permission;
 import edu.harvard.iq.dataverse.authorization.RoleAssignee;
 import edu.harvard.iq.dataverse.authorization.groups.impl.explicit.ExplicitGroup;
@@ -45,6 +45,7 @@ import edu.harvard.iq.dataverse.engine.command.impl.UpdateDataverseMetadataBlock
 import edu.harvard.iq.dataverse.engine.command.impl.UpdateExplicitGroupCommand;
 import edu.harvard.iq.dataverse.util.json.JsonParseException;
 import static edu.harvard.iq.dataverse.util.json.JsonPrinter.brief;
+import static edu.harvard.iq.dataverse.util.json.JsonPrinter.json;
 import java.io.StringReader;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -78,7 +79,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import static edu.harvard.iq.dataverse.util.json.JsonPrinter.json;
 
 /**
  * A REST API for dataverses.

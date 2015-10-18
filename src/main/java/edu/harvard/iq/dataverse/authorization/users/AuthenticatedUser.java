@@ -1,7 +1,6 @@
 package edu.harvard.iq.dataverse.authorization.users;
 
 import edu.harvard.iq.dataverse.DatasetLock;
-import edu.harvard.iq.dataverse.ValidateEmail;
 import edu.harvard.iq.dataverse.authorization.AuthenticatedUserDisplayInfo;
 import edu.harvard.iq.dataverse.authorization.AuthenticatedUserLookup;
 import edu.harvard.iq.dataverse.authorization.RoleAssigneeDisplayInfo;

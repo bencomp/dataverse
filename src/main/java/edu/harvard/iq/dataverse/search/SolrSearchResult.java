@@ -5,6 +5,7 @@ import edu.harvard.iq.dataverse.Dataset;
 import edu.harvard.iq.dataverse.DvObject;
 import edu.harvard.iq.dataverse.api.Util;
 import edu.harvard.iq.dataverse.util.json.NullSafeJsonBuilder;
+import static edu.harvard.iq.dataverse.util.json.NullSafeJsonBuilder.jsonObjectBuilder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +15,6 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import static edu.harvard.iq.dataverse.util.json.NullSafeJsonBuilder.jsonObjectBuilder;
 
 public class SolrSearchResult {
 

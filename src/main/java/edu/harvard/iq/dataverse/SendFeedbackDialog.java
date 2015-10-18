@@ -12,7 +12,6 @@ import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import org.apache.commons.validator.routines.EmailValidator;
 
 /**

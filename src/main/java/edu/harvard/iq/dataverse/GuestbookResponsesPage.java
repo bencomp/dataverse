@@ -5,7 +5,6 @@
  */
 package edu.harvard.iq.dataverse;
 
-import java.util.LinkedList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;

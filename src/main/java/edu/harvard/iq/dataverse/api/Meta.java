@@ -11,23 +11,21 @@ import edu.harvard.iq.dataverse.DataFile;
 import edu.harvard.iq.dataverse.DataFileServiceBean;
 import edu.harvard.iq.dataverse.Dataset;
 import edu.harvard.iq.dataverse.DatasetServiceBean;
-import edu.harvard.iq.dataverse.search.SearchServiceBean;
 import edu.harvard.iq.dataverse.export.DDIExportServiceBean;
-
+import edu.harvard.iq.dataverse.search.SearchServiceBean;
+import java.io.ByteArrayOutputStream;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import java.io.ByteArrayOutputStream;
-
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.ServiceUnavailableException;
 
 /*
     Custom API exceptions [NOT YET IMPLEMENTED]

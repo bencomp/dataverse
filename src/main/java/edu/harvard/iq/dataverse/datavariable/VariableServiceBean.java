@@ -6,11 +6,8 @@
 
 package edu.harvard.iq.dataverse.datavariable;
 
-import edu.harvard.iq.dataverse.DataFile;
 import edu.harvard.iq.dataverse.DataTable;
 import java.util.List;
-import java.util.Iterator;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Named;
 import javax.persistence.EntityManager;

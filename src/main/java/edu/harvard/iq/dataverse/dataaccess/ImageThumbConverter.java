@@ -19,29 +19,19 @@
 */
 package edu.harvard.iq.dataverse.dataaccess;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import java.util.Iterator;
-
-import java.awt.Color;
+import edu.harvard.iq.dataverse.DataFile;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageFilter;
-import java.awt.image.ImageProducer;
-import java.awt.image.RGBImageFilter;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
-
-import edu.harvard.iq.dataverse.DataFile;
-import java.util.logging.Logger;
 
 /**
  *

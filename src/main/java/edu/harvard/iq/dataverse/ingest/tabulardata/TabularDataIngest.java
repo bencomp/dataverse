@@ -19,8 +19,8 @@
  */
 package edu.harvard.iq.dataverse.ingest.tabulardata;
 
-import java.io.File;
 import edu.harvard.iq.dataverse.DataTable;
+import java.io.File;
 
 /**
  * A new Ingest object class that represents ingested tabular data object, both

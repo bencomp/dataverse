@@ -1,21 +1,21 @@
 package edu.harvard.iq.dataverse.api;
 
 import edu.harvard.iq.dataverse.Dataverse;
-import edu.harvard.iq.dataverse.search.SearchFields;
 import edu.harvard.iq.dataverse.DataverseServiceBean;
 import edu.harvard.iq.dataverse.DvObjectServiceBean;
-import edu.harvard.iq.dataverse.search.FacetCategory;
-import edu.harvard.iq.dataverse.search.FacetLabel;
-import edu.harvard.iq.dataverse.search.SolrSearchResult;
-import edu.harvard.iq.dataverse.search.SearchServiceBean;
-import edu.harvard.iq.dataverse.search.SolrQueryResponse;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.authorization.users.GuestUser;
 import edu.harvard.iq.dataverse.authorization.users.User;
+import edu.harvard.iq.dataverse.search.FacetCategory;
+import edu.harvard.iq.dataverse.search.FacetLabel;
 import edu.harvard.iq.dataverse.search.SearchConstants;
 import edu.harvard.iq.dataverse.search.SearchException;
+import edu.harvard.iq.dataverse.search.SearchFields;
+import edu.harvard.iq.dataverse.search.SearchServiceBean;
 import edu.harvard.iq.dataverse.search.SearchUtil;
 import edu.harvard.iq.dataverse.search.SolrIndexServiceBean;
+import edu.harvard.iq.dataverse.search.SolrQueryResponse;
+import edu.harvard.iq.dataverse.search.SolrSearchResult;
 import edu.harvard.iq.dataverse.search.SortBy;
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import java.util.ArrayList;

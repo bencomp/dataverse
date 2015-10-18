@@ -20,16 +20,28 @@
 package edu.harvard.iq.dataverse.ingest;
 
 
-import static java.lang.System.*;
-import java.io.*;
-import java.nio.*;
-import java.nio.channels.*;
-import java.util.*;
-import java.lang.reflect.*;
-import java.util.regex.*;
-import java.util.zip.*;
-import java.util.logging.*;
-import org.apache.commons.lang.builder.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import static java.lang.System.err;
+import static java.lang.System.out;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.BufferUnderflowException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * This is a virtually unchanged DVN v2-3 implementation by 

@@ -20,7 +20,12 @@
 package edu.harvard.iq.dataverse.ingest.tabulardata.impl.plugins.sav;
 
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class lists various data-format-related contants shared by 

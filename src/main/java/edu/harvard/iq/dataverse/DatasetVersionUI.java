@@ -6,10 +6,7 @@
 package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.util.MarkupChecker;
-import edu.harvard.iq.dataverse.util.StringUtil;
 import java.io.Serializable;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -20,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
-import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 

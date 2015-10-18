@@ -5,36 +5,36 @@
  */
 package edu.harvard.iq.dataverse.export;
 
-import edu.harvard.iq.dataverse.Dataset;
-import edu.harvard.iq.dataverse.DatasetVersion;
-import edu.harvard.iq.dataverse.DatasetServiceBean;
 import edu.harvard.iq.dataverse.DataFile;
 import edu.harvard.iq.dataverse.DataFileServiceBean;
 import edu.harvard.iq.dataverse.DataTable;
+import edu.harvard.iq.dataverse.Dataset;
+import edu.harvard.iq.dataverse.DatasetServiceBean;
+import edu.harvard.iq.dataverse.DatasetVersion;
 import edu.harvard.iq.dataverse.FileMetadata;
 import edu.harvard.iq.dataverse.datavariable.DataVariable;
-import edu.harvard.iq.dataverse.datavariable.VariableRange;
-import edu.harvard.iq.dataverse.datavariable.VariableServiceBean;
 import edu.harvard.iq.dataverse.datavariable.SummaryStatistic;
 import edu.harvard.iq.dataverse.datavariable.VariableCategory;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import edu.harvard.iq.dataverse.datavariable.VariableRange;
+import edu.harvard.iq.dataverse.datavariable.VariableServiceBean;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import javax.ejb.Stateless;
-import javax.inject.Named;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
+import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 /**
  *

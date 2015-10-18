@@ -7,25 +7,26 @@
 package edu.harvard.iq.dataverse.ingest.metadataextraction.impl.plugins.fits;
 
 
-import edu.harvard.iq.dataverse.ingest.metadataextraction.*;
-import edu.harvard.iq.dataverse.ingest.metadataextraction.spi.*;
+import edu.harvard.iq.dataverse.ingest.metadataextraction.FileMetadataExtractor;
+import edu.harvard.iq.dataverse.ingest.metadataextraction.FileMetadataIngest;
+import edu.harvard.iq.dataverse.ingest.metadataextraction.spi.FileMetadataExtractorSpi;
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.BufferedReader;
-import java.io.InputStreamReader; 
-import java.io.IOException; 
 import java.io.File; 
+import java.io.FileInputStream; 
+import java.io.IOException; 
+import java.io.InputStreamReader;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Map; 
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
+import java.text.SimpleDateFormat; 
 import java.util.ArrayList; 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet; 
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;

@@ -6,7 +6,6 @@
 package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.DatasetFieldType.FieldType;
-import edu.harvard.iq.dataverse.util.StringUtil;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -15,13 +14,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import org.apache.commons.lang.StringUtils;
 
 /**

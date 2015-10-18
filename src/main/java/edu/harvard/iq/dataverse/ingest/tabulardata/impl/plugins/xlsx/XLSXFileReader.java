@@ -20,30 +20,27 @@
 package edu.harvard.iq.dataverse.ingest.tabulardata.impl.plugins.xlsx;
 
 
-import java.io.*;
-import java.io.FileReader;
-import java.util.logging.*;
-import java.util.*;
-
-import javax.inject.Inject;
-
-
 import edu.harvard.iq.dataverse.DataTable;
 import edu.harvard.iq.dataverse.datavariable.DataVariable;
-
 import edu.harvard.iq.dataverse.ingest.tabulardata.TabularDataFileReader;
-import edu.harvard.iq.dataverse.ingest.tabulardata.spi.TabularDataFileReaderSpi;
 import edu.harvard.iq.dataverse.ingest.tabulardata.TabularDataIngest;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
+import edu.harvard.iq.dataverse.ingest.tabulardata.spi.TabularDataFileReaderSpi;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
-
-import org.apache.poi.xssf.eventusermodel.XSSFReader;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xssf.eventusermodel.XSSFReader;
+import org.apache.poi.xssf.model.SharedStringsTable;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -51,8 +48,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 
 /**

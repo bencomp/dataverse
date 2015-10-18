@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,8 +22,8 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.Version;
-import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.NotBlank;
 
 
 /**

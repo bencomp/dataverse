@@ -21,12 +21,9 @@
 package edu.harvard.iq.dataverse.dataaccess;
 
 // java core imports:
-import java.util.Map;
-import java.util.HashMap;
-
-
-// DVN App imports:
 import edu.harvard.iq.dataverse.DataFile;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *

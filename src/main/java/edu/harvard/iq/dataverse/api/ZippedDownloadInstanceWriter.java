@@ -6,22 +6,18 @@
 
 package edu.harvard.iq.dataverse.api;
 
-import java.lang.reflect.Type;
-import java.lang.annotation.Annotation;
-import java.io.OutputStream;
+import edu.harvard.iq.dataverse.dataaccess.DataFileZipper;
 import java.io.IOException;
-
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-
-import edu.harvard.iq.dataverse.dataaccess.*;
-import java.util.logging.Logger;
 
 /**
  *

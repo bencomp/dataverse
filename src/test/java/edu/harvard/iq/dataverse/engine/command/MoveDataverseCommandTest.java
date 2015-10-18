@@ -1,12 +1,12 @@
 package edu.harvard.iq.dataverse.engine.command;
 
-import edu.harvard.iq.dataverse.engine.command.impl.MoveDataverseCommand;
 import edu.harvard.iq.dataverse.Dataverse;
 import edu.harvard.iq.dataverse.DataverseServiceBean;
 import edu.harvard.iq.dataverse.engine.DataverseEngine;
 import edu.harvard.iq.dataverse.engine.TestCommandContext;
 import edu.harvard.iq.dataverse.engine.TestDataverseEngine;
 import edu.harvard.iq.dataverse.engine.command.exception.IllegalCommandException;
+import edu.harvard.iq.dataverse.engine.command.impl.MoveDataverseCommand;
 import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

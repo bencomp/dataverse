@@ -2,16 +2,21 @@ package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.authorization.AuthenticationServiceBean;
 import edu.harvard.iq.dataverse.authorization.DataverseRole;
-import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinUserServiceBean;
-import edu.harvard.iq.dataverse.authorization.users.GuestUser;
 import edu.harvard.iq.dataverse.authorization.Permission;
 import edu.harvard.iq.dataverse.authorization.RoleAssignee;
 import edu.harvard.iq.dataverse.authorization.groups.Group;
 import edu.harvard.iq.dataverse.authorization.groups.GroupServiceBean;
+import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinUserServiceBean;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
+import edu.harvard.iq.dataverse.authorization.users.GuestUser;
 import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.engine.command.Command;
+import static edu.harvard.iq.dataverse.engine.command.CommandHelper.CH;
+import edu.harvard.iq.dataverse.engine.command.DataverseRequest;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -19,13 +24,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.HashSet;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import static edu.harvard.iq.dataverse.engine.command.CommandHelper.CH;
-import edu.harvard.iq.dataverse.engine.command.DataverseRequest;
-import java.util.LinkedList;
 import javax.persistence.Query;
 
 /**

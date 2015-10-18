@@ -7,9 +7,9 @@
 package edu.harvard.iq.dataverse.rserve;
 
 import java.util.logging.Logger;
-import org.rosuda.REngine.Rserve.*;
-import org.rosuda.REngine.Rserve.RserveException;
 import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.Rserve.RConnection;
+import org.rosuda.REngine.Rserve.RserveException;
 
 /**
  * original

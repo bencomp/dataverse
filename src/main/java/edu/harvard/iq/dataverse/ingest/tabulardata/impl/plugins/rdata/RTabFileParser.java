@@ -19,12 +19,13 @@
 */
 package edu.harvard.iq.dataverse.ingest.tabulardata.impl.plugins.rdata;
 
-import java.io.*;
-import java.util.logging.*;
-import org.apache.commons.lang.StringUtils;
-
 import edu.harvard.iq.dataverse.DataTable;
 import edu.harvard.iq.dataverse.datavariable.DataVariable;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.logging.Logger;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * This is a customized version of CSVFileReader;

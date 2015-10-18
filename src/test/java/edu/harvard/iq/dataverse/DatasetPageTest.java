@@ -5,18 +5,9 @@
  */
 package edu.harvard.iq.dataverse;
 
-import edu.harvard.iq.dataverse.authorization.Permission;
-import edu.harvard.iq.dataverse.search.FacetCategory;
-import edu.harvard.iq.dataverse.search.FileView;
-import edu.harvard.iq.dataverse.search.SolrSearchResult;
-import java.util.List;
-import javax.faces.event.ActionEvent;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.model.SelectItem;
+import static org.junit.Assert.assertFalse;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.primefaces.event.FileUploadEvent;
 
 /**
  *

@@ -1,9 +1,9 @@
 package edu.harvard.iq.dataverse.passwordreset;
 
 import edu.harvard.iq.dataverse.MailServiceBean;
-import edu.harvard.iq.dataverse.authorization.providers.builtin.PasswordEncryption;
 import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinUser;
 import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinUserServiceBean;
+import edu.harvard.iq.dataverse.authorization.providers.builtin.PasswordEncryption;
 import edu.harvard.iq.dataverse.util.SystemConfig;
 import java.util.List;
 import java.util.logging.Level;

@@ -1,11 +1,11 @@
 package edu.harvard.iq.dataverse.authorization.providers.builtin;
 
-import edu.harvard.iq.dataverse.search.IndexServiceBean;
 import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.passwordreset.PasswordResetData;
 import edu.harvard.iq.dataverse.passwordreset.PasswordResetException;
 import edu.harvard.iq.dataverse.passwordreset.PasswordResetInitResponse;
 import edu.harvard.iq.dataverse.passwordreset.PasswordResetServiceBean;
+import edu.harvard.iq.dataverse.search.IndexServiceBean;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -8,9 +8,9 @@ package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.settings.SettingsServiceBean;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.net.URL;
 import javax.ejb.EJB;
 
 /**

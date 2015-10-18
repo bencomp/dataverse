@@ -19,12 +19,9 @@
 */
 package edu.harvard.iq.dataverse.dataaccess;
 
-import java.io.File;
+import edu.harvard.iq.dataverse.DataFile;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import edu.harvard.iq.dataverse.DataFile;
-import java.io.InputStream;
 import java.nio.channels.Channel;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;

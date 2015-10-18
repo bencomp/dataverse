@@ -19,17 +19,9 @@
 */
 package edu.harvard.iq.dataverse.ingest.tabulardata;
 
-import java.util.*;
+import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-/**
- * A class that stores information about a variables' invalid data.
- * Akio Sone's original DVN v.2.* implementation, virtually unchanged. 
- * 
- * @author Akio Sone
- * 
- * incorporated into Dataverse 4.0 by Leonid Andreev, 2014
- */
 
 public class InvalidData {
 

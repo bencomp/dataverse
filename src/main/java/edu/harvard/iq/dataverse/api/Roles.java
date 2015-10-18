@@ -1,22 +1,21 @@
 package edu.harvard.iq.dataverse.api;
 
-import edu.harvard.iq.dataverse.api.dto.RoleDTO;
 import edu.harvard.iq.dataverse.Dataverse;
-import edu.harvard.iq.dataverse.authorization.DataverseRole;
 import edu.harvard.iq.dataverse.DataverseServiceBean;
+import edu.harvard.iq.dataverse.api.dto.RoleDTO;
+import edu.harvard.iq.dataverse.authorization.DataverseRole;
 import edu.harvard.iq.dataverse.authorization.Permission;
 import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinUserServiceBean;
+import edu.harvard.iq.dataverse.engine.command.impl.CreateRoleCommand;
+import edu.harvard.iq.dataverse.engine.command.impl.DeleteRoleCommand;
+import static edu.harvard.iq.dataverse.util.json.JsonPrinter.json;
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-
-import static edu.harvard.iq.dataverse.util.json.JsonPrinter.*;
-import edu.harvard.iq.dataverse.engine.command.impl.CreateRoleCommand;
-import edu.harvard.iq.dataverse.engine.command.impl.DeleteRoleCommand;
-import javax.ejb.Stateless;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;

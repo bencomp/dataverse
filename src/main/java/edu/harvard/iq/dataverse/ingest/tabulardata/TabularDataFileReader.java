@@ -20,10 +20,11 @@
 
 package edu.harvard.iq.dataverse.ingest.tabulardata;
 
-import edu.harvard.iq.dataverse.ingest.tabulardata.spi.*;
-//import edu.harvard.iq.dataverse.ingest.plugin.metadata.*;
-import java.io.*;
-import static java.lang.System.*;
+import edu.harvard.iq.dataverse.ingest.tabulardata.spi.TabularDataFileReaderSpi;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import static java.lang.System.out;
 import java.util.regex.Matcher;
 
 /**

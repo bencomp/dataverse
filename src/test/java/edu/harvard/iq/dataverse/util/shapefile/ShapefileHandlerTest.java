@@ -9,27 +9,22 @@ package edu.harvard.iq.dataverse.util.shapefile;
 
 //import edu.harvard.iq.dataverse.util.ZipMaker;
 import edu.harvard.iq.dataverse.util.ShapefileHandler;
-
-import java.util.Arrays;
-import java.util.List;
 import java.io.File;
-
-import org.junit.Rule;
-import org.junit.Test;
-
-
-import org.junit.rules.TemporaryFolder;
-import static org.junit.Assert.assertEquals;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import static org.junit.Assert.assertEquals;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 
 // Dataverse/4.0/QA/4.0_files/ingest_4.0/dta/date_new_stata.dta

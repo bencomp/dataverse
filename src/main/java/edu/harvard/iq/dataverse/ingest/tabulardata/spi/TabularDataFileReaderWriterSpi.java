@@ -20,11 +20,10 @@
 
 package edu.harvard.iq.dataverse.ingest.tabulardata.spi;
 
+import edu.harvard.iq.dataverse.ingest.plugin.spi.IngestServiceProvider;
+import static java.lang.System.out;
 import java.nio.MappedByteBuffer;
-import java.util.logging.*;
-import static java.lang.System.*;
-
-import edu.harvard.iq.dataverse.ingest.plugin.spi.*;
+import java.util.logging.Logger;
 
 
 /**

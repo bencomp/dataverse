@@ -19,10 +19,9 @@
 */
 package edu.harvard.iq.dataverse.ingest;
 
-import edu.harvard.iq.dataverse.DataFile;
 import java.io.Serializable;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *

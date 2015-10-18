@@ -6,26 +6,21 @@
 
 package edu.harvard.iq.dataverse;
 
+import edu.harvard.iq.dataverse.datavariable.DataVariable;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.Size;
 import javax.persistence.OrderBy;
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.URL;
-
-import edu.harvard.iq.dataverse.datavariable.DataVariable;
-import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Index;
 import javax.persistence.Table;
 
 /**

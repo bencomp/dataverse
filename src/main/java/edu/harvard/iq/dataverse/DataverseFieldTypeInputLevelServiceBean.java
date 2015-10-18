@@ -7,8 +7,6 @@ package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.util.LruCache;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Named;
 import javax.persistence.EntityManager;

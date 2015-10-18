@@ -6,8 +6,6 @@
 
 package edu.harvard.iq.dataverse.api;
 
-import java.util.List;
-
 /**
  *
  * @author Leonid Andreev

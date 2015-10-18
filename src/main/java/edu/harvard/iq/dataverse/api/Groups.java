@@ -5,21 +5,21 @@ import edu.harvard.iq.dataverse.authorization.groups.impl.ipaddress.IpGroupProvi
 import edu.harvard.iq.dataverse.authorization.groups.impl.shib.ShibGroup;
 import edu.harvard.iq.dataverse.authorization.groups.impl.shib.ShibGroupProvider;
 import edu.harvard.iq.dataverse.util.json.JsonParser;
-import javax.ejb.Stateless;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-import static edu.harvard.iq.dataverse.util.json.JsonPrinter.*;
+import static edu.harvard.iq.dataverse.util.json.JsonPrinter.json;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 /**
  *
  * @author michael

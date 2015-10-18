@@ -5,16 +5,16 @@ import edu.harvard.iq.dataverse.authorization.AuthenticationProviderDisplayInfo;
 import edu.harvard.iq.dataverse.authorization.AuthenticationRequest;
 import edu.harvard.iq.dataverse.authorization.AuthenticationResponse;
 import edu.harvard.iq.dataverse.authorization.CredentialsAuthenticationProvider;
+import edu.harvard.iq.dataverse.authorization.CredentialsAuthenticationProvider.Credential;
+import edu.harvard.iq.dataverse.authorization.RoleAssignee;
 import edu.harvard.iq.dataverse.authorization.UserLister;
+import edu.harvard.iq.dataverse.authorization.groups.Group;
 import edu.harvard.iq.dataverse.authorization.groups.GroupProvider;
 import edu.harvard.iq.dataverse.authorization.users.User;
-import java.util.Arrays;
-import java.util.List;
-import static edu.harvard.iq.dataverse.authorization.CredentialsAuthenticationProvider.Credential;
-import edu.harvard.iq.dataverse.authorization.RoleAssignee;
-import edu.harvard.iq.dataverse.authorization.groups.Group;
 import edu.harvard.iq.dataverse.engine.command.DataverseRequest;
 import edu.harvard.iq.dataverse.passwordreset.PasswordResetException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**

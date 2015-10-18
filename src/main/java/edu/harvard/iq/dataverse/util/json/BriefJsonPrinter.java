@@ -1,8 +1,8 @@
 package edu.harvard.iq.dataverse.util.json;
 
 import edu.harvard.iq.dataverse.DatasetVersion;
-import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinUser;
 import edu.harvard.iq.dataverse.MetadataBlock;
+import edu.harvard.iq.dataverse.authorization.providers.builtin.BuiltinUser;
 import static edu.harvard.iq.dataverse.util.json.NullSafeJsonBuilder.jsonObjectBuilder;
 import javax.json.JsonObjectBuilder;
 

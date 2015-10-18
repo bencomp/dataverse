@@ -6,15 +6,15 @@
 
 package edu.harvard.iq.dataverse.ingest.metadataextraction.spi;
 
-import edu.harvard.iq.dataverse.ingest.metadataextraction.*;
-import java.util.logging.*;
-import java.io.*;
-
-import edu.harvard.iq.dataverse.ingest.plugin.spi.RegisterableService;
+import edu.harvard.iq.dataverse.ingest.metadataextraction.FileMetadataExtractor;
 import edu.harvard.iq.dataverse.ingest.plugin.spi.IngestServiceProvider;
 import edu.harvard.iq.dataverse.ingest.plugin.spi.ServiceRegistry;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 /**
  *

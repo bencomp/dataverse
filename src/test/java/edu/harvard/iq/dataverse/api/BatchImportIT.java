@@ -1,25 +1,20 @@
 package edu.harvard.iq.dataverse.api;
 
+import static com.jayway.restassured.RestAssured.given;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.path.xml.XmlPath;
+import com.jayway.restassured.response.Response;
 import java.io.File;
 import java.io.IOException;
-import com.jayway.restassured.response.Response;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.UUID;
 import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static com.jayway.restassured.RestAssured.given;
-import com.jayway.restassured.path.xml.XmlPath;
-import java.io.StringReader;
-import java.io.StringWriter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -28,7 +23,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import static junit.framework.Assert.assertEquals;
-import org.junit.Ignore;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class BatchImportIT {
 
