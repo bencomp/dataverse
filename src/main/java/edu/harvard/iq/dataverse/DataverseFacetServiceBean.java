@@ -15,7 +15,7 @@ import javax.persistence.Query;
  */
 @Stateless
 @Named
-public class DataverseFacetServiceBean implements java.io.Serializable {
+public class DataverseFacetServiceBean implements java.io.Serializable, Remover<DataverseFacet> {
     
     public static final LruCache<Long,List<DataverseFacet>> cache = new LruCache();
     
@@ -53,10 +53,10 @@ public class DataverseFacetServiceBean implements java.io.Serializable {
         
         dataverseFacet.setDisplayOrder(diplayOrder);
         
-        DatasetFieldType dsfType = (DatasetFieldType)em.find(DatasetFieldType.class,datasetFieldId);
+        DatasetFieldType dsfType = em.find(DatasetFieldType.class, datasetFieldId);
         dataverseFacet.setDatasetFieldType(dsfType);
         
-        Dataverse dataverse = (Dataverse)em.find(Dataverse.class,dataverseId);
+        Dataverse dataverse = em.find(Dataverse.class, dataverseId);
         dataverseFacet.setDataverse(dataverse);
         
         dataverse.getDataverseFacets().add(dataverseFacet);

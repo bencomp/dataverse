@@ -44,7 +44,7 @@ import javax.persistence.TypedQuery;
 
 @Stateless
 @Named
-public class DataFileServiceBean implements java.io.Serializable {
+public class DataFileServiceBean implements java.io.Serializable, Finder<DataFile>, Saver<DataFile> {
     
     private static final Logger logger = Logger.getLogger(DataFileServiceBean.class.getCanonicalName());
     @EJB
@@ -132,7 +132,7 @@ public class DataFileServiceBean implements java.io.Serializable {
     private static final String MIME_TYPE_UNDETERMINED_BINARY = "application/binary";
     
     public DataFile find(Object pk) {
-        return (DataFile) em.find(DataFile.class, pk);
+        return em.find(DataFile.class, pk);
     }   
     
     /*public DataFile findByMD5(String md5Value){

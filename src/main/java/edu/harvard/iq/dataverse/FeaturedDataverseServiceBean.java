@@ -22,7 +22,7 @@ import javax.persistence.Query;
  */
 @Stateless
 @Named
-public class FeaturedDataverseServiceBean {
+public class FeaturedDataverseServiceBean implements Remover<DataverseFeaturedDataverse> {
     @PersistenceContext(unitName = "VDCNet-ejbPU")
     private EntityManager em;
     
@@ -96,10 +96,10 @@ public class FeaturedDataverseServiceBean {
         
         dataverseFeaturedDataverse.setDisplayOrder(diplayOrder);
         
-        Dataverse dataverse = (Dataverse)em.find(Dataverse.class,dataverseId);
+        Dataverse dataverse = em.find(Dataverse.class,dataverseId);
         dataverseFeaturedDataverse.setDataverse(dataverse);
         
-        Dataverse featuredDataverse = (Dataverse)em.find(Dataverse.class,featuredDataverseId);
+        Dataverse featuredDataverse = em.find(Dataverse.class,featuredDataverseId);
         dataverseFeaturedDataverse.setFeaturedDataverse(featuredDataverse);
 
         em.persist(dataverseFeaturedDataverse);

@@ -27,7 +27,7 @@ import javax.persistence.TypedQuery;
  */
 @Stateless
 @Named
-public class DataverseRoleServiceBean implements java.io.Serializable {
+public class DataverseRoleServiceBean implements java.io.Serializable, Saver<DataverseRole> {
 
     private static final Logger logger = Logger.getLogger(IndexServiceBean.class.getCanonicalName());
 

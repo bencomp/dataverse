@@ -13,7 +13,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 @Named
-public class MetadataBlockServiceBean {
+public class MetadataBlockServiceBean implements Saver<MetadataBlock> {
     
     @PersistenceContext(unitName = "VDCNet-ejbPU")
     private EntityManager em;

@@ -22,7 +22,7 @@ import javax.persistence.Query;
  */
 @Stateless
 @Named
-public class DataverseFieldTypeInputLevelServiceBean {
+public class DataverseFieldTypeInputLevelServiceBean implements Remover<DataverseFieldTypeInputLevel> {
 
 //    private static final Logger logger = Logger.getLogger(DataverseFieldTypeInputLevelServiceBean.class.getCanonicalName());
     public static final LruCache<Long, List<DataverseFieldTypeInputLevel>> cache = new LruCache();

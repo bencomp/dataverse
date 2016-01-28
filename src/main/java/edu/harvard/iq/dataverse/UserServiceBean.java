@@ -11,7 +11,7 @@ import javax.persistence.PersistenceContext;
 
 @Stateless
 @Named
-public class UserServiceBean {
+public class UserServiceBean implements Finder<AuthenticatedUser>, Saver<AuthenticatedUser> {
 
     private static final Logger logger = Logger.getLogger(UserServiceBean.class.getCanonicalName());
 
@@ -21,7 +21,7 @@ public class UserServiceBean {
     @EJB IndexServiceBean indexService;
 
     public AuthenticatedUser find(Object pk) {
-        return (AuthenticatedUser) em.find(AuthenticatedUser.class, pk);
+        return em.find(AuthenticatedUser.class, pk);
     }    
 
     public AuthenticatedUser save( AuthenticatedUser user ) {

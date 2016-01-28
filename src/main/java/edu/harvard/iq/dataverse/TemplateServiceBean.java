@@ -16,7 +16,7 @@ import javax.persistence.Query;
  */
 @Stateless
 @Named
-public class TemplateServiceBean {
+public class TemplateServiceBean implements Finder<Template>, Saver<Template> {
 
     private static final Logger logger = Logger.getLogger(DatasetServiceBean.class.getCanonicalName());
     @EJB

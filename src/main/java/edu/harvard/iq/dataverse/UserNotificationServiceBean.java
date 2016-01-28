@@ -25,7 +25,7 @@ import javax.persistence.TypedQuery;
  */
 @Stateless
 @Named
-public class UserNotificationServiceBean implements Finder<UserNotification>, Saver<UserNotification> {
+public class UserNotificationServiceBean implements Finder<UserNotification>, Saver<UserNotification>, Remover<UserNotification> {
 
     private static final Logger logger = Logger.getLogger(UserNotificationServiceBean.class.getCanonicalName());
 

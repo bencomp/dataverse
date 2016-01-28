@@ -21,7 +21,7 @@ import javax.persistence.TypedQuery;
  */
 @Stateless
 @Named
-public class DatasetFieldServiceBean implements java.io.Serializable {
+public class DatasetFieldServiceBean implements java.io.Serializable, Saver<DatasetFieldType>, Finder<DatasetFieldType> {
 
     @PersistenceContext(unitName = "VDCNet-ejbPU")
     private EntityManager em;
@@ -56,7 +56,7 @@ public class DatasetFieldServiceBean implements java.io.Serializable {
     }
 
     public DatasetFieldType find(Object pk) {
-        return (DatasetFieldType) em.find(DatasetFieldType.class, pk);
+        return em.find(DatasetFieldType.class, pk);
     }
 
     public DatasetFieldType findByName(String name) {
@@ -107,7 +107,7 @@ public class DatasetFieldServiceBean implements java.io.Serializable {
     }
 
     public ControlledVocabularyValue findControlledVocabularyValue(Object pk) {
-        return (ControlledVocabularyValue) em.find(ControlledVocabularyValue.class, pk);
+        return em.find(ControlledVocabularyValue.class, pk);
     }
    
     /**

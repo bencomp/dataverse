@@ -45,7 +45,7 @@ import javax.persistence.TypedQuery;
  */
 @Stateless
 @Named
-public class DataverseServiceBean implements java.io.Serializable {
+public class DataverseServiceBean implements java.io.Serializable, Finder<Dataverse>, Saver<Dataverse> {
 
     private static final Logger logger = Logger.getLogger(DataverseServiceBean.class.getCanonicalName());
     @EJB
@@ -82,7 +82,7 @@ public class DataverseServiceBean implements java.io.Serializable {
     }
 
     public Dataverse find(Object pk) {
-        return (Dataverse) em.find(Dataverse.class, pk);
+        return em.find(Dataverse.class, pk);
     }
 
     public List<Dataverse> findAll() {
@@ -193,7 +193,7 @@ public class DataverseServiceBean implements java.io.Serializable {
     }
 
     public MetadataBlock findMDB(Long id) {
-        return (MetadataBlock) em.find(MetadataBlock.class, id);
+        return em.find(MetadataBlock.class, id);
     }
 
     public MetadataBlock findMDBByName(String name) {
@@ -216,7 +216,7 @@ public class DataverseServiceBean implements java.io.Serializable {
     }
     
     public DataverseFacet findFacet(Long id) {
-        return (DataverseFacet) em.find(DataverseFacet.class, id);
+        return em.find(DataverseFacet.class, id);
     }
     
     public List<DataverseFacet> findAllDataverseFacets() {

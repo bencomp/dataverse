@@ -29,7 +29,7 @@ import javax.persistence.TypedQuery;
  */
 @Stateless
 @Named
-public class DatasetVersionServiceBean implements java.io.Serializable {
+public class DatasetVersionServiceBean implements java.io.Serializable, Finder<DatasetVersion> {
 
     private static final Logger logger = Logger.getLogger(DatasetVersionServiceBean.class.getCanonicalName());
     
@@ -137,7 +137,7 @@ public class DatasetVersionServiceBean implements java.io.Serializable {
     } // end RetrieveDatasetVersionResponse
     
     public DatasetVersion find(Object pk) {
-        return (DatasetVersion) em.find(DatasetVersion.class, pk);
+        return em.find(DatasetVersion.class, pk);
     }
 
     public DatasetVersion findByFriendlyVersionNumber(Long datasetId, String friendlyVersionNumber) {

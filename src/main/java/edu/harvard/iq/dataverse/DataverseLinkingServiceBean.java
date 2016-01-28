@@ -21,7 +21,7 @@ import javax.persistence.TypedQuery;
  */
 @Stateless
 @Named
-public class DataverseLinkingServiceBean implements java.io.Serializable {
+public class DataverseLinkingServiceBean implements java.io.Serializable, Saver<DataverseLinkingDataverse> {
 
     @PersistenceContext(unitName = "VDCNet-ejbPU")
     private EntityManager em;
@@ -52,12 +52,13 @@ public class DataverseLinkingServiceBean implements java.io.Serializable {
         return retList;
     }
     
-    public void save(DataverseLinkingDataverse dataverseLinkingDataverse) {
+    public DataverseLinkingDataverse save(DataverseLinkingDataverse dataverseLinkingDataverse) {
         if (dataverseLinkingDataverse.getId() == null) {
             em.persist(dataverseLinkingDataverse);
         } else {
             em.merge(dataverseLinkingDataverse);
         }
+        return dataverseLinkingDataverse;
     }
 
     public boolean alreadyLinked(Dataverse definitionPoint, Dataverse dataverseToLinkTo) {

@@ -18,7 +18,7 @@ import javax.persistence.Query;
  */
 @Stateless
 @Named
-public class GuestbookServiceBean implements java.io.Serializable {
+public class GuestbookServiceBean implements java.io.Serializable, Finder<Guestbook>, Saver<Guestbook> {
     
     @PersistenceContext(unitName = "VDCNet-ejbPU")
     private EntityManager em;
@@ -29,7 +29,7 @@ public class GuestbookServiceBean implements java.io.Serializable {
         if (guestbookId != null) {
             queryString = "select count(o.id) from Dataset  o  where o.guestbook_id  = " + guestbookId + " ";
         } else {
-            return new Long(0) ;
+            return 0L;
         }
         Query query = em.createNativeQuery(queryString);
         return (Long) query.getSingleResult();

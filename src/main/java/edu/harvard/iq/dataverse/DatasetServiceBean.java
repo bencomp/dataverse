@@ -45,7 +45,7 @@ import org.ocpsoft.common.util.Strings;
  */
 @Stateless
 @Named
-public class DatasetServiceBean implements java.io.Serializable {
+public class DatasetServiceBean implements java.io.Serializable, Finder<Dataset> {
 
     private static final Logger logger = Logger.getLogger(DatasetServiceBean.class.getCanonicalName());
     @EJB
