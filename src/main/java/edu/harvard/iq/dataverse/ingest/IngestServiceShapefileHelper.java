@@ -53,7 +53,7 @@ public class IngestServiceShapefileHelper {
         if (this.dataFileList==null){
             return null;
         }
-        if (this.dataFileList.size()==0){
+        if (this.dataFileList.isEmpty()){
             return null;
         }
         return this.dataFileList;

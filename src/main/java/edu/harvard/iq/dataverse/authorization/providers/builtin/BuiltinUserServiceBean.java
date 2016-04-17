@@ -43,8 +43,8 @@ public class BuiltinUserServiceBean {
     public BuiltinUser save(BuiltinUser dataverseUser) {
         if ( dataverseUser.getId() == null ) {
             // see that the username is unique
-            if ( em.createNamedQuery("BuiltinUser.findByUserName")
-                    .setParameter("userName", dataverseUser.getUserName()).getResultList().size() > 0 ) {
+            if (!em.createNamedQuery("BuiltinUser.findByUserName")
+                    .setParameter("userName", dataverseUser.getUserName()).getResultList().isEmpty()) {
                 throw new IllegalArgumentException( "BuiltinUser with username '" + dataverseUser.getUserName() + "' already exists.");
             }
             em.persist( dataverseUser );

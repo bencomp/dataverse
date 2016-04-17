@@ -974,7 +974,7 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
         }
         
         
-        if (metadataKeys != null && metadataKeys.size() > 0) {
+        if (metadataKeys != null && !metadataKeys.isEmpty()) {
             summary = summary.concat ("The following recognized metadata keys " + 
                     "have been found in the FITS file:\n");
             for (String key : metadataKeys) {

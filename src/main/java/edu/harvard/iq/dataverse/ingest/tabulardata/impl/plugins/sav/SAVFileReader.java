@@ -2370,7 +2370,7 @@ public class SAVFileReader  extends TabularDataFileReader{
         dateFormatList = new String[varQnty];
 
         boolean hasStringVarContinuousBlock =
-                obsNonVariableBlockSet.size() > 0 ? true : false;
+                !obsNonVariableBlockSet.isEmpty() ? true : false;
         dbgLog.fine("hasStringVarContinuousBlock=" + hasStringVarContinuousBlock);
 
         int ii = 0;
@@ -2867,7 +2867,7 @@ public class SAVFileReader  extends TabularDataFileReader{
 
 
                         // write to tab file
-                        if (casewiseRecordForTabFile.size() > 0) {
+                        if (!casewiseRecordForTabFile.isEmpty()) {
                             pwout.println(StringUtils.join(casewiseRecordForTabFile, "\t"));
                         }
 
@@ -2952,8 +2952,8 @@ public class SAVFileReader  extends TabularDataFileReader{
         
         PrintWriter pwout = createOutputWriter ( stream ); 
         
-        boolean hasStringVarContinuousBlock = 
-            obsNonVariableBlockSet.size() > 0 ? true : false;
+        boolean hasStringVarContinuousBlock =
+                !obsNonVariableBlockSet.isEmpty() ? true : false;
         dbgLog.fine("hasStringVarContinuousBlock="+hasStringVarContinuousBlock);
         
         int ii = 0;
@@ -3300,7 +3300,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                 } // end: loop-k(2nd: variablte-wise-check)
 
 		// write to tab file
-		if (casewiseRecordForTabFile.size() > 0) {
+		if (!casewiseRecordForTabFile.isEmpty()) {
 		    pwout.println(StringUtils.join(casewiseRecordForTabFile, "\t"));
 		}
 		

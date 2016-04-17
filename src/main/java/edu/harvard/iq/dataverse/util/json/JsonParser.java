@@ -391,7 +391,7 @@ public class JsonParser {
 
         }
         // if we have found any subjects in the keyword list, then update the keyword and subject fields appropriately.
-        if (subjects.size() > 0) {
+        if (!subjects.isEmpty()) {
             keywordField.setDatasetFieldCompoundValues(filteredValues);
 
                DatasetField subjectField = new DatasetField();

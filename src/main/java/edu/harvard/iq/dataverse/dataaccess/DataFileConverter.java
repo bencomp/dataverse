@@ -282,7 +282,7 @@ public class DataFileConverter {
                     vl.put(vc.getValue(), vc.getLabel());
                 }
             }
-            if (vl.size() > 0){
+            if (!vl.isEmpty()){
                 vls.put("v"+dv.getId(), vl);
             }
         }

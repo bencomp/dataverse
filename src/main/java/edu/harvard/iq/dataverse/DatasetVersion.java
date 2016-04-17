@@ -798,7 +798,7 @@ public class DatasetVersion implements Serializable {
         
         if (this.getDataset().isHarvested()) {
             String distributorName = getDistributorName();
-            if (distributorName != null && distributorName.trim().length() > 0) {
+            if (distributorName != null && !distributorName.trim().isEmpty()) {
                 if (!StringUtil.isEmpty(str)) {
                     str += ". ";
                 }

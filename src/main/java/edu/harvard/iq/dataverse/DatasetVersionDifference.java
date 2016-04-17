@@ -534,11 +534,11 @@ public class DatasetVersionDifference {
     public String getFileNote() {
         String retString = "";
 
-        if (addedFiles.size() > 0) {
+        if (!addedFiles.isEmpty()) {
             retString = "Files (Added: " + addedFiles.size();
         }
 
-        if (removedFiles.size() > 0) {
+        if (!removedFiles.isEmpty()) {
             if (retString.isEmpty()) {
                 retString = "Files (Removed: " + removedFiles.size();
             } else {
@@ -546,7 +546,7 @@ public class DatasetVersionDifference {
             }
         }
 
-        if (changedFileMetadata.size() > 0) {
+        if (!changedFileMetadata.isEmpty()) {
             if (retString.isEmpty()) {
                 retString = "Files (Changed File Metadata: " + changedFileMetadata.size() / 2;
             } else {
@@ -648,7 +648,7 @@ public class DatasetVersionDifference {
         // same study file, the file metadatas ARE version-specific, so some of
         // the fields there (filename, etc.) may be different. If this is the
         // case, we want to display these differences as well.
-        if (originalVersion.getFileMetadatas().size() == 0 && newVersion.getFileMetadatas().size() == 0) {
+        if (originalVersion.getFileMetadatas().isEmpty() && newVersion.getFileMetadatas().isEmpty()) {
             noFileDifferencesFoundLabel = "No data files in either version of the study";
             return;
         }
@@ -764,7 +764,7 @@ public class DatasetVersionDifference {
             j++;
         }
 
-        if (datasetFilesDiffList.size() == 0) {
+        if (datasetFilesDiffList.isEmpty()) {
             noFileDifferencesFoundLabel = "These study versions have identical sets of data files";
         }
     }

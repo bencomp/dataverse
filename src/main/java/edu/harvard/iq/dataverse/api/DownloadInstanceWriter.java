@@ -117,7 +117,7 @@ public class DownloadInstanceWriter implements MessageBodyWriter<DownloadInstanc
                             // instead. 
                             // -- L.A. 4.0 beta 9
                             
-                            if (di.getExtraArguments() != null && di.getExtraArguments().size() > 0) {
+                            if (di.getExtraArguments() != null && !di.getExtraArguments().isEmpty()) {
                                 logger.fine("processing extra arguments list of length "+di.getExtraArguments().size());
                                 List <DataVariable> variableList = new ArrayList<>();
                                 String subsetVariableHeader = null;
@@ -138,7 +138,7 @@ public class DownloadInstanceWriter implements MessageBodyWriter<DownloadInstanc
                                         }
                                     }  
                                 }
-                                if (variableList.size() > 0) {
+                                if (!variableList.isEmpty()) {
                                     TabularSubsetInputStream subsetInputStream = null; 
                                 
                                     try {

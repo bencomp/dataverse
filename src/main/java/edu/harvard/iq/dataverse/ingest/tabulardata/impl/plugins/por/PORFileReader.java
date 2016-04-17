@@ -196,7 +196,7 @@ public class PORFileReader  extends TabularDataFileReader{
                 
                 if (headerId.equals("F")) {
                     // missing value
-                    if ((missingValueTable !=null) && (missingValueTable.size()>0)){
+                    if ((missingValueTable !=null) && (!missingValueTable.isEmpty())){
                         processMissingValueData();
                     }
                 }

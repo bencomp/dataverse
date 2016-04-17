@@ -498,7 +498,7 @@ public class IngestServiceBean {
                     try {unZippedIn.close();} catch (Exception zEx) {}
                 }
             }
-            if (datafiles.size() > 0) {
+            if (!datafiles.isEmpty()) {
                 // link the data files to the dataset/version: 
                 Iterator<DataFile> itf = datafiles.iterator();
                 while (itf.hasNext()) {
@@ -577,7 +577,7 @@ public class IngestServiceBean {
             }
             */
              
-            if (datafiles.size() > 0) {
+            if (!datafiles.isEmpty()) {
                 return datafiles;
             }else{
                 logger.severe("No files added from directory of rezipped shapefiles");
@@ -869,7 +869,7 @@ public class IngestServiceBean {
     }
     
     public void addFiles (DatasetVersion version, List<DataFile> newFiles) {
-        if (newFiles != null && newFiles.size() > 0) {
+        if (newFiles != null && !newFiles.isEmpty()) {
             // final check for duplicate file names; 
             // we tried to make the file names unique on upload, but then 
             // the user may have edited them on the "add files" page, and 
@@ -1328,7 +1328,7 @@ public class IngestServiceBean {
             }
         }
         
-        if (unfValueList.size() > 0) {
+        if (!unfValueList.isEmpty()) {
             unfValues = unfValueList.toArray(unfValues);
         
             logger.fine("Attempting to calculate new UNF from total of " + unfValueList.size() + " file-level signatures.");

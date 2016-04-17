@@ -110,7 +110,7 @@ public class VariableNameCheckerForR {
     
     public boolean hasRenamedVariables(){
         boolean result = false;
-        if (raw2safeTable.size() > 0){
+        if (!raw2safeTable.isEmpty()){
             result = true;
         }
         return result;

@@ -139,7 +139,7 @@ public class DataFile extends DvObject {
     }
     
     public DataTable getDataTable() {
-        if ( getDataTables() != null && getDataTables().size() > 0 ) {
+        if ( getDataTables() != null && !getDataTables().isEmpty()) {
             return getDataTables().get(0);
         } else {
             return null;
@@ -181,7 +181,7 @@ public class DataFile extends DvObject {
     }
     
     public IngestReport getIngestReport() {
-        if ( ingestReports != null && ingestReports.size() > 0 ) {
+        if ( ingestReports != null && !ingestReports.isEmpty()) {
             return ingestReports.get(0);
         } else {
             return null;
@@ -207,7 +207,7 @@ public class DataFile extends DvObject {
     }
     
     public String getIngestReportMessage() {
-        if ( ingestReports != null && ingestReports.size() > 0 ) {
+        if ( ingestReports != null && !ingestReports.isEmpty()) {
             if (ingestReports.get(0).getReport() != null && !"".equals(ingestReports.get(0).getReport())) {
                 return ingestReports.get(0).getReport();
             }
@@ -215,7 +215,7 @@ public class DataFile extends DvObject {
         return "Ingest failed. No further information is available.";
     }
     public boolean isTabularData() {
-        return getDataTables() != null && getDataTables().size() > 0; 
+        return getDataTables() != null && !getDataTables().isEmpty();
     }
     
     public String getOriginalFileFormat() {

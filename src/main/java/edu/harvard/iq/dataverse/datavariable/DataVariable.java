@@ -420,7 +420,7 @@ public class DataVariable implements Serializable {
     }
 
     public boolean isCategorical () {
-        return (categories != null && categories.size() > 0);
+        return (categories != null && !categories.isEmpty());
     }
     
     public boolean isOrderedCategorical () {

@@ -297,7 +297,7 @@ public class MyDataFinder {
         Set<Long> distinctParentIds = new HashSet<>(parentIds);
 
 
-        if ((distinctEntityIds.size() == 0) && (distinctParentIds.size() == 0)) {
+        if ((distinctEntityIds.isEmpty()) && (distinctParentIds.isEmpty())) {
             this.addErrorMessage(DataRetrieverAPI.MSG_NO_RESULTS_FOUND);
             return null;
         }
@@ -340,12 +340,12 @@ public class MyDataFinder {
 
         // Build clauses
         String entityIdClause = null;
-        if (distinctEntityIds.size() > 0){
+        if (!distinctEntityIds.isEmpty()){
             entityIdClause = sqf.buildIdQuery(distinctEntityIds, SearchFields.ENTITY_ID, null);
         }
         
         String parentIdClause = null;
-        if (distinctParentIds.size() > 0){
+        if (!distinctParentIds.isEmpty()){
             parentIdClause = sqf.buildIdQuery(distinctParentIds, SearchFields.PARENT_ID, "datasets OR files");  
         }
         

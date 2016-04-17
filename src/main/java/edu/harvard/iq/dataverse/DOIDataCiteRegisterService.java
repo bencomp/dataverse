@@ -80,7 +80,7 @@ public class DOIDataCiteRegisterService {
                 rc.setDoi(identifier);
                 rc.setXml(xmlMetadata);
                 rc.setStatus("public");
-                if (target == null || target.trim().length() == 0) {
+                if (target == null || target.trim().isEmpty()) {
                     target = rc.getUrl();
                 } else {
                     rc.setUrl(target);
@@ -223,7 +223,7 @@ class DataCiteMetadataTemplate {
         this.xmlMetadata = xmlMetaData;
         Document doc = Jsoup.parseBodyFragment(xmlMetaData);
         Elements identifierElements = doc.select("identifier");
-        if (identifierElements.size() > 0) {
+        if (!identifierElements.isEmpty()) {
             identifier = identifierElements.get(0).html();
         }
         Elements creatorElements = doc.select("creatorName");
@@ -232,15 +232,15 @@ class DataCiteMetadataTemplate {
             creators.add(creatorElement.html());
         }
         Elements titleElements = doc.select("title");
-        if (titleElements.size() > 0) {
+        if (!titleElements.isEmpty()) {
             title = titleElements.get(0).html();
         }
         Elements publisherElements = doc.select("publisher");
-        if (publisherElements.size() > 0) {
+        if (!publisherElements.isEmpty()) {
             publisher = publisherElements.get(0).html();
         }
         Elements publisherYearElements = doc.select("publicationYear");
-        if (publisherYearElements.size() > 0) {
+        if (!publisherYearElements.isEmpty()) {
             publisherYear = publisherYearElements.get(0).html();
         }
     }

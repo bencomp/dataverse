@@ -20,7 +20,7 @@ public class RequiredCheckboxValidator implements Validator {
             String requiredMessage = ((UIInput) component).getRequiredMessage();
             if (requiredMessage == null) {
                 Object label = component.getAttributes().get("label");
-                if (label == null || (label instanceof String && ((String) label).length() == 0)) {
+                if (label == null || (label instanceof String && ((String) label).isEmpty())) {
                     label = component.getValueExpression("label");
                 }
                 if (label == null) {

@@ -3669,7 +3669,7 @@ public class DatasetPage implements java.io.Serializable {
     private void refreshSelectedTabFileTags() {
         selectedTabFileTags = null;
         selectedTabFileTags = new String[0];
-        if (tabFileTagsByName.size() > 0) {
+        if (!tabFileTagsByName.isEmpty()) {
             selectedTabFileTags = new String[tabFileTagsByName.size()];
             for (int i = 0; i < tabFileTagsByName.size(); i++) {
                 selectedTabFileTags[i] = tabFileTagsByName.get(i);
@@ -3742,7 +3742,7 @@ public class DatasetPage implements java.io.Serializable {
             }
         }
 
-        if (selectedCategoriesByName.size() > 0) {
+        if (!selectedCategoriesByName.isEmpty()) {
             selectedTags = new String[selectedCategoriesByName.size()];
             for (int i = 0; i < selectedCategoriesByName.size(); i++) {
                 selectedTags[i] = (String) selectedCategoriesByName.get(i);
@@ -3765,7 +3765,7 @@ public class DatasetPage implements java.io.Serializable {
             refreshSelectedFiles();
         }
         for (FileMetadata fmd : workingVersion.getFileMetadatas()) {
-            if (selectedFiles != null && selectedFiles.size() > 0) {
+            if (selectedFiles != null && !selectedFiles.isEmpty()) {
                 for (FileMetadata fm : selectedFiles) {
                     if (fm.getDataFile().equals(fmd.getDataFile())) {
                         fmd.setCategories(new ArrayList());

@@ -296,7 +296,7 @@ public class DataTableImportDDI {
         cat.setMissing( "Y".equals( xmlr.getAttributeValue(null, "missing") ) ); // default is N, so null sets missing to false
         cat.setDataVariable(dv);
                 
-        if (dv.getCategories() == null || dv.getCategories().size() == 0) {
+        if (dv.getCategories() == null || dv.getCategories().isEmpty()) {
             // if this is the first category we encounter, we'll assume that this
             // categorical data/"factor" variable is ordered. 
             // But we'll switch it back to unordered later, if we encounter

@@ -685,7 +685,7 @@ public class DDIExportServiceBean {
         }
 
         // if we've made it this far, and there is no explicitly defined list of allowed fields: 
-        if (includedFieldSet == null || includedFieldSet.size() == 0) {
+        if (includedFieldSet == null || includedFieldSet.isEmpty()) {
 
             // AND the field is not specifically included on the list of unwanted fields:
             if (excludedFieldSet == null || !excludedFieldSet.contains(fieldName)) {

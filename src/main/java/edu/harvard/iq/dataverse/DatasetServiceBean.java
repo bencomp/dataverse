@@ -215,7 +215,7 @@ public class DatasetServiceBean implements java.io.Serializable {
         String query = "SELECT d FROM Dataset d WHERE d.identifier = '" + userIdentifier + "'";
         query += " and d.protocol ='" + protocol + "'";
         query += " and d.authority = '" + authority + "'";
-        boolean u = em.createQuery(query).getResultList().size() == 0;
+        boolean u = em.createQuery(query).getResultList().isEmpty();
         String nonNullDefaultIfKeyNotFound = "";
         String doiProvider = settingsService.getValueForKey(SettingsServiceBean.Key.DoiProvider, nonNullDefaultIfKeyNotFound);
         if (doiProvider.equals("EZID")) {

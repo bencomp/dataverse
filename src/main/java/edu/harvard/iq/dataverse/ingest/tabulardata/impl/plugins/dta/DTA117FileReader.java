@@ -551,7 +551,7 @@ public class DTA117FileReader extends TabularDataFileReader{
         logger.fine("dataset time stamp: "+datasetTimeStamp);
         
         if (datasetTimeStamp == null ||
-                (datasetTimeStamp.length() > 0 && datasetTimeStamp.length() < 17)) {
+                (!datasetTimeStamp.isEmpty() && datasetTimeStamp.length() < 17)) {
             throw new IOException("unexpected/invalid length of the time stamp in the DTA117 header.");
         } else {
             // TODO: validate the time stamp found against dd Mon yyyy hh:mm; 

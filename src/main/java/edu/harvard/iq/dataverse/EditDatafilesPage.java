@@ -986,7 +986,7 @@ public class EditDatafilesPage implements java.io.Serializable {
             ingestService.startIngestJobs(dataset, (AuthenticatedUser) session.getUser());
         }
 
-        if (mode == FileEditMode.SINGLE && fileMetadatas.size() > 0) {
+        if (mode == FileEditMode.SINGLE && !fileMetadatas.isEmpty()) {
             // If this was a "single file edit", i.e. an edit request sent from 
             // the individual File Landing page, we want to redirect back to 
             // the landing page. BUT ONLY if the file still exists - i.e., if 
@@ -1548,7 +1548,7 @@ public class EditDatafilesPage implements java.io.Serializable {
     private void refreshSelectedTabFileTags() {
         selectedTabFileTags = null;
         selectedTabFileTags = new String[0];
-        if (tabFileTagsByName.size() > 0) {
+        if (!tabFileTagsByName.isEmpty()) {
             selectedTabFileTags = new String[tabFileTagsByName.size()];
             for (int i = 0; i < tabFileTagsByName.size(); i++) {
                 selectedTabFileTags[i] = tabFileTagsByName.get(i);
@@ -1589,7 +1589,7 @@ public class EditDatafilesPage implements java.io.Serializable {
             }
         }
 
-        if (selectedCategoriesByName.size() > 0) {
+        if (!selectedCategoriesByName.isEmpty()) {
             selectedTags = new String[selectedCategoriesByName.size()];
             for (int i = 0; i < selectedCategoriesByName.size(); i++) {
                 selectedTags[i] = (String) selectedCategoriesByName.get(i);

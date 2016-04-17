@@ -59,7 +59,7 @@ public class DataverseFieldTypeInputLevelServiceBean {
      */
     public List<DataverseFieldTypeInputLevel> findByDataverseIdAndDatasetFieldTypeIdList( Long dataverseId, List<Long> datasetFieldIdList){
         msg("---- findByDataverseIdAndDatasetFieldTypeIdList ----");
-        if (datasetFieldIdList==null || datasetFieldIdList.size()==0){
+        if (datasetFieldIdList==null || datasetFieldIdList.isEmpty()){
             return null;
         }
         if (dataverseId == null){                    

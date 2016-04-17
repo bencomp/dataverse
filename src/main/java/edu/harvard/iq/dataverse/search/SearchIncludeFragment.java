@@ -1101,7 +1101,7 @@ public class SearchIncludeFragment implements java.io.Serializable {
         
         if (fileParentDatasets != null) {
             Map<Long,String> descriptionsForHarvestedDatasets = datasetService.getHarvestingDescriptionsForHarvestedDatasets(fileParentDatasets);
-            if (descriptionsForHarvestedDatasets != null && descriptionsForHarvestedDatasets.size() > 0) {
+            if (descriptionsForHarvestedDatasets != null && !descriptionsForHarvestedDatasets.isEmpty()) {
                 for (SolrSearchResult result : searchResultsList) {
                     if (result.getType().equals("files")) {
                         if (descriptionsForHarvestedDatasets.containsKey(result.getParentIdAsLong())) {
@@ -1133,7 +1133,7 @@ public class SearchIncludeFragment implements java.io.Serializable {
                 }
             }
             
-            if (dvObjectParentIds.size() > 0) {
+            if (!dvObjectParentIds.isEmpty()) {
                 Map<Long, String> treePathMap = dvObjectService.getObjectPathsByIds(dvObjectParentIds);
                 if (treePathMap != null) {
                     for (SolrSearchResult result : searchResultsList) {

@@ -348,7 +348,7 @@ public class ImportDDIServiceBean {
                             if (!set.isEmpty()) {
                                 publications.add(set);
                             }
-                            if (publications.size()>0)
+                            if (!publications.isEmpty())
                                 getCitation(dvDTO).addField(FieldDTO.createMultipleCompoundFieldDTO(DatasetFieldConstant.publication, publications));
                         }
                     } else {
@@ -389,7 +389,7 @@ public class ImportDDIServiceBean {
                         //   rp.setText( (String) rpFromDDI );
                     }
                     publications.add(set);
-                    if (publications.size()>0) {
+                    if (!publications.isEmpty()) {
                         getCitation(dvDTO).addField(FieldDTO.createMultipleCompoundFieldDTO(DatasetFieldConstant.publication, publications));
                     }
 
@@ -462,7 +462,7 @@ public class ImportDDIServiceBean {
                  else if (xmlr.getLocalName().equals("notes")) processNotes(xmlr,dvDTO);
             } else if (event == XMLStreamConstants.END_ELEMENT) {
                 if (xmlr.getLocalName().equals("stdyInfo") ) {
-                    if (descriptions.size()>0) {
+                    if (!descriptions.isEmpty()) {
                         getCitation(dvDTO).getFields().add(FieldDTO.createMultipleCompoundFieldDTO("dsDescription", descriptions));
                     }
                     return;
@@ -496,10 +496,10 @@ public class ImportDDIServiceBean {
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
                 if (xmlr.getLocalName().equals("subject")) {
-                    if (keywords.size()>0) {
+                    if (!keywords.isEmpty()) {
                         citation.getFields().add(FieldDTO.createMultipleCompoundFieldDTO("keyword", keywords));
                     }
-                    if (topicClasses.size()>0) {
+                    if (!topicClasses.isEmpty()) {
                         citation.getFields().add(FieldDTO.createMultipleCompoundFieldDTO("topicClassification", topicClasses));
                     }
                     return;
@@ -652,22 +652,22 @@ public class ImportDDIServiceBean {
                         getCitation(dvDTO).addField(FieldDTO.createMultipleCompoundFieldDTO("dateOfCollection", dateOfCollectionStart, dateOfCollectionEnd));
                     }
                   
-                    if (geoUnit.size() > 0) {
+                    if (!geoUnit.isEmpty()) {
                         getGeospatial(dvDTO).addField(FieldDTO.createMultiplePrimitiveFieldDTO("geographicUnit", geoUnit));
                     }
-                    if (unitOfAnalysis.size() > 0) {
+                    if (!unitOfAnalysis.isEmpty()) {
                         getSocialScience(dvDTO).addField(FieldDTO.createMultiplePrimitiveFieldDTO("unitOfAnalysis", unitOfAnalysis));
                     }
-                    if (universe.size() > 0) {
+                    if (!universe.isEmpty()) {
                         getSocialScience(dvDTO).addField(FieldDTO.createMultiplePrimitiveFieldDTO("universe", universe));
                     }
-                    if (kindOfData.size() > 0) {
+                    if (!kindOfData.isEmpty()) {
                         getCitation(dvDTO).addField(FieldDTO.createMultiplePrimitiveFieldDTO("kindOfData", kindOfData));
                     }
-                    if (geoCoverages.size()>0) {
+                    if (!geoCoverages.isEmpty()) {
                         getGeospatial(dvDTO).addField(FieldDTO.createMultipleCompoundFieldDTO("geographicCoverage", geoCoverages));
                     }
-                    if (geoBoundBox.size()>0) {
+                    if (!geoBoundBox.isEmpty()) {
                         getGeospatial(dvDTO).addField(FieldDTO.createMultipleCompoundFieldDTO("geographicBoundingBox", geoBoundBox));
                     }
                     return ;
@@ -1130,10 +1130,10 @@ public class ImportDDIServiceBean {
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
                 if (xmlr.getLocalName().equals("distStmt")) {
-                    if (distributors.size() > 0) {
+                    if (!distributors.isEmpty()) {
                         citation.addField(FieldDTO.createMultipleCompoundFieldDTO("distributor", distributors));
                     }
-                    if (datasetContacts.size() > 0) {
+                    if (!datasetContacts.isEmpty()) {
                         citation.addField(FieldDTO.createMultipleCompoundFieldDTO("datasetContact", datasetContacts));
                     }
                     return;
@@ -1186,13 +1186,13 @@ public class ImportDDIServiceBean {
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
                 if (xmlr.getLocalName().equals("prodStmt")) {
-                    if (software.size()>0) {
+                    if (!software.isEmpty()) {
                         citation.addField(FieldDTO.createMultipleCompoundFieldDTO("software", software));
                     }
-                    if (grants.size()>0) {
+                    if (!grants.isEmpty()) {
                         citation.addField(FieldDTO.createMultipleCompoundFieldDTO("grantNumber", grants));
                     } 
-                    if (producers.size()>0) {
+                    if (!producers.isEmpty()) {
                         citation.getFields().add(FieldDTO.createMultipleCompoundFieldDTO("producer", producers));
                     }
                     return;
@@ -1232,7 +1232,7 @@ public class ImportDDIServiceBean {
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
                 if (xmlr.getLocalName().equals("titlStmt")) {
-                    if (otherIds.size()>0) {
+                    if (!otherIds.isEmpty()) {
                         citation.addField(FieldDTO.createMultipleCompoundFieldDTO("otherId", otherIds));
                     }
                     return;
@@ -1255,7 +1255,7 @@ public class ImportDDIServiceBean {
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
                 if (xmlr.getLocalName().equals("rspStmt")) {
-                    if (authors.size()>0) {
+                    if (!authors.isEmpty()) {
                         FieldDTO author = FieldDTO.createMultipleCompoundFieldDTO("author", authors);
                         citation.getFields().add(author);
                     }
