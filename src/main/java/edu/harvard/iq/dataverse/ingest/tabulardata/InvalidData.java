@@ -85,9 +85,9 @@ public class InvalidData {
         switch(type){
             case 1: case 2: case 3:
                     sb.append("\t\t<invalrng>\n");
-                    for (int k=0; k < invalidValues.size();k++){
-                        sb.append("\t\t\t<item VALUE=\"" + invalidValues.get(k)+"\"/>\n");
-                    }
+                for (String invalidValue : invalidValues) {
+                    sb.append("\t\t\t<item VALUE=\"" + invalidValue + "\"/>\n");
+                }
                     sb.append("\t\t</invalrng>\n");
                 break;
             case -2:

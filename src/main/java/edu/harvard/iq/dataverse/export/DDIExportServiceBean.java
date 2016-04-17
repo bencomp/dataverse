@@ -143,9 +143,9 @@ public class DDIExportServiceBean {
 
             String splitTokens[] = partialExclude.split(",");
 
-            for (int i = 0; i < splitTokens.length; i++) {
-                if (splitTokens[i] != null && !splitTokens[i].equals("")) {
-                    excludedFieldSet.add(splitTokens[i]);
+            for (String splitToken : splitTokens) {
+                if (splitToken != null && !splitToken.equals("")) {
+                    excludedFieldSet.add(splitToken);
                 }
             }
         }
@@ -155,9 +155,9 @@ public class DDIExportServiceBean {
 
             String splitTokens[] = partialInclude.split(",");
 
-            for (int i = 0; i < splitTokens.length; i++) {
-                if (splitTokens[i] != null && !splitTokens[i].equals("")) {
-                    includedFieldSet.add(splitTokens[i]);
+            for (String splitToken : splitTokens) {
+                if (splitToken != null && !splitToken.equals("")) {
+                    includedFieldSet.add(splitToken);
                 }
             }
         }

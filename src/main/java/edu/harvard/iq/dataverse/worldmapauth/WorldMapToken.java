@@ -120,8 +120,8 @@ public class WorldMapToken implements java.io.Serializable {
         
         byte[] mdbytes = md.digest();
         StringBuilder sb = new StringBuilder("");
-        for (int i = 0; i < mdbytes.length; i++) {
-            sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+        for (byte mdbyte : mdbytes) {
+            sb.append(Integer.toString((mdbyte & 0xff) + 0x100, 16).substring(1));
         }
         this.token = sb.toString();
         //this.token = md.toString();

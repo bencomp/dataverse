@@ -157,8 +157,7 @@ public class DdiExportUtil {
                 for (FieldDTO fieldDTO : value.getFields()) {
                     if (DatasetFieldConstant.author.equals(fieldDTO.getTypeName())) {
                         for (HashSet<FieldDTO> foo : fieldDTO.getMultipleCompound()) {
-                            for (Iterator<FieldDTO> iterator = foo.iterator(); iterator.hasNext();) {
-                                FieldDTO next = iterator.next();
+                            for (FieldDTO next : foo) {
                                 if (DatasetFieldConstant.authorName.equals(next.getTypeName())) {
                                     return next.getSinglePrimitive();
                                 }

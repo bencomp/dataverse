@@ -751,8 +751,8 @@ public class RDATAFileReader extends TabularDataFileReader {
                 LOG.fine("variable type name: " + variableTypeName);
                 LOG.fine("variable format: " + variableFormat);
 
-                for (int i = 0; i < variableLevels.length; i++) {
-                    LOG.fine("variable level: " + variableLevels[i]);
+                for (String variableLevel : variableLevels) {
+                    LOG.fine("variable level: " + variableLevel);
                 }
 
                 //dataTable.getDataVariables().get(k).setFormatSchema("RDATA");

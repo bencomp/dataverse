@@ -369,10 +369,10 @@ public class Dataset extends DvObjectContainer {
         if (newCategoryNames != null) {
             Collection<String> oldCategoryNames = getCategoryNames();
 
-            for (int i = 0; i < newCategoryNames.size(); i++) {
-                if (!oldCategoryNames.contains(newCategoryNames.get(i))) {
+            for (String newCategoryName : newCategoryNames) {
+                if (!oldCategoryNames.contains(newCategoryName)) {
                     DataFileCategory newCategory = new DataFileCategory();
-                    newCategory.setName(newCategoryNames.get(i));
+                    newCategory.setName(newCategoryName);
                     newCategory.setDataset(this);
                     this.addFileCategory(newCategory);
                 }
@@ -395,9 +395,9 @@ public class Dataset extends DvObjectContainer {
     public DataFileCategory getCategoryByName(String categoryName) {
         if (categoryName != null && !categoryName.equals("")) {
             if (dataFileCategories != null) {
-                for (int i = 0; i < dataFileCategories.size(); i++) {
-                    if (categoryName.equals(dataFileCategories.get(i).getName())) {
-                        return dataFileCategories.get(i);
+                for (DataFileCategory dataFileCategory : dataFileCategories) {
+                    if (categoryName.equals(dataFileCategory.getName())) {
+                        return dataFileCategory;
                     }
                 }
             }
@@ -415,8 +415,8 @@ public class Dataset extends DvObjectContainer {
     private Collection<String> getCategoryNames() {
         ArrayList<String> ret = new ArrayList<>();
         if (dataFileCategories != null) {
-            for (int i = 0; i < dataFileCategories.size(); i++) {
-                ret.add(dataFileCategories.get(i).getName());
+            for (DataFileCategory dataFileCategory : dataFileCategories) {
+                ret.add(dataFileCategory.getName());
             }
         }
         return ret;

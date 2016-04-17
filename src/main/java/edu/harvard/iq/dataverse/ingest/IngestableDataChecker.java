@@ -548,8 +548,8 @@ public class IngestableDataChecker implements java.io.Serializable {
                 byte[] uchdr = new byte[5];
                 buff.get(uchdr, 0, 5);
                 StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < uchdr.length; i++) {
-                    sb.append(String.format("%02X", uchdr[i]));
+                for (byte anUchdr : uchdr) {
+                    sb.append(String.format("%02X", anUchdr));
                 }
                 String fisrt5bytes = sb.toString();
 

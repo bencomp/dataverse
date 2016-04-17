@@ -3774,17 +3774,17 @@ public class DatasetPage implements java.io.Serializable {
                         }
                         // 2. Tabular DataFile Tags: 
                         if (selectedTags != null) {
-                            for (int i = 0; i < selectedTags.length; i++) {
-                                fmd.addCategoryByName(selectedTags[i]);
+                            for (String selectedTag : selectedTags) {
+                                fmd.addCategoryByName(selectedTag);
                             }
                         }
                         if (fmd.getDataFile().isTabularData()) {
                             fmd.getDataFile().setTags(null);
-                            for (int i = 0; i < selectedTabFileTags.length; i++) {
+                            for (String selectedTabFileTag : selectedTabFileTags) {
 
                                 DataFileTag tag = new DataFileTag();
                                 try {
-                                    tag.setTypeByLabel(selectedTabFileTags[i]);
+                                    tag.setTypeByLabel(selectedTabFileTag);
                                     tag.setDataFile(fmd.getDataFile());
                                     fmd.getDataFile().addTag(tag);
 

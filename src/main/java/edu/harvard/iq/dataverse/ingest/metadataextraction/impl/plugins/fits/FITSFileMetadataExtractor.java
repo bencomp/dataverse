@@ -883,10 +883,10 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
         if (nImageHDUs > 0) {
             // At least one HDU is an image; so the whole file gets to be typed
             // as image - unless it qualifies as one of the Image sub-types:
-            for (int j = 0; j < hduTypes.size(); j++) {
-                if (hduTypes.get(j).equals(HDU_TYPE_IMAGE_CUBE)) {
+            for (String hduType : hduTypes) {
+                if (hduType.equals(HDU_TYPE_IMAGE_CUBE)) {
                     return FILE_TYPE_CUBE;
-                } 
+                }
             }
             
             if (nImageHDUs > 1) {
@@ -1007,9 +1007,9 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
         int count = 0;
 
         if (typeList != null) {
-            for (int i = 0; i<typeList.size(); i++) {
-                if (typeToken.equals(typeList.get(i))) {
-                    count++; 
+            for (String aTypeList : typeList) {
+                if (typeToken.equals(aTypeList)) {
+                    count++;
                 }
             }
         }

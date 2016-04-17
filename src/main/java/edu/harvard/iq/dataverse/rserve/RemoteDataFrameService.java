@@ -655,8 +655,8 @@ public class RemoteDataFrameService {
     public static String[] getValueSet(Map<String, String> mp, String[] keys) {
         
         List<String> tmpvl = new ArrayList<String>();
-        for (int i=0; i< keys.length; i++){
-            tmpvl.add(mp.get(keys[i]));
+        for (String key : keys) {
+            tmpvl.add(mp.get(key));
         }
         String[] tmpv = (String[])tmpvl.toArray(new String[tmpvl.size()]);
         return tmpv;

@@ -2264,20 +2264,19 @@ public class SAVFileReader  extends TabularDataFileReader{
             // missing value processing concerning HIGHEST/LOWEST values
 
             Set<Map.Entry<String,InvalidData>> msvlc = invalidDataTable.entrySet();
-            for (Iterator<Map.Entry<String,InvalidData>> itc = msvlc.iterator(); itc.hasNext();){
-                Map.Entry<String, InvalidData> et = itc.next();
+            for (Map.Entry<String, InvalidData> et : msvlc) {
                 String variable = et.getKey();
-                dbgLog.fine("variable="+variable);
+                dbgLog.fine("variable=" + variable);
                 InvalidData invalidDataInfo = et.getValue();
 
                 if (invalidDataInfo.getInvalidRange() != null &&
-                    !invalidDataInfo.getInvalidRange().isEmpty()){
-                    if (invalidDataInfo.getInvalidRange().get(0).equals(OBSTypeHexValue.get("LOWEST"))){
+                        !invalidDataInfo.getInvalidRange().isEmpty()) {
+                    if (invalidDataInfo.getInvalidRange().get(0).equals(OBSTypeHexValue.get("LOWEST"))) {
                         dbgLog.fine("1st value is LOWEST");
                         invalidDataInfo.getInvalidRange().set(0, "LOWEST");
-                    } else if (invalidDataInfo.getInvalidRange().get(1).equals(OBSTypeHexValue.get("HIGHEST"))){
+                    } else if (invalidDataInfo.getInvalidRange().get(1).equals(OBSTypeHexValue.get("HIGHEST"))) {
                         dbgLog.fine("2nd value is HIGHEST");
-                        invalidDataInfo.getInvalidRange().set(1,"HIGHEST");
+                        invalidDataInfo.getInvalidRange().set(1, "HIGHEST");
                     }
                 }
             }
@@ -3421,20 +3420,20 @@ public class SAVFileReader  extends TabularDataFileReader{
 	
 	byte[] stringBytes = stringBase36.getBytes(); 
 
-	int ret = 0; 
+	int ret = 0;
 
-	for ( int i = 0; i < stringBytes.length; i++ ) {
-	    int value = 0; 
-	    if (stringBytes[i] >= 48 && stringBytes[i] <= 57 ) {
-		// [0-9]
-		value = (int)stringBytes[i] - 48; 
-	    } else if (stringBytes[i] >= 65 && stringBytes[i] <= 90 ) {
-		// [A-Z] 
-		value = (int)stringBytes[i] - 55; 
-	    }
+        for (byte stringByte : stringBytes) {
+            int value = 0;
+            if (stringByte >= 48 && stringByte <= 57) {
+                // [0-9]
+                value = (int) stringByte - 48;
+            } else if (stringByte >= 65 && stringByte <= 90) {
+                // [A-Z]
+                value = (int) stringByte - 55;
+            }
 
-	    ret = (ret * 36) + value;
-	}
+            ret = (ret * 36) + value;
+        }
 
 	return ret; 
     }
@@ -3625,8 +3624,8 @@ public class SAVFileReader  extends TabularDataFileReader{
     
     void print2Darray(Object[][] datatable, String title){
         dbgLog.fine(title);
-        for (int i=0; i< datatable.length; i++){
-            dbgLog.fine(StringUtils.join(datatable[i], "|"));
+        for (Object[] aDatatable : datatable) {
+            dbgLog.fine(StringUtils.join(aDatatable, "|"));
         }
     }    
         

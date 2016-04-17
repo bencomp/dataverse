@@ -1402,59 +1402,58 @@ public class PORFileReader  extends TabularDataFileReader{
 
         dbgLog.fine("missingValueCodeTable="+missingValueCodeTable);
         Set<Map.Entry<String,List<String>>> msvlc = missingValueCodeTable.entrySet();
-        for (Iterator<Map.Entry<String,List<String>>> itc = msvlc.iterator(); itc.hasNext();){
-            Map.Entry<String, List<String>> et = itc.next();
+        for (Map.Entry<String, List<String>> et : msvlc) {
             String variable = et.getKey();
-            dbgLog.fine("variable="+variable);
+            dbgLog.fine("variable=" + variable);
             List<String> codeList = et.getValue();
             List<String> valueList = missingValueTable.get(variable);
-            dbgLog.fine("codeList="+codeList);
-            dbgLog.fine("valueList="+valueList);
+            dbgLog.fine("codeList=" + codeList);
+            dbgLog.fine("valueList=" + valueList);
             int type;
             InvalidData invalidDataInfo = null;
-            if (valueList.size() == 3){
+            if (valueList.size() == 3) {
                 if (codeList.get(0).equals("8") && codeList.get(1).equals("8") &&
-                        codeList.get(2).equals("8") ){
+                        codeList.get(2).equals("8")) {
                     type = 3;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList);
-                } else if (codeList.get(0).equals("9") && codeList.get(1).equals("8")){
+                } else if (codeList.get(0).equals("9") && codeList.get(1).equals("8")) {
                     type = -3;
 
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList.subList(2, 3));
                     invalidDataInfo.setInvalidRange(valueList.subList(0, 2));
 
-                } else if (codeList.get(0).equals("A") && codeList.get(1).equals("8")){
+                } else if (codeList.get(0).equals("A") && codeList.get(1).equals("8")) {
                     type = -3;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList.subList(2, 3));
                     invalidDataInfo.setInvalidRange(valueList.subList(0, 2));
-                } else if (codeList.get(0).equals("B") && codeList.get(1).equals("8")){
+                } else if (codeList.get(0).equals("B") && codeList.get(1).equals("8")) {
                     type = -3;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList.subList(2, 3));
                     invalidDataInfo.setInvalidRange(valueList.subList(0, 2));
                 } else {
-                   dbgLog.severe("unkown missing-value combination(3 values)");
+                    dbgLog.severe("unkown missing-value combination(3 values)");
                 }
-                
-            } else if (valueList.size() == 2){
-                if (codeList.get(0).equals("8") && codeList.get(1).equals("8")){
+
+            } else if (valueList.size() == 2) {
+                if (codeList.get(0).equals("8") && codeList.get(1).equals("8")) {
                     type = 2;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList);
 
-                } else if (codeList.get(0).equals("9")){
+                } else if (codeList.get(0).equals("9")) {
                     type = -2;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidRange(valueList.subList(0, 2));
 
-                } else if (codeList.get(0).equals("A")){
+                } else if (codeList.get(0).equals("A")) {
                     type = -2;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidRange(valueList.subList(0, 2));
-                } else if (codeList.get(0).equals("B")){
+                } else if (codeList.get(0).equals("B")) {
                     type = -2;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidRange(valueList.subList(0, 2));
@@ -1462,8 +1461,8 @@ public class PORFileReader  extends TabularDataFileReader{
                 } else {
                     dbgLog.severe("unknown missing value combination(2 values)");
                 }
-            } else if (valueList.size() == 1){
-                if (codeList.get(0).equals("8")){
+            } else if (valueList.size() == 1) {
+                if (codeList.get(0).equals("8")) {
                     type = 1;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList);
@@ -1478,19 +1477,17 @@ public class PORFileReader  extends TabularDataFileReader{
 
 
         Set<Map.Entry<String,List<String>>> msvl = missingValueTable.entrySet();
-        for (Iterator<Map.Entry<String,List<String>>> it = msvl.iterator(); it.hasNext();){
-            Map.Entry<String, List<String>> et = it.next();
-
+        for (Map.Entry<String, List<String>> et : msvl) {
             String variable = et.getKey();
             List<String> valueList = et.getValue();
 
             List<String> codeList = missingValueCodeTable.get(variable);
 
-            dbgLog.finer("var="+variable+"\tvalue="+valueList+"\t code"+ codeList);
+            dbgLog.finer("var=" + variable + "\tvalue=" + valueList + "\t code" + codeList);
             List<String> temp = new ArrayList<String>();
-            for (int j=0; j<codeList.size(); j++){
-                if (codeList.get(j).equals("8")){
-                  temp.add(valueList.get(j));
+            for (int j = 0; j < codeList.size(); j++) {
+                if (codeList.get(j).equals("8")) {
+                    temp.add(valueList.get(j));
                 }
             }
             missingValueTable.put(variable, temp);
@@ -1678,8 +1675,8 @@ public class PORFileReader  extends TabularDataFileReader{
     
     private void print2Darray(Object[][] datatable, String title){
         dbgLog.fine(title);
-        for (int i=0; i< datatable.length; i++){
-            dbgLog.fine(StringUtils.join(datatable[i], "|"));
+        for (Object[] aDatatable : datatable) {
+            dbgLog.fine(StringUtils.join(aDatatable, "|"));
         }
     }    
     

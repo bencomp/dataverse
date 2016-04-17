@@ -22,12 +22,11 @@ public class StringUtil {
 
     public static final boolean isAlphaNumeric(String str) {
       final char[] chars = str.toCharArray();
-      for (int x = 0; x < chars.length; x++) {      
-        final char c = chars[x];
-        if(! isAlphaNumericChar(c)) {
-            return false;
+        for (final char c : chars) {
+            if (!isAlphaNumericChar(c)) {
+                return false;
+            }
         }
-      }  
       return true;
 }
     public static final boolean isAlphaNumericChar(char c) {

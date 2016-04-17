@@ -460,9 +460,9 @@ public class RJobRequest {
     public String[] getVariableLabels(){
         String [] variableLabels=null;
         List<String> rw = new ArrayList();
-        for(int i=0;i < dataVariablesForRequest.size(); i++){
-            DataVariable dv = (DataVariable) dataVariablesForRequest.get(i);
-                rw.add(dv.getLabel());
+        for (DataVariable aDataVariablesForRequest : dataVariablesForRequest) {
+            DataVariable dv = (DataVariable) aDataVariablesForRequest;
+            rw.add(dv.getLabel());
         }
         
         variableLabels = (String[])rw.toArray(new String[rw.size()]);

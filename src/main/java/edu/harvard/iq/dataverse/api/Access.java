@@ -214,9 +214,9 @@ public class Access extends AbstractApiBean {
                     String variableIdParams[] = subsetParam.split(",");
                     if (variableIdParams != null && variableIdParams.length > 0) {
                         logger.fine(variableIdParams.length + " tokens;");
-                        for (int i = 0; i < variableIdParams.length; i++) {
-                            logger.fine("token: " + variableIdParams[i]);
-                            String token = variableIdParams[i].replaceFirst("^v", "");
+                        for (String variableIdParam : variableIdParams) {
+                            logger.fine("token: " + variableIdParam);
+                            String token = variableIdParam.replaceFirst("^v", "");
                             Long variableId = null;
                             try {
                                 variableId = new Long(token);
@@ -231,9 +231,9 @@ public class Access extends AbstractApiBean {
                                         if (downloadInstance.getExtraArguments() == null) {
                                             downloadInstance.setExtraArguments(new ArrayList<Object>());
                                         }
-                                        logger.fine("putting variable id "+variable.getId()+" on the parameters list of the download instance.");
+                                        logger.fine("putting variable id " + variable.getId() + " on the parameters list of the download instance.");
                                         downloadInstance.getExtraArguments().add(variable);
-                                        
+
                                         //if (!variable.getDataTable().getDataFile().getId().equals(sf.getId())) {
                                         //variableList.add(variable);
                                         //}
@@ -454,11 +454,11 @@ public class Access extends AbstractApiBean {
                 
                 if (fileIdParams != null && fileIdParams.length > 0) {
                     logger.fine(fileIdParams.length + " tokens;");
-                    for (int i = 0; i < fileIdParams.length; i++) {
-                        logger.fine("token: " + fileIdParams[i]);
+                    for (String fileIdParam : fileIdParams) {
+                        logger.fine("token: " + fileIdParam);
                         Long fileId = null;
                         try {
-                            fileId = new Long(fileIdParams[i]);
+                            fileId = new Long(fileIdParam);
                         } catch (NumberFormatException nfe) {
                             fileId = null;
                         }
@@ -466,16 +466,16 @@ public class Access extends AbstractApiBean {
                             logger.fine("attempting to look up file id " + fileId);
                             DataFile file = dataFileService.find(fileId);
                             if (file != null) {
-                                
-                                if ((accessToUnrestrictedFileAuthorized && !file.isRestricted()) 
-                                        || isAccessAuthorized(file, apiToken)) { 
-                                    
+
+                                if ((accessToUnrestrictedFileAuthorized && !file.isRestricted())
+                                        || isAccessAuthorized(file, apiToken)) {
+
                                     if (!file.isRestricted()) {
                                         accessToUnrestrictedFileAuthorized = true;
                                     }
                                     logger.fine("adding datafile (id=" + file.getId() + ") to the download list of the ZippedDownloadInstance.");
                                     //downloadInstance.addDataFile(file);
-                                    
+
                                     if (zipper == null) {
                                         // This is the first file we can serve - so we now know that we are going to be able 
                                         // to produce some output.
@@ -489,7 +489,7 @@ public class Access extends AbstractApiBean {
                                     } else {
                                         String fileName = file.getFileMetadata().getLabel();
                                         String mimeType = file.getContentType();
-                                        
+
                                         zipper.addToManifest(fileName + " (" + mimeType + ") " + " skipped because the total size of the download bundle exceeded the limit of " + zipDownloadSizeLimit + " bytes.\r\n");
                                     }
                                 } else {
@@ -498,7 +498,7 @@ public class Access extends AbstractApiBean {
                                     } else {
                                         zipper.addToManifest(file.getFileMetadata().getLabel() + " IS RESTRICTED AND CANNOT BE DOWNLOADED\r\n");
                                     }
-                                } 
+                                }
 
                             } else {
                                 // Or should we just drop it and make a note in the Manifest?    

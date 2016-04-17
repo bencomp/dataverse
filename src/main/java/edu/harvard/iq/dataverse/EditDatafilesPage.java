@@ -1261,11 +1261,11 @@ public class EditDatafilesPage implements java.io.Serializable {
         // Iterate through list of DataFile objects
         // -----------------------------------------------------------
         if (dFileList != null) {
-            for (int i = 0; i < dFileList.size(); i++) {
-                dataFile = dFileList.get(i);
+            for (DataFile aDFileList : dFileList) {
+                dataFile = aDFileList;
 
                 //logger.info("dataFile: " + dataFile);
-                
+
                 // -----------------------------------------------------------
                 // Check for ingest warnings
                 // -----------------------------------------------------------
@@ -1654,8 +1654,8 @@ public class EditDatafilesPage implements java.io.Serializable {
         }
         // 2. Tabular DataFile Tags: 
         if (selectedTags != null) {
-            for (int i = 0; i < selectedTags.length; i++) {
-                fileMetadataSelectedForTagsPopup.addCategoryByName(selectedTags[i]);
+            for (String selectedTag : selectedTags) {
+                fileMetadataSelectedForTagsPopup.addCategoryByName(selectedTag);
             }
         }
 
@@ -1675,14 +1675,14 @@ public class EditDatafilesPage implements java.io.Serializable {
         if (tabularDataTagsUpdated && selectedTabFileTags != null) {
             if (fileMetadataSelectedForTagsPopup != null && fileMetadataSelectedForTagsPopup.getDataFile() != null) {
                 fileMetadataSelectedForTagsPopup.getDataFile().setTags(null);
-                for (int i = 0; i < selectedTabFileTags.length; i++) {
-                    
+                for (String selectedTabFileTag : selectedTabFileTags) {
+
                     DataFileTag tag = new DataFileTag();
                     try {
-                        tag.setTypeByLabel(selectedTabFileTags[i]);
+                        tag.setTypeByLabel(selectedTabFileTag);
                         tag.setDataFile(fileMetadataSelectedForTagsPopup.getDataFile());
                         fileMetadataSelectedForTagsPopup.getDataFile().addTag(tag);
-                        
+
                     } catch (IllegalArgumentException iax) {
                         // ignore 
                     }

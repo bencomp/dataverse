@@ -85,11 +85,11 @@ public class SumStatCalculator {
         double[] retvector = new double[length];
 
         int c = 0;
-        for (int i = 0; i < x.length; i++) {
-            if (x[i] != null) {
-                double xvalue = x[i].doubleValue();
+        for (Number aX : x) {
+            if (aX != null) {
+                double xvalue = aX.doubleValue();
                 if (!Double.isNaN(xvalue)) {
-                    retvector[c++] = xvalue; 
+                    retvector[c++] = xvalue;
                 }
             }
         }
@@ -135,9 +135,9 @@ public class SumStatCalculator {
      */
     private static int countInvalidValues(Number[] x){
         int counter=0;
-        for (int i=0; i<x.length;i++){
+        for (Number aX : x) {
             ////if ( x[i] == null || x[i].equals(Double.NaN) ) {
-            if ( x[i] == null || (Double.isNaN(x[i].doubleValue())) ) {
+            if (aX == null || (Double.isNaN(aX.doubleValue()))) {
                 counter++;
             }
         }
@@ -153,8 +153,8 @@ public class SumStatCalculator {
      */
     private static int countNaNs(double[] x){
         int NaNcounter=0;
-        for (int i=0; i<x.length;i++){
-            if (Double.isNaN(x[i])){
+        for (double aX : x) {
+            if (Double.isNaN(aX)) {
                 NaNcounter++;
             }
         }

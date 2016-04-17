@@ -159,14 +159,14 @@ class DigraphNode implements Cloneable, Serializable {
      */
     public void dispose() {
         Object[] inNodesArray = inNodes.toArray();
-        for(int i=0; i<inNodesArray.length; i++) {
-            DigraphNode node = (DigraphNode) inNodesArray[i];
+        for (Object anInNodesArray : inNodesArray) {
+            DigraphNode node = (DigraphNode) anInNodesArray;
             node.removeEdge(this);
         }
 
         Object[] outNodesArray = outNodes.toArray();
-        for(int i=0; i<outNodesArray.length; i++) {
-            DigraphNode node = (DigraphNode) outNodesArray[i];
+        for (Object anOutNodesArray : outNodesArray) {
+            DigraphNode node = (DigraphNode) anOutNodesArray;
             removeEdge(node);
         }
     }

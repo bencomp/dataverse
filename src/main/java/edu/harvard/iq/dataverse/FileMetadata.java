@@ -124,8 +124,8 @@ public class FileMetadata implements Serializable {
     public List<String> getCategoriesByName() {
         ArrayList<String> ret = new ArrayList<>();
         if (fileCategories != null) {
-            for (int i = 0; i < fileCategories.size(); i++) {
-                ret.add(fileCategories.get(i).getName());
+            for (DataFileCategory fileCategory : fileCategories) {
+                ret.add(fileCategory.getName());
             }
         }
         return ret;
@@ -138,16 +138,16 @@ public class FileMetadata implements Serializable {
 
         if (newCategoryNames != null) {
 
-            for (int i = 0; i < newCategoryNames.size(); i++) {
-                // Dataset.getCategoryByName() will check if such a category 
-                // already exists for the parent dataset; it will be created 
-                // if not. The method will return null if the supplied 
+            for (String newCategoryName : newCategoryNames) {
+                // Dataset.getCategoryByName() will check if such a category
+                // already exists for the parent dataset; it will be created
+                // if not. The method will return null if the supplied
                 // category name is null or empty. -- L.A. 4.0 beta 10
                 DataFileCategory fileCategory = null;
                 try {
-                    // Using "try {}" to catch any null pointer exceptions, 
-                    // just in case: 
-                    fileCategory = this.getDatasetVersion().getDataset().getCategoryByName(newCategoryNames.get(i));
+                    // Using "try {}" to catch any null pointer exceptions,
+                    // just in case:
+                    fileCategory = this.getDatasetVersion().getDataset().getCategoryByName(newCategoryName);
                 } catch (Exception ex) {
                     fileCategory = null;
                 }
