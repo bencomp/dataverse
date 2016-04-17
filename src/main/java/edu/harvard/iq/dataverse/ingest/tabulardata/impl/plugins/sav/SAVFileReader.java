@@ -2709,7 +2709,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                 // StringUtils.stripEnd() below:
 
 
-                                String paddRemoved = StringUtils.stripEnd(casewiseRecordForTabFile.get(k).toString(), null);
+                                String paddRemoved = StringUtils.stripEnd(casewiseRecordForTabFile.get(k), null);
                                 // TODO: clean this up.  For now, just make sure that strings contain at least one blank space.
                                 if ("".equals(paddRemoved)) {
                                     paddRemoved = " ";
@@ -2732,7 +2732,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                 if ("date".equals(variableFormatType)) {
                                     dbgLog.finer("date case");
 
-                                    long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString()) * 1000L - SPSS_DATE_OFFSET;
+                                    long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k)) * 1000L - SPSS_DATE_OFFSET;
 
                                     String newDatum = sdf_ymd.format(new Date(dateDatum));
                                     dbgLog.finer("k=" + k + ":" + newDatum);
@@ -2753,13 +2753,13 @@ public class SAVFileReader  extends TabularDataFileReader{
                                         // as character strings, not numerics!)
                                         
                                         if (!casewiseRecordForTabFile.get(k).toString().contains(".")) {
-                                            long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString()) * 1000L - SPSS_DATE_BIAS;
+                                            long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k)) * 1000L - SPSS_DATE_BIAS;
                                             String newDatum = sdf_dhms.format(new Date(dateDatum));
                                             dbgLog.finer("k=" + k + ":" + newDatum);
                                             casewiseRecordForTabFile.set(k, newDatum);
                                         } else {
                                             // decimal point included
-                                            String[] timeData = casewiseRecordForTabFile.get(k).toString().split("\\.");
+                                            String[] timeData = casewiseRecordForTabFile.get(k).split("\\.");
 
                                             dbgLog.finer(StringUtils.join(timeData, "|"));
                                             long dateDatum = Long.parseLong(timeData[0]) * 1000L - SPSS_DATE_BIAS;
@@ -2782,14 +2782,14 @@ public class SAVFileReader  extends TabularDataFileReader{
                                         // part of the saved format!
                                         //  -- L.A. Aug. 12 2014 
                                         if (!casewiseRecordForTabFile.get(k).toString().contains(".")) {
-                                            long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString()) * 1000L - SPSS_DATE_OFFSET;
+                                            long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k)) * 1000L - SPSS_DATE_OFFSET;
                                             String newDatum = sdf_ymdhms.format(new Date(dateDatum));
                                             dbgLog.finer("k=" + k + ":" + newDatum);
                                             casewiseRecordForTabFile.set(k, newDatum);
                                             dateFormatList[k] = sdf_ymdhms.toPattern();
                                         } else {
                                             // decimal point included
-                                            String[] timeData = casewiseRecordForTabFile.get(k).toString().split("\\.");
+                                            String[] timeData = casewiseRecordForTabFile.get(k).split("\\.");
 
                                             //dbgLog.finer(StringUtils.join(timeData, "|"));
                                             long dateDatum = Long.parseLong(timeData[0]) * 1000L - SPSS_DATE_OFFSET;
@@ -2808,7 +2808,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                         // TODO: 
                                         // double-check that we are handling "dateless" time correctly... -- L.A. Aug. 2014
                                         if (!casewiseRecordForTabFile.get(k).toString().contains(".")) {
-                                            long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString()) * 1000L;
+                                            long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k)) * 1000L;
                                             String newDatum = sdf_hms.format(new Date(dateDatum));
                                             dbgLog.finer("k=" + k + ":" + newDatum);
                                             casewiseRecordForTabFile.set(k, newDatum);
@@ -2817,7 +2817,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                             }
                                         } else {
                                             // decimal point included
-                                            String[] timeData = casewiseRecordForTabFile.get(k).toString().split("\\.");
+                                            String[] timeData = casewiseRecordForTabFile.get(k).split("\\.");
 
                                             //dbgLog.finer(StringUtils.join(timeData, "|"));
                                             long dateDatum = Long.parseLong(timeData[0]) * 1000L;
@@ -2844,15 +2844,15 @@ public class SAVFileReader  extends TabularDataFileReader{
                                     if ("WKDAY".equals(printFormatTable.get(variableNameList.get(k)))) {
                                         // day of week
                                         dbgLog.finer("data k=" + k + ":" + casewiseRecordForTabFile.get(k));
-                                        dbgLog.finer("data k=" + k + ":" + SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString()) - 1));
-                                        String newDatum = SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString()) - 1);
+                                        dbgLog.finer("data k=" + k + ":" + SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k)) - 1));
+                                        String newDatum = SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k)) - 1);
                                         casewiseRecordForTabFile.set(k, newDatum);
                                         dbgLog.finer("wkday:k=" + k + ":" + casewiseRecordForTabFile.get(k));
                                     } else if ("MONTH".equals(printFormatTable.get(variableNameList.get(k)))) {
                                         // month
                                         dbgLog.finer("data k=" + k + ":" + casewiseRecordForTabFile.get(k));
-                                        dbgLog.finer("data k=" + k + ":" + SPSSConstants.MONTH_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString()) - 1));
-                                        String newDatum = SPSSConstants.MONTH_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString()) - 1);
+                                        dbgLog.finer("data k=" + k + ":" + SPSSConstants.MONTH_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k)) - 1));
+                                        String newDatum = SPSSConstants.MONTH_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k)) - 1);
                                         casewiseRecordForTabFile.set(k, newDatum);
                                         dbgLog.finer("month:k=" + k + ":" + casewiseRecordForTabFile.get(k));
                                     }
@@ -2882,7 +2882,7 @@ public class SAVFileReader  extends TabularDataFileReader{
 
                             } else {
                                 if (variableTypelList.get(l) <= 0) {
-                                    if (casewiseRecordForTabFile.get(l).toString().contains(".")) {
+                                    if (casewiseRecordForTabFile.get(l).contains(".")) {
                                         decimalVariableSet.add(l);
                                     }
                                 }
@@ -3146,7 +3146,7 @@ public class SAVFileReader  extends TabularDataFileReader{
 			// See my comments for this padding removal logic
 			// in the "compressed" method -- L.A.
 
-			String paddRemoved = StringUtils.stripEnd(casewiseRecordForTabFile.get(k).toString(), null);
+			String paddRemoved = StringUtils.stripEnd(casewiseRecordForTabFile.get(k), null);
 			// TODO: clean this up.  For now, just make sure that strings contain at least one blank space.
 			if ("".equals(paddRemoved)) {
 			    paddRemoved = " ";
@@ -3170,7 +3170,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                         if ("date".equals(variableFormatType)){
                             dbgLog.finer("date case");
 
-                            long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString())*1000L- SPSS_DATE_OFFSET;
+                            long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k))*1000L- SPSS_DATE_OFFSET;
 
                             String newDatum = sdf_ymd.format(new Date(dateDatum));
                             dbgLog.finer("k="+k+":"+newDatum);
@@ -3188,14 +3188,14 @@ public class SAVFileReader  extends TabularDataFileReader{
                             if ("DTIME".equals(printFormatTable.get(variableNameList.get(k)))){
 
                                 if (!casewiseRecordForTabFile.get(k).toString().contains(".")){
-                                    long dateDatum  = Long.parseLong(casewiseRecordForTabFile.get(k).toString())*1000L - SPSS_DATE_BIAS;
+                                    long dateDatum  = Long.parseLong(casewiseRecordForTabFile.get(k))*1000L - SPSS_DATE_BIAS;
                                     String newDatum = sdf_dhms.format(new Date(dateDatum));
                                     // Note: DTIME is not a complete date, so we don't save a date format with it
                                     dbgLog.finer("k="+k+":"+newDatum);
                                     casewiseRecordForTabFile.set(k, newDatum);
                                 } else {
                                     // decimal point included
-                                    String[] timeData = casewiseRecordForTabFile.get(k).toString().split("\\.");
+                                    String[] timeData = casewiseRecordForTabFile.get(k).split("\\.");
 
                                     dbgLog.finer(StringUtils.join(timeData, "|"));
                                     long dateDatum = Long.parseLong(timeData[0])*1000L - SPSS_DATE_BIAS;
@@ -3219,14 +3219,14 @@ public class SAVFileReader  extends TabularDataFileReader{
                                 //  -- L.A. Aug. 12 2014 
 
                                 if (!casewiseRecordForTabFile.get(k).toString().contains(".")){
-                                    long dateDatum  = Long.parseLong(casewiseRecordForTabFile.get(k).toString())*1000L - SPSS_DATE_OFFSET;
+                                    long dateDatum  = Long.parseLong(casewiseRecordForTabFile.get(k))*1000L - SPSS_DATE_OFFSET;
                                     String newDatum = sdf_ymdhms.format(new Date(dateDatum));
                                     dbgLog.finer("k="+k+":"+newDatum);
                                     casewiseRecordForTabFile.set(k, newDatum);
                                     dateFormatList[k] = sdf_ymdhms.toPattern();
                                 } else {
                                     // decimal point included
-                                    String[] timeData = casewiseRecordForTabFile.get(k).toString().split("\\.");
+                                    String[] timeData = casewiseRecordForTabFile.get(k).split("\\.");
 
                                     //dbgLog.finer(StringUtils.join(timeData, "|"));
                                     long dateDatum = Long.parseLong(timeData[0])*1000L- SPSS_DATE_OFFSET;
@@ -3244,7 +3244,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                 }
                             } else if ("TIME".equals(printFormatTable.get(variableNameList.get(k)))){
                                 if (!casewiseRecordForTabFile.get(k).toString().contains(".")){
-                                    long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString())*1000L;
+                                    long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k))*1000L;
                                     String newDatum = sdf_hms.format(new Date(dateDatum));
                                     dbgLog.finer("k="+k+":"+newDatum);
                                     casewiseRecordForTabFile.set(k, newDatum);
@@ -3253,7 +3253,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                     }
                                 } else {
                                     // decimal point included
-                                    String[] timeData = casewiseRecordForTabFile.get(k).toString().split("\\.");
+                                    String[] timeData = casewiseRecordForTabFile.get(k).split("\\.");
 
                                     //dbgLog.finer(StringUtils.join(timeData, "|"));
                                     long dateDatum = Long.parseLong(timeData[0])*1000L;
@@ -3279,15 +3279,15 @@ public class SAVFileReader  extends TabularDataFileReader{
                             if ("WKDAY".equals(printFormatTable.get(variableNameList.get(k)))){
                                 // day of week
                                 dbgLog.finer("data k="+k+":"+casewiseRecordForTabFile.get(k));
-                                dbgLog.finer("data k="+k+":"+SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString())-1));
-                                String newDatum = SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString())-1);
+                                dbgLog.finer("data k="+k+":"+SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k))-1));
+                                String newDatum = SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k))-1);
                                 casewiseRecordForTabFile.set(k, newDatum);
                                 dbgLog.finer("wkday:k="+k+":"+casewiseRecordForTabFile.get(k));
                             } else if ("MONTH".equals(printFormatTable.get(variableNameList.get(k)))){
                                 // month
                                 dbgLog.finer("data k="+k+":"+casewiseRecordForTabFile.get(k));
-                                dbgLog.finer("data k="+k+":"+SPSSConstants.MONTH_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString())-1));
-                                String newDatum = SPSSConstants.MONTH_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString())-1);
+                                dbgLog.finer("data k="+k+":"+SPSSConstants.MONTH_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k))-1));
+                                String newDatum = SPSSConstants.MONTH_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k))-1);
                                 casewiseRecordForTabFile.set(k, newDatum);
                                 dbgLog.finer("month:k="+k+":"+casewiseRecordForTabFile.get(k));
 
@@ -3312,7 +3312,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                         
                     } else { 
                         if (variableTypelList.get(l) <= 0) {
-                            if (casewiseRecordForTabFile.get(l).toString().contains(".")){
+                            if (casewiseRecordForTabFile.get(l).contains(".")){
                                 decimalVariableSet.add(l);
                             }
                         }

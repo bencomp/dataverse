@@ -564,10 +564,10 @@ public class PORFileReader  extends TabularDataFileReader{
             while(porScanner.hasNextLine()){
                 lineCounter++;
                 if (lineCounter<=5){
-                    String line = porScanner.nextLine().toString();
+                    String line = porScanner.nextLine();
                     dbgLog.fine("line="+lineCounter+":"+line.length()+":"+line);
                 } else {
-                    fileWriter.write(porScanner.nextLine().toString());
+                    fileWriter.write(porScanner.nextLine());
                 }
             }
         } finally {

@@ -1591,7 +1591,7 @@ public class DTA117FileReader extends TabularDataFileReader{
             }
 
             String yearString  = Long.valueOf(1960L + years).toString();
-            String dayInYearString = new DecimalFormat("000").format((left*7) + 1).toString();
+            String dayInYearString = new DecimalFormat("000").format((left * 7) + 1);
             String yearDayInYearString = yearString + "-" + dayInYearString;
 
             Date tempDate = null;
@@ -1623,7 +1623,7 @@ public class DTA117FileReader extends TabularDataFileReader{
                 left = 0L;
             }
             Long monthdata = (left+1);
-            month = "-"+twoDigitFormatter.format(monthdata).toString()+"-01";
+            month = "-"+ twoDigitFormatter.format(monthdata) +"-01";
             long year  = 1960L + years;
             String monthYear = Long.valueOf(year).toString() + month;
             logger.fine("rawDatum="+rawDatum+": monthYear="+monthYear);
