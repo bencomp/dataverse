@@ -709,7 +709,7 @@ public class IndexServiceBean {
                     } else {
                         // _s (dynamic string) and all other Solr fields
 
-                        if (dsf.getDatasetFieldType().getName().equals("authorAffiliation")) {
+                        if ("authorAffiliation".equals(dsf.getDatasetFieldType().getName())) {
                             /**
                              * @todo think about how to tie the fact that this
                              * needs to be multivalued (_ss) because a
@@ -721,7 +721,7 @@ public class IndexServiceBean {
                              * of DatasetField.java
                              */
                             solrInputDocument.addField(SearchFields.AFFILIATION, dsf.getValuesWithoutNaValues());
-                        } else if (dsf.getDatasetFieldType().getName().equals("title")) {
+                        } else if ("title".equals(dsf.getDatasetFieldType().getName())) {
                             // datasets have titles not names but index title under name as well so we can sort datasets by name along dataverses and files
                             List<String> possibleTitles = dsf.getValues();
                             String firstTitle = possibleTitles.get(0);
@@ -947,10 +947,10 @@ public class IndexServiceBean {
                             // is something social science-specific...
                             // anyway -- needs to be reviewed. -- L.A. 4.0alpha1 
 
-                            if (var.getName() != null && !var.getName().equals("")) {
+                            if (var.getName() != null && !"".equals(var.getName())) {
                                 datafileSolrInputDocument.addField(SearchFields.VARIABLE_NAME, var.getName());
                             }
-                            if (var.getLabel() != null && !var.getLabel().equals("")) {
+                            if (var.getLabel() != null && !"".equals(var.getLabel())) {
                                 datafileSolrInputDocument.addField(SearchFields.VARIABLE_LABEL, var.getLabel());
                             }
                         }

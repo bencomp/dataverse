@@ -27,7 +27,7 @@ public class FacetConverter implements Converter {
     }
 
     public String getAsString(FacesContext facesContext, UIComponent component, Object value) {
-        if (value == null || value.equals("")) {
+        if (value == null || "".equals(value)) {
             return "";
         } else {
             return ((DatasetFieldType) value).getId().toString();

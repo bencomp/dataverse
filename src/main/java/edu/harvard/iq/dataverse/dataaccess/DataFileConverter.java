@@ -92,7 +92,7 @@ public class DataFileConverter {
         // if the format requested is "D00", and it's already a TAB file,
         // we don't need to do anything:
         if (formatRequested.equals(FILE_TYPE_TAB)
-                && file.getContentType().equals("text/tab-separated-values")) {
+                && "text/tab-separated-values".equals(file.getContentType())) {
 
             return fileDownload;
         }
@@ -159,7 +159,7 @@ public class DataFileConverter {
             fileDownload.setMimeType(formatType);
             String dbFileName = fileDownload.getFileName();
 
-            if (dbFileName == null || dbFileName.equals("")) {
+            if (dbFileName == null || "".equals(dbFileName)) {
                 dbFileName = "f" + file.getId().toString();
             }
 
@@ -292,7 +292,7 @@ public class DataFileConverter {
     private static String generateAltFileName(String formatRequested, String xfileId) {
         String altFileName = xfileId;
 
-        if ( altFileName == null || altFileName.equals("")) {
+        if ( altFileName == null || "".equals(altFileName)) {
             altFileName = "Converted";
         }
 

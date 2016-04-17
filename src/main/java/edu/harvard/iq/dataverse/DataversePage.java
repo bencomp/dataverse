@@ -185,7 +185,7 @@ public class DataversePage implements java.io.Serializable {
     
     
     public void setupLinkingPopup (String popupSetting){
-        if (popupSetting.equals("link")){
+        if ("link".equals(popupSetting)){
             setLinkMode(LinkMode.LINKDATAVERSE);           
         } else {
             setLinkMode(LinkMode.SAVEDSEARCH); 

@@ -127,7 +127,7 @@ public class Access extends AbstractApiBean {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         
-        if (apiToken == null || apiToken.equals("")) {
+        if (apiToken == null || "".equals(apiToken)) {
             apiToken = headers.getHeaderString(API_KEY_HEADER);
         }
         
@@ -177,7 +177,7 @@ public class Access extends AbstractApiBean {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         
-        if (apiToken == null || apiToken.equals("")) {
+        if (apiToken == null || "".equals(apiToken)) {
             apiToken = headers.getHeaderString(API_KEY_HEADER);
         }
         
@@ -209,7 +209,7 @@ public class Access extends AbstractApiBean {
                 // the download instance to key and value;
                 // TODO: I should probably set these explicitly instead. 
                 
-                if (downloadInstance.getConversionParam().equals("subset")) {
+                if ("subset".equals(downloadInstance.getConversionParam())) {
                     String subsetParam = downloadInstance.getConversionParamValue();
                     String variableIdParams[] = subsetParam.split(",");
                     if (variableIdParams != null && variableIdParams.length > 0) {
@@ -385,7 +385,7 @@ public class Access extends AbstractApiBean {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         
-        if (apiToken == null || apiToken.equals("")) {
+        if (apiToken == null || "".equals(apiToken)) {
             apiToken = headers.getHeaderString(API_KEY_HEADER);
         }
         
@@ -433,11 +433,11 @@ public class Access extends AbstractApiBean {
         
         logger.fine("setting zip download size limit to " + zipDownloadSizeLimit + " bytes.");
         
-        if (fileIds == null || fileIds.equals("")) {
+        if (fileIds == null || "".equals(fileIds)) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        String apiToken = (apiTokenParam == null || apiTokenParam.equals("")) 
+        String apiToken = (apiTokenParam == null || "".equals(apiTokenParam))
                 ? headers.getHeaderString(API_KEY_HEADER) 
                 : apiTokenParam;
         
@@ -536,7 +536,7 @@ public class Access extends AbstractApiBean {
     public InputStream tempPreview(@PathParam("fileSystemId") String fileSystemId, @Context UriInfo uriInfo, @Context HttpHeaders headers, @Context HttpServletResponse response) /*throws NotFoundException, ServiceUnavailableException, PermissionDeniedException, AuthorizationRequiredException*/ {
         
         String filesRootDirectory = System.getProperty("dataverse.files.directory");
-        if (filesRootDirectory == null || filesRootDirectory.equals("")) {
+        if (filesRootDirectory == null || "".equals(filesRootDirectory)) {
             filesRootDirectory = "/tmp/files";
         }
 
@@ -700,7 +700,7 @@ public class Access extends AbstractApiBean {
         
         // First, check if the dataverse has a defined logo: 
         
-        if (dataverse.getDataverseTheme()!=null && dataverse.getDataverseTheme().getLogo() != null && !dataverse.getDataverseTheme().getLogo().equals("")) {
+        if (dataverse.getDataverseTheme()!=null && dataverse.getDataverseTheme().getLogo() != null && !"".equals(dataverse.getDataverseTheme().getLogo())) {
             File dataverseLogoFile = getLogo(dataverse);
             if (dataverseLogoFile != null) {
                 logger.info("dvCardImage: logo file found");
@@ -804,7 +804,7 @@ public class Access extends AbstractApiBean {
         }
         
         DataverseTheme theme = dataverse.getDataverseTheme(); 
-        if (theme != null && theme.getLogo() != null && !theme.getLogo().equals("")) {
+        if (theme != null && theme.getLogo() != null && !"".equals(theme.getLogo())) {
             Properties p = System.getProperties();
             String domainRoot = p.getProperty("com.sun.aas.instanceRoot");
   

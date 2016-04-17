@@ -440,7 +440,7 @@ public class DataFile extends DvObject {
         }
         // a pdf file is an "image" for practical purposes (we will attempt to 
         // generate thumbnails and previews for them)
-        return (contentType != null && (contentType.startsWith("image/") || contentType.equalsIgnoreCase("application/pdf")));
+        return (contentType != null && (contentType.startsWith("image/") || "application/pdf".equalsIgnoreCase(contentType)));
     }
 
     public void setIngestStatus(char ingestStatus) {

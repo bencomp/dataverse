@@ -13,7 +13,7 @@ import org.jsoup.Jsoup;
 public class StringUtil {
        
     public static final boolean isEmpty(String str) {
-        return str==null || str.trim().equals("");        
+        return str==null || "".equals(str.trim());
     }
     
     public static  String nullToEmpty(String inString) {

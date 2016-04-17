@@ -82,7 +82,7 @@ public class DestroyDatasetCommand extends AbstractVoidCommand {
         }   
         
         //Register Cache
-        if(ctxt.settings().getValueForKey(SettingsServiceBean.Key.DoiProvider, "").equals("DataCite")){
+        if("DataCite".equals(ctxt.settings().getValueForKey(SettingsServiceBean.Key.DoiProvider, ""))){
             ctxt.doiDataCite().deleteRecordFromCache(doomed);
         }
 

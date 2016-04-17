@@ -674,11 +674,11 @@ public class DTA117FileReader extends TabularDataFileReader{
             typeLabel = variableTypeTable.get(type);
 
             dv.setTypeNumeric();
-            if (typeLabel.equals("Byte") || typeLabel.equals("Integer") || typeLabel.equals("Long")) {
+            if ("Byte".equals(typeLabel) || "Integer".equals(typeLabel) || "Long".equals(typeLabel)) {
                 // these are treated as discrete:
                 dv.setIntervalDiscrete();
 
-            } else if (typeLabel.equals("Float") || typeLabel.equals("Double")) {
+            } else if ("Float".equals(typeLabel) || "Double".equals(typeLabel)) {
                 // these are treated as contiuous:
                 dv.setIntervalContinuous();
 
@@ -723,7 +723,7 @@ public class DTA117FileReader extends TabularDataFileReader{
         for (int i = 0; i < dataTable.getVarQuantity(); i++) {
             String variableName = reader.readString(33);
             logger.fine("variable "+i+": name=" + variableName);
-            if ((variableName != null) && (!variableName.equals(""))) {
+            if ((variableName != null) && (!"".equals(variableName))) {
                 dataTable.getDataVariables().get(i).setName(variableName);
             } else {
                 // TODO: decide if we should throw an exception here. 
@@ -836,7 +836,7 @@ public class DTA117FileReader extends TabularDataFileReader{
             // Define all the byte lengths as constants!
             String valueLabelFormat = reader.readString(33);
             logger.fine("variable "+i+": value label format=" + valueLabelFormat);
-            if ((valueLabelFormat != null) && (!valueLabelFormat.equals(""))) {
+            if ((valueLabelFormat != null) && (!"".equals(valueLabelFormat))) {
                 valueLabelsLookupTable[i] = valueLabelFormat;
             }
         }
@@ -857,7 +857,7 @@ public class DTA117FileReader extends TabularDataFileReader{
         for (int i = 0; i < dataTable.getVarQuantity(); i++) {
             String variableLabel = reader.readString(81);
             logger.fine("variable "+i+": label=" + variableLabel);
-            if ((variableLabel != null) && (!variableLabel.equals(""))) {
+            if ((variableLabel != null) && (!"".equals(variableLabel))) {
                 dataTable.getDataVariables().get(i).setLabel(variableLabel);
             }
         }
@@ -933,7 +933,7 @@ public class DTA117FileReader extends TabularDataFileReader{
                 // make sure the formats are properly set! -- use the old 
                 // plugin as a model... 
                 String formatCategory = dataTable.getDataVariables().get(columnCounter).getFormatCategory();
-                if (formatCategory != null && (formatCategory.equals("time") || formatCategory.equals("date"))) {
+                if (formatCategory != null && ("time".equals(formatCategory) || "date".equals(formatCategory))) {
                     isDateTimeDatum = true;
                 }
 
@@ -941,13 +941,13 @@ public class DTA117FileReader extends TabularDataFileReader{
                 // ditto
                 String variableFormat = dateVariableFormats[columnCounter];
 
-                if (varType == null || varType.equals("")) {
+                if (varType == null || "".equals(varType)) {
                     throw new IOException("Undefined variable type encountered in readData()");
                 }
 
                 // TODO: 
                 // double-check that the missing values constants are still correct!
-                if (varType.equals("Byte")) {
+                if ("Byte".equals(varType)) {
                     // (signed) Byte
                     byte byte_datum = reader.readSignedByte();
 
@@ -964,7 +964,7 @@ public class DTA117FileReader extends TabularDataFileReader{
                     }
 
                     byte_offset++;
-                } else if (varType.equals("Integer")) {
+                } else if ("Integer".equals(varType)) {
                     short short_datum = (short) reader.readShortSignedInteger();
 
                     logger.fine(i + "-th row " + columnCounter
@@ -991,7 +991,7 @@ public class DTA117FileReader extends TabularDataFileReader{
                         }
                     }
                     byte_offset += 2;
-                } else if (varType.equals("Long")) {
+                } else if ("Long".equals(varType)) {
                     // stata-Long (= java's int: 4 byte), signed.
 
                     int int_datum = reader.readSignedInteger();
@@ -1013,7 +1013,7 @@ public class DTA117FileReader extends TabularDataFileReader{
 
                     }
                     byte_offset += 4;
-                } else if (varType.equals("Float")) {
+                } else if ("Float".equals(varType)) {
                     // STATA float 
                     // same as Java float - 4-byte
 
@@ -1047,7 +1047,7 @@ public class DTA117FileReader extends TabularDataFileReader{
 
                     }
                     byte_offset += 4;
-                } else if (varType.equals("Double")) {
+                } else if ("Double".equals(varType)) {
                     // STATA double
                     // same as Java double - 8-byte
 
@@ -1098,7 +1098,7 @@ public class DTA117FileReader extends TabularDataFileReader{
                         logger.fine(i + "-th row " + columnCounter
                                 + "=th column string =" + string_datum.substring(0, 64) + "... (truncated)");
                     }
-                    if (string_datum.equals("")) {
+                    if ("".equals(string_datum)) {
 
                         logger.fine(i + "-th row " + columnCounter
                                 + "=th column string missing value=" + string_datum);
@@ -1120,7 +1120,7 @@ public class DTA117FileReader extends TabularDataFileReader{
                         dataRow[columnCounter] = escapeCharacterString(string_datum);
                     }
                     byte_offset += strVarLength;
-                } else if (varType.equals("STRL")) {
+                } else if ("STRL".equals(varType)) {
                     //throw new IOException("<Support for STRLs not yet implemented>");
                     logger.fine("STRL encountered.");
                     
@@ -1264,7 +1264,7 @@ public class DTA117FileReader extends TabularDataFileReader{
                                 } else {
                                     // This one must have been cached already:
                                     if (cachedGSOs.get(voPair) != null &&
-                                       !cachedGSOs.get(voPair).equals("")) {
+                                       !"".equals(cachedGSOs.get(voPair))) {
                                         line[varindex] = cachedGSOs.get(voPair);
                                     } else {
                                         throw new IOException("GSO string unavailable for v,o value "+voPair);
@@ -1511,7 +1511,7 @@ public class DTA117FileReader extends TabularDataFileReader{
     private int getVariableByteLength(String variableType) throws IOException {
         int byte_length = 0;
 
-        if (variableType == null || variableType.equals("")) {
+        if (variableType == null || "".equals(variableType)) {
             throw new IOException("<empty variable type in attempted byte length lookup.>");
         }
         if (byteLengthTable.containsKey(variableType)) {
@@ -2169,7 +2169,7 @@ public class DTA117FileReader extends TabularDataFileReader{
         }
         
         private boolean checkTag(String tag) throws IOException {
-            if (tag == null || tag.equals("")) {
+            if (tag == null || "".equals(tag)) {
                 throw new IOException("opening tag must be a non-empty string.");
             }
 
@@ -2185,7 +2185,7 @@ public class DTA117FileReader extends TabularDataFileReader{
         
         
         public void readOpeningTag(String tag) throws IOException {
-            if (tag == null || tag.equals("")) {
+            if (tag == null || "".equals(tag)) {
                 throw new IOException("opening tag must be a non-empty string.");
             }
             
@@ -2198,7 +2198,7 @@ public class DTA117FileReader extends TabularDataFileReader{
         }
         
         public void readClosingTag(String tag) throws IOException {
-            if (tag == null || tag.equals("")) {
+            if (tag == null || "".equals(tag)) {
                 throw new IOException("closing tag must be a non-empty string.");
             }
             

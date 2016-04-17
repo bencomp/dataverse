@@ -277,7 +277,7 @@ public class DatasetPage implements java.io.Serializable {
     private List<FileMetadata> selectFileMetadatasForDisplay(String searchTerm) {
         Set<Long> searchResultsIdSet = null; 
         
-        if (searchTerm != null && !searchTerm.equals("")) {
+        if (searchTerm != null && !"".equals(searchTerm)) {
             List<Integer> searchResultsIdList = datafileService.findFileMetadataIdsByDatasetVersionIdLabelSearchTerm(workingVersion.getId(), searchTerm, "", "");
             searchResultsIdSet = new HashSet<>();
             for (Integer id : searchResultsIdList) {
@@ -1447,7 +1447,7 @@ public class DatasetPage implements java.io.Serializable {
                 // if so, we'll simply forward to the remote URL for the original
                 // source of this harvested dataset:
                 String originalSourceURL = dataset.getRemoteArchiveURL();
-                if (originalSourceURL != null && !originalSourceURL.equals("")) {
+                if (originalSourceURL != null && !"".equals(originalSourceURL)) {
                     logger.fine("redirecting to "+originalSourceURL);
                     try {
                         FacesContext.getCurrentInstance().getExternalContext().redirect(originalSourceURL);
@@ -1615,7 +1615,7 @@ public class DatasetPage implements java.io.Serializable {
         Command cmd;
         try {
             if (this.guestbookResponse != null) {
-                if (!type.equals("multiple")) {
+                if (!"multiple".equals(type)) {
                     cmd = new CreateGuestbookResponseCommand(dvRequestService.getDataverseRequest(), this.guestbookResponse, dataset);
                     commandEngine.submit(cmd);
                 } else {
@@ -1634,12 +1634,12 @@ public class DatasetPage implements java.io.Serializable {
             logger.severe(ex.getMessage());
         }
         
-        if (type.equals("multiple")){
+        if ("multiple".equals(type)){
             //return callDownloadServlet(getSelectedFilesIdsString());
             callDownloadServlet(getDownloadableFilesIdsString());
         }
        
-        if ((type.equals("download") || type.isEmpty())) {
+        if (("download".equals(type) || type.isEmpty())) {
             //return callDownloadServlet(downloadFormat, this.selectedDownloadFile.getId());
             if(type.isEmpty()){
                 downloadFormat = "download";
@@ -1647,7 +1647,7 @@ public class DatasetPage implements java.io.Serializable {
             callDownloadServlet(downloadFormat, this.selectedDownloadFile.getId());
         }
         
-        if (type.equals("explore")) {
+        if ("explore".equals(type)) {
             String retVal = getDataExploreURLComplete(this.selectedDownloadFile.getId());
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect(retVal);
@@ -1688,19 +1688,19 @@ public class DatasetPage implements java.io.Serializable {
         
         String fileDownloadUrl = "/api/access/datafile/" + fileId;
                     
-        if (downloadType != null && downloadType.equals("bundle")){
+        if (downloadType != null && "bundle".equals(downloadType)){
             fileDownloadUrl = "/api/access/datafile/bundle/" + this.selectedDownloadFile.getId();
         }
-        if (downloadType != null && downloadType.equals("original")){
+        if (downloadType != null && "original".equals(downloadType)){
             fileDownloadUrl = "/api/access/datafile/" + this.selectedDownloadFile.getId() + "?format=original";
         }
-        if (downloadType != null && downloadType.equals("RData")){
+        if (downloadType != null && "RData".equals(downloadType)){
             fileDownloadUrl = "/api/access/datafile/" + this.selectedDownloadFile.getId() + "?format=RData";
         }
-        if (downloadType != null && downloadType.equals("var")){
+        if (downloadType != null && "var".equals(downloadType)){
             fileDownloadUrl = "/api/meta/datafile/" + this.selectedDownloadFile.getId();
         }
-        if (downloadType != null && downloadType.equals("tab")){
+        if (downloadType != null && "tab".equals(downloadType)){
             fileDownloadUrl = "/api/access/datafile/" + this.selectedDownloadFile.getId()+ "?format=tab";
         }
         logger.fine("Returning file download url: " + fileDownloadUrl);
@@ -3112,7 +3112,7 @@ public class DatasetPage implements java.io.Serializable {
                 cqr.setGuestbookResponse(guestbookResponse);
                 cqr.setCustomQuestion(cq);
                 cqr.setResponse("");
-                if (cq.getQuestionType().equals("options")) {
+                if ("options".equals(cq.getQuestionType())) {
                     //response select Items
                     cqr.setResponseSelectItems(setResponseUISelectItems(cq));
                 }
@@ -3120,12 +3120,12 @@ public class DatasetPage implements java.io.Serializable {
             }
         }
         this.guestbookResponse.setDownloadtype("Download");
-        if(downloadFormat.toLowerCase().equals("subset")){
+        if("subset".equals(downloadFormat.toLowerCase())){
             this.guestbookResponse.setDownloadtype("Subset");
             setDownloadFormat("subset");
             setDownloadType("subset");
         }
-        if(downloadFormat.toLowerCase().equals("explore")){
+        if("explore".equals(downloadFormat.toLowerCase())){
             setDownloadFormat("explore");
             setDownloadType("explore");
             this.guestbookResponse.setDownloadtype("Explore");
@@ -3363,7 +3363,7 @@ public class DatasetPage implements java.io.Serializable {
     public String getDataExploreURL() {
         String TwoRavensUrl = settingsService.getValueForKey(SettingsServiceBean.Key.TwoRavensUrl);
 
-        if (TwoRavensUrl != null && !TwoRavensUrl.equals("")) {
+        if (TwoRavensUrl != null && !"".equals(TwoRavensUrl)) {
             return TwoRavensUrl;
         }
 
@@ -3374,7 +3374,7 @@ public class DatasetPage implements java.io.Serializable {
         String TwoRavensUrl = settingsService.getValueForKey(SettingsServiceBean.Key.TwoRavensUrl);
         String TwoRavensDefaultLocal = "/dataexplore/gui.html?dfId=";
 
-        if (TwoRavensUrl != null && !TwoRavensUrl.equals("")) {
+        if (TwoRavensUrl != null && !"".equals(TwoRavensUrl)) {
             // If we have TwoRavensUrl set up as, as an optional 
             // configuration service, it must mean that TwoRavens is sitting 
             // on some remote server. And that in turn means that we must use 
@@ -3429,7 +3429,7 @@ public class DatasetPage implements java.io.Serializable {
     
     public void setFileMetadataSelected(FileMetadata fm, String guestbook) {
         if (guestbook != null) {
-            if (guestbook.equals("create")) {
+            if ("create".equals(guestbook)) {
                 createSilentGuestbookEntry(fm, "Subset");
             } else {
                 initGuestbookResponse(fm, "Subset", null);
@@ -4132,12 +4132,12 @@ public class DatasetPage implements java.io.Serializable {
         if (workingVersion.getTermsOfUseAndAccess() != null) {
             if (!TermsOfUseAndAccess.License.CC0.equals(workingVersion.getTermsOfUseAndAccess().getLicense())
                     && !(workingVersion.getTermsOfUseAndAccess().getTermsOfUse() == null
-                    || workingVersion.getTermsOfUseAndAccess().getTermsOfUse().equals(""))) {
+                    || "".equals(workingVersion.getTermsOfUseAndAccess().getTermsOfUse()))) {
                 return true;
             }
 
             // 2. Terms of Access:
-            if (!(workingVersion.getTermsOfUseAndAccess().getTermsOfAccess() == null) && !workingVersion.getTermsOfUseAndAccess().getTermsOfAccess().equals("")) {
+            if (!(workingVersion.getTermsOfUseAndAccess().getTermsOfAccess() == null) && !"".equals(workingVersion.getTermsOfUseAndAccess().getTermsOfAccess())) {
                 return true;
             }
         }

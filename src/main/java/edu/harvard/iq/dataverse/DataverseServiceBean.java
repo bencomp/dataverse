@@ -159,7 +159,7 @@ public class DataverseServiceBean implements java.io.Serializable {
      */
     public Dataverse findByAlias(String anAlias) {
         try {
-            return (anAlias.toLowerCase().equals(":root"))
+            return (":root".equals(anAlias.toLowerCase()))
 				? findRootDataverse()
 				: em.createNamedQuery("Dataverse.findByAlias", Dataverse.class)
 					.setParameter("alias", anAlias.toLowerCase())
@@ -313,7 +313,7 @@ public class DataverseServiceBean implements java.io.Serializable {
         }
         
         DataverseTheme theme = dataverse.getDataverseTheme(); 
-        if (theme != null && theme.getLogo() != null && !theme.getLogo().equals("")) {
+        if (theme != null && theme.getLogo() != null && !"".equals(theme.getLogo())) {
             Properties p = System.getProperties();
             String domainRoot = p.getProperty("com.sun.aas.instanceRoot");
   
@@ -343,7 +343,7 @@ public class DataverseServiceBean implements java.io.Serializable {
             return null;
         }
         
-        if (logoFileName != null && !logoFileName.equals("")) {
+        if (logoFileName != null && !"".equals(logoFileName)) {
             Properties p = System.getProperties();
             String domainRoot = p.getProperty("com.sun.aas.instanceRoot");
   

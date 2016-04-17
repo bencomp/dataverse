@@ -187,7 +187,7 @@ public class SystemConfig {
                 }
             }
             
-            if (buildNumberString != null && !buildNumberString.equals("")) {
+            if (buildNumberString != null && !"".equals(buildNumberString)) {
                 return appVersionString + " build " + buildNumberString; 
             } 
         }        
@@ -296,7 +296,7 @@ public class SystemConfig {
         String zipLimitOption = settingsService.getValueForKey(SettingsServiceBean.Key.ZipDownloadLimit);   
         
         Long zipLimit = null; 
-        if (zipLimitOption != null && !zipLimitOption.equals("")) {
+        if (zipLimitOption != null && !"".equals(zipLimitOption)) {
             try {
                 zipLimit = new Long(zipLimitOption);
             } catch (NumberFormatException nfe) {
@@ -315,7 +315,7 @@ public class SystemConfig {
         String limitOption = settingsService.getValueForKey(SettingsServiceBean.Key.ZipUploadFilesLimit);
         Integer limit = null; 
         
-        if (limitOption != null && !limitOption.equals("")) {
+        if (limitOption != null && !"".equals(limitOption)) {
             try {
                 limit = new Integer(limitOption);
             } catch (NumberFormatException nfe) {
@@ -353,7 +353,7 @@ public class SystemConfig {
         }
         Long limit = null; 
         
-        if (option != null && !option.equals("")) {
+        if (option != null && !"".equals(option)) {
             try {
                 limit = new Long(option);
             } catch (NumberFormatException nfe) {
@@ -482,7 +482,7 @@ public class SystemConfig {
         // if available, otherwise - the blanket limit that applies to all tabular 
         // ingests regardless of a format. 
         
-        if (formatName == null || formatName.equals("")) {
+        if (formatName == null || "".equals(formatName)) {
             return getTabularIngestSizeLimit(); 
         }
         

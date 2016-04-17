@@ -192,7 +192,7 @@ public class SAVFileReaderSpi extends TabularDataFileReaderSpi{
         String hdr4sav = new String(hdr4);
         dbgLog.fine("from string[hdr4]=" + new String(Hex.encodeHex(hdr4)).toUpperCase());
         
-        if (hdr4sav.equals("$FL2")) {
+        if ("$FL2".equals(hdr4sav)) {
             dbgLog.fine("this file is spss-sav type");
             return true;
         } else {

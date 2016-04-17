@@ -160,7 +160,7 @@ public class DatasetServiceBean implements java.io.Serializable {
         } else {
             authority = globalId.substring(index1 + 1, index2);
         }
-        if (protocol.equals("doi")) {
+        if ("doi".equals(protocol)) {
 
             index3 = globalId.indexOf(separator, index2 + 1);
             if (index3 == -1 ) {
@@ -218,7 +218,7 @@ public class DatasetServiceBean implements java.io.Serializable {
         boolean u = em.createQuery(query).getResultList().isEmpty();
         String nonNullDefaultIfKeyNotFound = "";
         String doiProvider = settingsService.getValueForKey(SettingsServiceBean.Key.DoiProvider, nonNullDefaultIfKeyNotFound);
-        if (doiProvider.equals("EZID")) {
+        if ("EZID".equals(doiProvider)) {
             if (!doiEZIdServiceBean.lookupMetadataFromIdentifier(protocol, authority, separator, userIdentifier).isEmpty()) {
                 u = false;
             }

@@ -81,11 +81,11 @@ public class DatasetRelPublication {
     }
 
      public boolean isEmpty() {
-        return ((text==null || text.trim().equals(""))
+        return ((text==null || "".equals(text.trim()))
             && (!replicationData)
-            && (idType==null || idType.trim().equals(""))
-            && (idNumber==null || idNumber.trim().equals(""))                
-            && (url==null || url.trim().equals("")));
+            && (idType==null || "".equals(idType.trim()))
+            && (idNumber==null || "".equals(idNumber.trim()))
+            && (url==null || "".equals(url.trim())));
     }        
 
 }

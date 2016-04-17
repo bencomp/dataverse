@@ -32,7 +32,7 @@ public class RoleAssigneeConverter implements Converter {
     }
 
     public String getAsString(FacesContext facesContext, UIComponent component, Object value) {
-        if (value == null || value.equals("")) {
+        if (value == null || "".equals(value)) {
             return "";
         } else {
             return ((RoleAssignee) value).getIdentifier();

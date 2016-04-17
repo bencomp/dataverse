@@ -465,7 +465,7 @@ public class WorldMapRelatedData extends AbstractApiBean {
         jsonData.add("dataverse_name", dverse.getName());
 
         String dataverseDesc = dverse.getDescription();
-        if (dataverseDesc == null || dataverseDesc.equalsIgnoreCase("")){
+        if (dataverseDesc == null || "".equalsIgnoreCase(dataverseDesc)){
             dataverseDesc = "";
         }        
         jsonData.add("dataverse_description", dataverseDesc);
@@ -617,7 +617,7 @@ public class WorldMapRelatedData extends AbstractApiBean {
         //  - joinDescription
         //
         String joinDescription = jsonInfo.getString("joinDescription");
-        if ((joinDescription == null) || (joinDescription.equals(""))){
+        if ((joinDescription == null) || ("".equals(joinDescription))){
             mapLayerMetadata.setIsJoinLayer(true);
             mapLayerMetadata.setJoinDescription(joinDescription);
         }else{

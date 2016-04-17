@@ -62,7 +62,7 @@ public class MediaResourceManagerImpl implements MediaResourceManager {
         DataverseRequest dvReq = new DataverseRequest(user, httpRequest);
         urlManager.processUrl(uri);
         String globalId = urlManager.getTargetIdentifier();
-        if (urlManager.getTargetType().equals("study") && globalId != null) {
+        if ("study".equals(urlManager.getTargetType()) && globalId != null) {
             logger.fine("looking up dataset with globalId " + globalId);
             Dataset dataset = datasetService.findByGlobalId(globalId);
             if (dataset != null) {
@@ -192,7 +192,7 @@ public class MediaResourceManagerImpl implements MediaResourceManager {
         
         urlManager.processUrl(uri);
         String globalId = urlManager.getTargetIdentifier();
-        if (urlManager.getTargetType().equals("study") && globalId != null) {
+        if ("study".equals(urlManager.getTargetType()) && globalId != null) {
             logger.fine("looking up dataset with globalId " + globalId);
             Dataset dataset = datasetService.findByGlobalId(globalId);
             if (dataset == null) {

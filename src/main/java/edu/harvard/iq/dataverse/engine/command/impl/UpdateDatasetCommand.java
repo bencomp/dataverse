@@ -165,8 +165,8 @@ public class UpdateDatasetCommand extends AbstractCommand<Dataset> {
         String nonNullDefaultIfKeyNotFound = "";
         String doiProvider = ctxt.settings().getValueForKey(SettingsServiceBean.Key.DoiProvider, nonNullDefaultIfKeyNotFound);
 
-        if (theDataset.getProtocol().equals("doi")
-                && doiProvider.equals("EZID") && theDataset.getGlobalIdCreateTime() == null) {
+        if ("doi".equals(theDataset.getProtocol())
+                && "EZID".equals(doiProvider) && theDataset.getGlobalIdCreateTime() == null) {
             String doiRetString = ctxt.doiEZId().createIdentifier(theDataset);
             if (doiRetString.contains(theDataset.getIdentifier())) {
                 theDataset.setGlobalIdCreateTime(new Timestamp(new Date().getTime()));

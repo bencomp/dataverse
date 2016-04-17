@@ -83,7 +83,7 @@ public class StoredOriginalFile {
         
         dataAccess.setSize(origFileSize);
         
-        if (originalMimeType != null && !originalMimeType.equals("")) {
+        if (originalMimeType != null && !"".equals(originalMimeType)) {
             if (originalMimeType.matches("application/x-dvn-.*-zip")) {
                 dataAccess.setMimeType("application/zip");
             } else {
@@ -203,21 +203,21 @@ public class StoredOriginalFile {
     
     private static String generateOriginalExtension(String fileType) {
 
-        if (fileType.equalsIgnoreCase("application/x-spss-sav")) {
+        if ("application/x-spss-sav".equalsIgnoreCase(fileType)) {
             return ".sav";
-        } else if (fileType.equalsIgnoreCase("application/x-spss-por")) {
+        } else if ("application/x-spss-por".equalsIgnoreCase(fileType)) {
             return ".por";
-        } else if (fileType.equalsIgnoreCase("application/x-stata") || fileType.equalsIgnoreCase("application/x-stata-13")) {
+        } else if ("application/x-stata".equalsIgnoreCase(fileType) || "application/x-stata-13".equalsIgnoreCase(fileType)) {
             return ".dta";
-        } else if (fileType.equalsIgnoreCase("application/x-dvn-csvspss-zip")) {
+        } else if ("application/x-dvn-csvspss-zip".equalsIgnoreCase(fileType)) {
             return ".zip";
-        } else if (fileType.equalsIgnoreCase("application/x-dvn-tabddi-zip")) {
+        } else if ("application/x-dvn-tabddi-zip".equalsIgnoreCase(fileType)) {
             return ".zip";
-        } else if (fileType.equalsIgnoreCase("application/x-rlang-transport")) {
+        } else if ("application/x-rlang-transport".equalsIgnoreCase(fileType)) {
             return ".RData";
-        } else if (fileType.equalsIgnoreCase("text/csv") || fileType.equalsIgnoreCase("text/comma-separated-values")) {
+        } else if ("text/csv".equalsIgnoreCase(fileType) || "text/comma-separated-values".equalsIgnoreCase(fileType)) {
             return ".csv";
-        } else if (fileType.equalsIgnoreCase("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+        } else if ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".equalsIgnoreCase(fileType)) {
             return ".xlsx";
         }
 

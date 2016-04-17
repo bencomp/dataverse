@@ -288,7 +288,7 @@ public class ShapefileHandler{
             return null;
         }
         String unzipFileName = new File(fileName).getName();
-        if (unzipFileName.equals("")){
+        if ("".equals(unzipFileName)){
             logger.info("getFileBasename.  fileName is an empty string: " + fileName);
             return null;
         }
@@ -647,7 +647,7 @@ public class ShapefileHandler{
     } // end updateFileGroupHash
     
     private boolean isFileToSkip(String fname){
-        if ((fname==null)||(fname.equals(""))){
+        if ((fname==null)||("".equals(fname))){
             return true;
         }
         

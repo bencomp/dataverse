@@ -56,7 +56,7 @@ public class MarkupCheckerTest {
         String safeStr = "<script>alert('hi')</script>";
         String sanitized = MarkupChecker.sanitizeBasicHTML(safeStr);
         this.msgu("safeStr: " + safeStr + "\nsanitized: " + sanitized);
-        assertTrue(sanitized.equals(""));
+        assertTrue("".equals(sanitized));
 
         String unsafeStr = "<map name=\"rtdcCO\">";
         safeStr = "<map name=\"rtdcCO\"></map>";

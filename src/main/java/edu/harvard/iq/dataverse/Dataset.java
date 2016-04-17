@@ -393,7 +393,7 @@ public class Dataset extends DvObjectContainer {
      }*/
 
     public DataFileCategory getCategoryByName(String categoryName) {
-        if (categoryName != null && !categoryName.equals("")) {
+        if (categoryName != null && !"".equals(categoryName)) {
             if (dataFileCategories != null) {
                 for (DataFileCategory dataFileCategory : dataFileCategories) {
                     if (categoryName.equals(dataFileCategory.getName())) {
@@ -426,7 +426,7 @@ public class Dataset extends DvObjectContainer {
         Path studyDir = null;
 
         String filesRootDirectory = System.getProperty("dataverse.files.directory");
-        if (filesRootDirectory == null || filesRootDirectory.equals("")) {
+        if (filesRootDirectory == null || "".equals(filesRootDirectory)) {
             filesRootDirectory = "/tmp/files";
         }
 

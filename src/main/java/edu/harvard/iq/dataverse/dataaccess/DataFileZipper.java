@@ -229,7 +229,7 @@ public class DataFileZipper {
 
             String fileName = accessObject.getFileName();
             String mimeType = accessObject.getMimeType();
-            if (mimeType == null || mimeType.equals("")) {
+            if (mimeType == null || "".equals(mimeType)) {
                 mimeType = "application/octet-stream";
             }
 

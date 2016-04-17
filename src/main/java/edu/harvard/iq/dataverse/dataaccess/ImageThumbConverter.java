@@ -80,11 +80,11 @@ public class ImageThumbConverter {
 
             logger.fine("Checking for thumbnail, file type: " + file.getContentType());
 
-            if (file.getContentType().substring(0, 6).equalsIgnoreCase("image/")) {
+            if ("image/".equalsIgnoreCase(file.getContentType().substring(0, 6))) {
                 imageThumbFileName = generateImageThumb(dataAccess.getFileSystemPath().toString(), size);
-            } else if (file.getContentType().equalsIgnoreCase("application/pdf")) {
+            } else if ("application/pdf".equalsIgnoreCase(file.getContentType())) {
                 imageThumbFileName = generatePDFThumb(dataAccess.getFileSystemPath().toString(), size);
-            } else if (file.getContentType().equalsIgnoreCase("application/zipped-shapefile")) {
+            } else if ("application/zipped-shapefile".equalsIgnoreCase(file.getContentType())) {
                 imageThumbFileName = generateWorldMapThumb(dataAccess.getFileSystemPath().toString(), size);
             }
         } catch (IOException ioEx) {
@@ -212,13 +212,13 @@ public class ImageThumbConverter {
     public static File getImageThumbAsFile(FileAccessIO fileAccess, int size ) {
         String imageThumbFileName = null;
         try {
-            if (fileAccess.getDataFile() != null && fileAccess.getDataFile().getContentType().substring(0, 6).equalsIgnoreCase("image/")) {
+            if (fileAccess.getDataFile() != null && "image/".equalsIgnoreCase(fileAccess.getDataFile().getContentType().substring(0, 6))) {
                 imageThumbFileName = generateImageThumb(fileAccess.getFileSystemPath().toString(), size);
                 
-            } else if (fileAccess.getDataFile() != null && fileAccess.getDataFile().getContentType().equalsIgnoreCase("application/pdf")) {
+            } else if (fileAccess.getDataFile() != null && "application/pdf".equalsIgnoreCase(fileAccess.getDataFile().getContentType())) {
                 imageThumbFileName = generatePDFThumb(fileAccess.getFileSystemPath().toString(), size);
                 
-            } else if (fileAccess.getDataFile() != null && fileAccess.getDataFile().getContentType().equalsIgnoreCase("application/zipped-shapefile")) {
+            } else if (fileAccess.getDataFile() != null && "application/zipped-shapefile".equalsIgnoreCase(fileAccess.getDataFile().getContentType())) {
                 imageThumbFileName = generateWorldMapThumb(fileAccess.getFileSystemPath().toString(), size);
                 
             } else {
@@ -462,7 +462,7 @@ public class ImageThumbConverter {
         
         // default location:
         
-        if ( imageMagickExec == null || imageMagickExec.equals("") ) {
+        if ( imageMagickExec == null || "".equals(imageMagickExec)) {
             imageMagickExec = "/usr/bin/convert";
         } 
         
@@ -606,7 +606,7 @@ public class ImageThumbConverter {
         }
         Long limit = null; 
         
-        if (option != null && !option.equals("")) {
+        if (option != null && !"".equals(option)) {
             try {
                 limit = new Long(option);
             } catch (NumberFormatException nfe) {

@@ -73,10 +73,10 @@ public class PublishDatasetCommand extends AbstractCommand<Dataset> {
         String doiProvider = ctxt.settings().getValueForKey(SettingsServiceBean.Key.DoiProvider, nonNullDefaultIfKeyNotFound);
         String authority = theDataset.getAuthority();
         if (theDataset.getGlobalIdCreateTime() == null) {
-            if (protocol.equals("doi")
-                    && (doiProvider.equals("EZID") || doiProvider.equals("DataCite"))) {
+            if ("doi".equals(protocol)
+                    && ("EZID".equals(doiProvider) || "DataCite".equals(doiProvider))) {
                 String doiRetString = "";
-                if (doiProvider.equals("EZID")) {
+                if ("EZID".equals(doiProvider)) {
                     doiRetString = ctxt.doiEZId().createIdentifier(theDataset);
                     if (doiRetString.contains(theDataset.getIdentifier())) {
                         theDataset.setGlobalIdCreateTime(new Timestamp(new Date().getTime()));
@@ -93,7 +93,7 @@ public class PublishDatasetCommand extends AbstractCommand<Dataset> {
                     }
                 }
                 
-                if (doiProvider.equals("DataCite")) {
+                if ("DataCite".equals(doiProvider)) {
                     try {
                         if (!ctxt.doiDataCite().alreadyExists(theDataset)) {
                             ctxt.doiDataCite().createIdentifier(theDataset);
@@ -210,12 +210,12 @@ public class PublishDatasetCommand extends AbstractCommand<Dataset> {
             ctxt.em().merge(datasetDataverseUser);
         }
 
-        if (protocol.equals("doi")
-                && doiProvider.equals("EZID")) {
+        if ("doi".equals(protocol)
+                && "EZID".equals(doiProvider)) {
             ctxt.doiEZId().publicizeIdentifier(savedDataset);
         }
-        if (protocol.equals("doi")
-                && doiProvider.equals("DataCite")) {
+        if ("doi".equals(protocol)
+                && "DataCite".equals(doiProvider)) {
             try {
                 ctxt.doiDataCite().publicizeIdentifier(savedDataset);
             } catch (IOException io) {

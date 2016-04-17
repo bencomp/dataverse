@@ -165,7 +165,7 @@ public class DOIEZIdServiceBean  {
 
         String idStatus = doiMetadata.get("_status");
         
-        if (idStatus.equals("reserved")) {
+        if ("reserved".equals(idStatus)) {
             logger.log(Level.INFO, "Delete status is reserved..");
             try {
                 ezidService.deleteIdentifier(identifier);
@@ -178,7 +178,7 @@ public class DOIEZIdServiceBean  {
             }
             return;
         }
-        if (idStatus.equals("public")) { 
+        if ("public".equals(idStatus)) {
             //if public then it has been released set to unavaialble and reset target to n2t url
             updateIdentifierStatus(datasetIn, "unavailable | withdrawn by author");
             HashMap<String, String> metadata = new HashMap<>();
@@ -233,7 +233,7 @@ public class DOIEZIdServiceBean  {
         String targetUrl = "";
         DOISHOULDER = "doi:" + datasetIn.getAuthority();
         
-        if (inetAddress.equals("localhost")) {
+        if ("localhost".equals(inetAddress)) {
            targetUrl ="http://localhost:8080" + "/dataset.xhtml?persistentId=" + DOISHOULDER 
                     + datasetIn.getDoiSeparator()       + datasetIn.getIdentifier();
         } else {
@@ -251,7 +251,7 @@ public class DOIEZIdServiceBean  {
         String targetUrl = "";
         DOISHOULDER = "doi:" + datasetIn.getAuthority();
         
-        if (inetAddress.equals("localhost")){
+        if ("localhost".equals(inetAddress)){
            targetUrl ="http://localhost:8080" + "/dataset.xhtml?persistentId=" + DOISHOULDER 
                     + datasetIn.getDoiSeparator()       + datasetIn.getIdentifier();
         } else{

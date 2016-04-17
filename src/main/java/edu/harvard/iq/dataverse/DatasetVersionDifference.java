@@ -36,7 +36,7 @@ public class DatasetVersionDifference {
                 if (dsfo.getDatasetFieldType().equals(dsfn.getDatasetFieldType())) {
                     deleted = false;
                     if (dsfo.getDatasetFieldType().isPrimitive()) {
-                        if (!dsfo.getDatasetFieldType().getFieldType().equals("email")) {
+                        if (!"email".equals(dsfo.getDatasetFieldType().getFieldType())) {
                             compareValues(dsfo, dsfn, false);
                         }
                     } else {
@@ -793,10 +793,10 @@ public class DatasetVersionDifference {
         value1 = fm1.getLabel();
         value2 = fm2.getLabel();
 
-        if (value1 == null || value1.equals("") || value1.equals(" ")) {
+        if (value1 == null || "".equals(value1) || " ".equals(value1)) {
             value1 = "";
         }
-        if (value2 == null || value2.equals("") || value2.equals(" ")) {
+        if (value2 == null || "".equals(value2) || " ".equals(value2)) {
             value2 = "";
         }
 
@@ -808,10 +808,10 @@ public class DatasetVersionDifference {
         value1 = fm1.getDataFile().getFriendlyType();
         value2 = fm2.getDataFile().getFriendlyType();
 
-        if (value1 == null || value1.equals("") || value1.equals(" ")) {
+        if (value1 == null || "".equals(value1) || " ".equals(value1)) {
             value1 = "";
         }
-        if (value2 == null || value2.equals("") || value2.equals(" ")) {
+        if (value2 == null || "".equals(value2) || " ".equals(value2)) {
             value2 = "";
         }
 
@@ -839,10 +839,10 @@ public class DatasetVersionDifference {
         value1 = fm1.getCategoriesByName().toString();
         value2 = fm2.getCategoriesByName().toString();
 
-        if (value1 == null || value1.equals("") || value1.equals(" ")) {
+        if (value1 == null || "".equals(value1) || " ".equals(value1)) {
             value1 = "";
         }
-        if (value2 == null || value2.equals("") || value2.equals(" ")) {
+        if (value2 == null || "".equals(value2) || " ".equals(value2)) {
             value2 = "";
         }
 
@@ -854,10 +854,10 @@ public class DatasetVersionDifference {
         value1 = fm1.getDescription();
         value2 = fm2.getDescription();
 
-        if (value1 == null || value1.equals("") || value1.equals(" ")) {
+        if (value1 == null || "".equals(value1) || " ".equals(value1)) {
             value1 = "";
         }
-        if (value2 == null || value2.equals("") || value2.equals(" ")) {
+        if (value2 == null || "".equals(value2) || " ".equals(value2)) {
             value2 = "";
         }
 
@@ -928,10 +928,10 @@ public class DatasetVersionDifference {
             value1 = fm1.getLabel();
             value2 = fm2.getLabel();
 
-            if (value1 == null || value1.equals("") || value1.equals(" ")) {
+            if (value1 == null || "".equals(value1) || " ".equals(value1)) {
                 value1 = "";
             }
-            if (value2 == null || value2.equals("") || value2.equals(" ")) {
+            if (value2 == null || "".equals(value2) || " ".equals(value2)) {
                 value2 = "";
             }
 
@@ -948,10 +948,10 @@ public class DatasetVersionDifference {
             // file category:
             value1 = fm1.getCategoriesByName().toString();
             value2 = fm2.getCategoriesByName().toString();
-            if (value1 == null || value1.equals("") || value1.equals(" ")) {
+            if (value1 == null || "".equals(value1) || " ".equals(value1)) {
                 value1 = "";
             }
-            if (value2 == null || value2.equals("") || value2.equals(" ")) {
+            if (value2 == null || "".equals(value2) || " ".equals(value2)) {
                 value2 = "";
             }
 
@@ -964,10 +964,10 @@ public class DatasetVersionDifference {
             value1 = fm1.getDescription();
             value2 = fm2.getDescription();
 
-            if (value1 == null || value1.equals("") || value1.equals(" ")) {
+            if (value1 == null || "".equals(value1) || " ".equals(value1)) {
                 value1 = "";
             }
-            if (value2 == null || value2.equals("") || value2.equals(" ")) {
+            if (value2 == null || "".equals(value2) || " ".equals(value2)) {
                 value2 = "";
             }
 

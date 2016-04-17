@@ -79,11 +79,11 @@ public class TestIngest {
         BufferedInputStream fileInputStream = null; 
         
         String absoluteFilePath = null; 
-        if (fileType.equals("x-stata")) {
+        if ("x-stata".equals(fileType)) {
             absoluteFilePath = "/usr/share/data/retest_stata/reingest/" + fileName;
-        } else if (fileType.equals("x-spss-sav")) {
+        } else if ("x-spss-sav".equals(fileType)) {
             absoluteFilePath = "/usr/share/data/retest_sav/reingest/" + fileName;
-        } else if (fileType.equals("x-spss-por")) {
+        } else if ("x-spss-por".equals(fileType)) {
             absoluteFilePath = "/usr/share/data/retest_por/reingest/" + fileName; 
         }
         

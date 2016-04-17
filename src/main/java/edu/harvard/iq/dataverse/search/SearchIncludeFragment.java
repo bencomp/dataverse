@@ -363,7 +363,7 @@ public class SearchIncludeFragment implements java.io.Serializable {
                 solrSearchResult.setIsInTree(true);
                 // (we'll review this later!)
                 
-                if (solrSearchResult.getType().equals("dataverses")) {
+                if ("dataverses".equals(solrSearchResult.getType())) {
                     //logger.info("XXRESULT: dataverse: "+solrSearchResult.getEntityId());
                     dataverseService.populateDvSearchCard(solrSearchResult);
                     
@@ -371,7 +371,7 @@ public class SearchIncludeFragment implements java.io.Serializable {
                         solrSearchResult.setHarvested(true);
                     }
 
-                } else if (solrSearchResult.getType().equals("datasets")) {
+                } else if ("datasets".equals(solrSearchResult.getType())) {
                     //logger.info("XXRESULT: dataset: "+solrSearchResult.getEntityId());
                     datasetVersionService.populateDatasetSearchCard(solrSearchResult);
 
@@ -386,7 +386,7 @@ public class SearchIncludeFragment implements java.io.Serializable {
                         solrSearchResult.setHarvestingDescription(getHarvestingDataverseDescription(solrSearchResult.getParentIdAsLong()));
                         solrSearchResult.setHarvested(true);
                     }
-                } else if (solrSearchResult.getType().equals("files")) {
+                } else if ("files".equals(solrSearchResult.getType())) {
                     //logger.info("XXRESULT: datafile: "+solrSearchResult.getEntityId());
                     dataFileService.populateFileSearchCard(solrSearchResult);
 
@@ -1031,7 +1031,7 @@ public class SearchIncludeFragment implements java.io.Serializable {
                 }
                 ret = ret.concat(" - ");
             }
-            if (unf != null && !unf.equals("")) {
+            if (unf != null && !"".equals(unf)) {
                 ret = ret.concat("UNF: " + unf);
             }
         }
@@ -1068,13 +1068,13 @@ public class SearchIncludeFragment implements java.io.Serializable {
         for (SolrSearchResult result : searchResultsList) {
             //logger.info("checking DisplayImage for the search result " + i++);
             boolean valueSet = false;
-            if (result.getType().equals("dataverses") /*&& result.getEntity() instanceof Dataverse*/) {
+            if ("dataverses".equals(result.getType()) /*&& result.getEntity() instanceof Dataverse*/) {
                 result.setImageUrl(getDataverseCardImageUrl(result));
                 valueSet = true;
-            } else if (result.getType().equals("datasets") /*&& result.getEntity() instanceof Dataset*/) {
+            } else if ("datasets".equals(result.getType()) /*&& result.getEntity() instanceof Dataset*/) {
                 result.setImageUrl(getDatasetCardImageUrl(result));
                 valueSet = true;
-            } else if (result.getType().equals("files") /*&& result.getEntity() instanceof DataFile*/) {
+            } else if ("files".equals(result.getType()) /*&& result.getEntity() instanceof DataFile*/) {
                 // TODO: 
                 // use permissionsWrapper?  -- L.A. 4.2.1
                 // OK, done! (4.2.2; in the getFileCardImageUrl() method, below)
@@ -1103,7 +1103,7 @@ public class SearchIncludeFragment implements java.io.Serializable {
             Map<Long,String> descriptionsForHarvestedDatasets = datasetService.getHarvestingDescriptionsForHarvestedDatasets(fileParentDatasets);
             if (descriptionsForHarvestedDatasets != null && !descriptionsForHarvestedDatasets.isEmpty()) {
                 for (SolrSearchResult result : searchResultsList) {
-                    if (result.getType().equals("files")) {
+                    if ("files".equals(result.getType())) {
                         if (descriptionsForHarvestedDatasets.containsKey(result.getParentIdAsLong())) {
                             result.setHarvestingDescription(descriptionsForHarvestedDatasets.get(result.getParentIdAsLong()));
                             result.setHarvested(true);

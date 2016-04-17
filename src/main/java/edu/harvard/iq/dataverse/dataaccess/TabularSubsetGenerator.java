@@ -788,7 +788,7 @@ public class TabularSubsetGenerator implements SubsetGenerator {
                                 retVector[caseindex] = java.lang.Double.POSITIVE_INFINITY;
                             } else if ("-inf".equalsIgnoreCase(token)) {
                                 retVector[caseindex] = java.lang.Double.NEGATIVE_INFINITY;
-                            } else if (token == null || token.equals("")) {
+                            } else if (token == null || "".equals(token)) {
                                 // missing value:
                                 retVector[caseindex] = null;
                             } else {
@@ -812,7 +812,7 @@ public class TabularSubsetGenerator implements SubsetGenerator {
                                 retVector[caseindex] = java.lang.Float.POSITIVE_INFINITY;
                             } else if ("-inf".equalsIgnoreCase(token)) {
                                 retVector[caseindex] = java.lang.Float.NEGATIVE_INFINITY;
-                            } else if (token == null || token.equals("")) {
+                            } else if (token == null || "".equals(token)) {
                                 // missing value:
                                 retVector[caseindex] = null;
                             } else {

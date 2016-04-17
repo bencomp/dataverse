@@ -175,7 +175,7 @@ public class ForeignMetadataImportServiceBean {
                     
                     // Process the payload of this XML element:
                     String dataverseFieldName = mappingDefined.getDatasetfieldName();
-                    if (dataverseFieldName != null && !dataverseFieldName.equals("")) {
+                    if (dataverseFieldName != null && !"".equals(dataverseFieldName)) {
                         DatasetFieldType dataverseFieldType = datasetfieldService.findByNameOpt(dataverseFieldName);
                         if (dataverseFieldType != null) {
                             String elementTextPayload = parseText(xmlr);

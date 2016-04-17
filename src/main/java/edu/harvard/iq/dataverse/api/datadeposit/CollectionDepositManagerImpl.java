@@ -66,7 +66,7 @@ public class CollectionDepositManagerImpl implements CollectionDepositManager {
         
         urlManager.processUrl(collectionUri);
         String dvAlias = urlManager.getTargetIdentifier();
-        if (urlManager.getTargetType().equals("dataverse") && dvAlias != null) {
+        if ("dataverse".equals(urlManager.getTargetType()) && dvAlias != null) {
 
             logger.log(Level.FINE, "attempting deposit into this dataverse alias: {0}", dvAlias);
 

@@ -192,7 +192,7 @@ public class FileMetadata implements Serializable {
     */
     
     public void addCategoryByName(String newCategoryName) {
-        if (newCategoryName != null && !newCategoryName.equals("")) {
+        if (newCategoryName != null && !"".equals(newCategoryName)) {
             Collection<String> oldCategoryNames = getCategoriesByName();
             if (!oldCategoryNames.contains(newCategoryName)) {
                 DataFileCategory fileCategory = null;

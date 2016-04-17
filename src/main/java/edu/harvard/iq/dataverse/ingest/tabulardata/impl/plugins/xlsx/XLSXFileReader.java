@@ -142,21 +142,21 @@ public class XLSXFileReader extends TabularDataFileReader {
         
             for (int i = 0; i < varQnty; i++) {
                 if (dataTable.getDataVariables().get(i).isTypeNumeric()) {
-                    if (valueTokens[i] == null || valueTokens[i].equals(".") || valueTokens[i].equals("") || valueTokens[i].equalsIgnoreCase("NA")) {
+                    if (valueTokens[i] == null || ".".equals(valueTokens[i]) || "".equals(valueTokens[i]) || "NA".equalsIgnoreCase(valueTokens[i])) {
                         // Missing value - represented as an empty string in 
                         // the final tab file
                         caseRow[i] = "";
-                    } else if (valueTokens[i].equalsIgnoreCase("NaN")) {
+                    } else if ("NaN".equalsIgnoreCase(valueTokens[i])) {
                         // "Not a Number" special value: 
                         caseRow[i] = "NaN";
-                    } else if (valueTokens[i].equalsIgnoreCase("Inf")
-                            || valueTokens[i].equalsIgnoreCase("+Inf")) {
+                    } else if ("Inf".equalsIgnoreCase(valueTokens[i])
+                            || "+Inf".equalsIgnoreCase(valueTokens[i])) {
                         // Positive infinity:
                         caseRow[i] = "Inf";
-                    } else if (valueTokens[i].equalsIgnoreCase("-Inf")) {
+                    } else if ("-Inf".equalsIgnoreCase(valueTokens[i])) {
                         // Negative infinity: 
                         caseRow[i] = "-Inf";
-                    } else if (valueTokens[i].equalsIgnoreCase("null")) {
+                    } else if ("null".equalsIgnoreCase(valueTokens[i])) {
                         // By request from Gus - "NULL" is recognized as a 
                         // numeric zero: 
                         caseRow[i] = "0";
@@ -176,7 +176,7 @@ public class XLSXFileReader extends TabularDataFileReader {
                     // the new line);                                                                       
                     // Empty strings stored as "" (quoted empty string).
                     
-                    if (valueTokens[i] != null && !valueTokens[i].equals(".")) {
+                    if (valueTokens[i] != null && !".".equals(valueTokens[i])) {
                         String charToken = valueTokens[i];
                         // Dealing with quotes: 
                         // remove the leading and trailing quotes, if present:
@@ -304,12 +304,12 @@ public class XLSXFileReader extends TabularDataFileReader {
             dbglog.fine("entering startElement ("+name+")");
 
             // first raw encountered: 
-            if (variableHeader && name.equals("row")) {
+            if (variableHeader && "row".equals(name)) {
                 Long varCount = null; 
                 String rAttribute = attributes.getValue("t");
                 if (rAttribute == null) {
                     dbglog.warning("Null r attribute in the first row element!");
-                } else if (!rAttribute.equals("1")) {
+                } else if (!"1".equals(rAttribute)) {
                     dbglog.warning("Attribute r of the first row element is not \"1\"!");
                 }
                 
@@ -338,7 +338,7 @@ public class XLSXFileReader extends TabularDataFileReader {
             }
             
             // c => cell
-            if (name.equals("c")) {
+            if ("c".equals(name)) {
                 // try and establish the location index (column number) of this
                 // cell, from the "r" attribute: 
                 
@@ -357,7 +357,7 @@ public class XLSXFileReader extends TabularDataFileReader {
                 }
                 
                 String cellType = attributes.getValue("t");
-                if (cellType != null && cellType.equals("s")) {
+                if (cellType != null && "s".equals(cellType)) {
                     nextIsString = true;
                 } else {
                     nextIsString = false;
@@ -402,7 +402,7 @@ public class XLSXFileReader extends TabularDataFileReader {
 
             // v => contents of a cell
             // Output after we've seen the string contents
-            if (name.equals("v")) {
+            if ("v".equals(name)) {
                 if (variableHeader) {
                     dbglog.fine("variable header mode; cell "+columnCount+", cell contents: "+cellContents);
                     
@@ -414,7 +414,7 @@ public class XLSXFileReader extends TabularDataFileReader {
                 }
             }
             
-            if (name.equals("row")) {
+            if ("row".equals(name)) {
                 if (variableHeader) {
                     // Initialize variables:
                     dbglog.fine("variableHeader mode; ");
@@ -426,7 +426,7 @@ public class XLSXFileReader extends TabularDataFileReader {
                         String varName = variableNames[i];
                         
 
-                        if (varName == null || varName.equals("")) {
+                        if (varName == null || "".equals(varName)) {
                             varName = getColumnLetterTag(i);
                             // TODO: 
                             // Add a sensible variable name validation algorithm.
@@ -477,17 +477,17 @@ public class XLSXFileReader extends TabularDataFileReader {
                             // If we haven't given up on the "numeric" status of this 
                             // variable, let's perform some tests on it, and see if 
                             // this value is still a parsable number:
-                            if (dataRow[i] != null && (!dataRow[i].equals(""))) {
+                            if (dataRow[i] != null && (!"".equals(dataRow[i]))) {
 
                                 boolean isNumeric = false; 
                         
-                                if (dataRow[i].equalsIgnoreCase(".")
-                                        || dataRow[i].equalsIgnoreCase("NaN")
-                                        || dataRow[i].equalsIgnoreCase("NA")
-                                        || dataRow[i].equalsIgnoreCase("Inf")
-                                        || dataRow[i].equalsIgnoreCase("+Inf")
-                                        || dataRow[i].equalsIgnoreCase("-Inf")
-                                        || dataRow[i].equalsIgnoreCase("null")) {
+                                if (".".equalsIgnoreCase(dataRow[i])
+                                        || "NaN".equalsIgnoreCase(dataRow[i])
+                                        || "NA".equalsIgnoreCase(dataRow[i])
+                                        || "Inf".equalsIgnoreCase(dataRow[i])
+                                        || "+Inf".equalsIgnoreCase(dataRow[i])
+                                        || "-Inf".equalsIgnoreCase(dataRow[i])
+                                        || "null".equalsIgnoreCase(dataRow[i])) {
                                     isNumeric = true;
                                 } else {
                                     try {
@@ -513,7 +513,7 @@ public class XLSXFileReader extends TabularDataFileReader {
                 dataRow = new String[dataTable.getVarQuantity().intValue()];
             }
             
-            if (name.equals("sheetData")) {
+            if ("sheetData".equals(name)) {
                 dataTable.setCaseQuantity(new Long(caseCount));
             
                 // Re-type the variables that we've determined are numerics:

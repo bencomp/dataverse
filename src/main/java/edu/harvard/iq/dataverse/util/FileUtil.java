@@ -169,7 +169,7 @@ public class FileUtil implements java.io.Serializable  {
     public static String getUserFriendlyOriginalType(DataFile dataFile) {
         String fileType = dataFile.getOriginalFileFormat();
          
-        if (fileType != null && !fileType.equals("")) {
+        if (fileType != null && !"".equals(fileType)) {
             if (fileType.contains(";")) {
                 fileType = fileType.substring(0, fileType.indexOf(";"));
             }
@@ -212,7 +212,7 @@ public class FileUtil implements java.io.Serializable  {
             // in 4.0, we'll accept either the extension, or the valid 
             // magic header:
             if (isFITSFile(f) || (fileExtension != null
-                    && fileExtension.equalsIgnoreCase("fits"))) {
+                    && "fits".equalsIgnoreCase(fileExtension))) {
                 fileType = "application/fits";
             }
         }
@@ -355,7 +355,7 @@ public class FileUtil implements java.io.Serializable  {
             XMLStreamReader xmlr = xmlif.createXMLStreamReader(fileReader);
             for (int event = xmlr.next(); event != XMLStreamConstants.END_DOCUMENT; event = xmlr.next()) {
                 if (event == XMLStreamConstants.START_ELEMENT) {
-                    if (xmlr.getLocalName().equals("graphml")) {
+                    if ("graphml".equals(xmlr.getLocalName())) {
                         String schema = xmlr.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation");
                         logger.fine("schema = "+schema);
                         if (schema!=null && schema.contains("http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd")){

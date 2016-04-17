@@ -612,7 +612,7 @@ public class DDIExportServiceBean {
         // various notes:
         // this specially formatted note section is used to store the UNF
         // (Universal Numeric Fingerprint) signature:
-        if (checkField("unf", excludedFieldSet, includedFieldSet) && dt.getUnf() != null && !dt.getUnf().equals("")) {
+        if (checkField("unf", excludedFieldSet, includedFieldSet) && dt.getUnf() != null && !"".equals(dt.getUnf())) {
             xmlw.writeStartElement("notes");
             writeAttribute(xmlw, "level", LEVEL_FILE);
             writeAttribute(xmlw, "type", NOTE_TYPE_UNF);
@@ -701,7 +701,7 @@ public class DDIExportServiceBean {
      * back in DVN v2-3).
      */
     private boolean StringUtilisEmpty(String str) {
-        if (str == null || str.trim().equals("")) {
+        if (str == null || "".equals(str.trim())) {
             return true;
         }
         return false;

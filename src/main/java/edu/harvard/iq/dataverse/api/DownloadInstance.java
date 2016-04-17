@@ -84,7 +84,7 @@ public class DownloadInstance {
         for (OptionalAccessService dataService : servicesAvailable) {
             if (dataService != null) {
                 // Special case for the subsetting parameter (variables=<LIST>):
-                if (serviceArg.equals("variables")) {
+                if ("variables".equals(serviceArg)) {
                     if ("subset".equals(dataService.getServiceName())) {
                         conversionParam = "subset";
                         conversionParamValue = serviceArgValue; 
@@ -122,13 +122,13 @@ public class DownloadInstance {
         for (OptionalAccessService dataService : servicesAvailable) {
             if (dataService != null) {
                 // Special case for the subsetting parameter (variables=<LIST>):
-                if (serviceArg.equals("variables")) {
+                if ("variables".equals(serviceArg)) {
                     if ("subset".equals(dataService.getServiceName())) {
                         conversionParam = "subset";
                         conversionParamValue = serviceArgValue;
                         return dataService.getMimeType();
                     }
-                } else if (serviceArg.equals("imageThumb")) {
+                } else if ("imageThumb".equals(serviceArg)) {
                     return "image/png";
                 } else {
                     String argValuePair = serviceArg + "=" + serviceArgValue;

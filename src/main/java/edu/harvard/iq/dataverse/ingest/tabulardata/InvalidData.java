@@ -94,10 +94,10 @@ public class InvalidData {
                     // range-type 1 missing values
                     sb.append("\t\t<invalrng>\n");
                     sb.append("\t\t\t<range");
-                    if (!invalidRange.get(0).equals("LOWEST")){
+                    if (!"LOWEST".equals(invalidRange.get(0))){
                         sb.append(" min=\""+invalidRange.get(0)+"\"");
                     }
-                    if (!invalidRange.get(1).equals("HIGHEST")) {
+                    if (!"HIGHEST".equals(invalidRange.get(1))) {
                         sb.append(" max=\"" + invalidRange.get(1) + "\"");
                     }
                     sb.append("/>\n");
@@ -107,10 +107,10 @@ public class InvalidData {
                     // range-type: 2 missing values
                     sb.append("\t\t<invalrng>\n");
                     sb.append("\t\t\t<range");
-                    if (!invalidRange.get(0).equals("LOWEST")) {
+                    if (!"LOWEST".equals(invalidRange.get(0))) {
                         sb.append(" min=\""+invalidRange.get(0)+"\"");
                     }
-                    if (!invalidRange.get(1).equals("HIGHEST")) {
+                    if (!"HIGHEST".equals(invalidRange.get(1))) {
                         sb.append(" max=\"" + invalidRange.get(1) +"\"");
                     }
                     sb.append("/>\n");

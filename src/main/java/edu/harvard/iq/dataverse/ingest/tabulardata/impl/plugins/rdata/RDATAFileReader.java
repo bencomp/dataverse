@@ -757,16 +757,16 @@ public class RDATAFileReader extends TabularDataFileReader {
 
                 //dataTable.getDataVariables().get(k).setFormatSchema("RDATA");
 
-                if (variableTypeName == null || variableTypeName.equals("character") || variableTypeName.equals("other")) {
+                if (variableTypeName == null || "character".equals(variableTypeName) || "other".equals(variableTypeName)) {
                     // This is a String: 
                     dataTable.getDataVariables().get(k).setTypeCharacter();
                     dataTable.getDataVariables().get(k).setIntervalDiscrete();
                     
-                } else if (variableTypeName.equals("integer")) {
+                } else if ("integer".equals(variableTypeName)) {
                     dataTable.getDataVariables().get(k).setTypeNumeric();
                     dataTable.getDataVariables().get(k).setIntervalDiscrete();
                     
-                } else if (variableTypeName.equals("numeric") || variableTypeName.equals("double")) {
+                } else if ("numeric".equals(variableTypeName) || "double".equals(variableTypeName)) {
                     dataTable.getDataVariables().get(k).setTypeNumeric();
                     dataTable.getDataVariables().get(k).setIntervalContinuous();
                     
@@ -776,13 +776,13 @@ public class RDATAFileReader extends TabularDataFileReader {
                     dataTable.getDataVariables().get(k).setFormat(variableFormat);
                     
                     // instead:
-                    if (variableTypeName.equals("Date")) {
+                    if ("Date".equals(variableTypeName)) {
                         dataTable.getDataVariables().get(k).setFormatCategory("date");
-                    } else if (variableTypeName.equals("DateTime")) {
+                    } else if ("DateTime".equals(variableTypeName)) {
                         dataTable.getDataVariables().get(k).setFormatCategory("time");
                     }
                     
-                } else if (variableTypeName.equals("factor")) {
+                } else if ("factor".equals(variableTypeName)) {
                     
                     // All R factors are *string* factors!
                     dataTable.getDataVariables().get(k).setTypeCharacter();
@@ -792,7 +792,7 @@ public class RDATAFileReader extends TabularDataFileReader {
                         LOG.fine("this is a factor.");
                         boolean ordered = false; 
                         
-                        if (variableFormat != null && variableFormat.equals("ordered")) {
+                        if (variableFormat != null && "ordered".equals(variableFormat)) {
                             LOG.fine("an ordered factor, too");
                             ordered = true;
                         }

@@ -66,7 +66,7 @@ public class DatasetRelMaterial  {
     
     
    public boolean isEmpty() {
-        return ((text==null || text.trim().equals("")));
+        return ((text==null || "".equals(text.trim())));
     }
 
     @Override

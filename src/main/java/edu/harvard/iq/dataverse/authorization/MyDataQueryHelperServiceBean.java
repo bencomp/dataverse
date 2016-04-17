@@ -62,12 +62,12 @@ public class MyDataQueryHelperServiceBean {
         for (Object[] result : results) {
             Long role_id = (Long) result[0];
             
-            if (dtypeParent.equals("Dataverse") && dtypeChild.equals("Dataset") && rolePermissionHelper.hasDatasetPermissions(role_id)) {
+            if ("Dataverse".equals(dtypeParent) && "Dataset".equals(dtypeChild) && rolePermissionHelper.hasDatasetPermissions(role_id)) {
                 Integer r1 = (Integer) result[1];
                 retVal.add(r1.longValue());
             }
 
-            if (dtypeParent.equals("Dataverse") && dtypeChild.equals("DataFile") && rolePermissionHelper.hasFilePermissions(role_id)) {
+            if ("Dataverse".equals(dtypeParent) && "DataFile".equals(dtypeChild) && rolePermissionHelper.hasFilePermissions(role_id)) {
                 List<Object> dsIds = em.createNativeQuery("Select id from dvobject where dtype = 'Dataset' and owner_id = " + (Integer) result[1] + ";").getResultList();
                 for (Object dsId : dsIds) {
                     Integer r1 = (Integer) dsId;
@@ -75,7 +75,7 @@ public class MyDataQueryHelperServiceBean {
                 }
             }
 
-            if (dtypeParent.equals("Dataset")) {
+            if ("Dataset".equals(dtypeParent)) {
                 if (rolePermissionHelper.hasFilePermissions(role_id)) {
                     Integer r1 = (Integer) result[1];
                     retVal.add(r1.longValue());

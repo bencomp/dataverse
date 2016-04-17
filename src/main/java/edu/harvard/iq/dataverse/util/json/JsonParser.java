@@ -305,13 +305,13 @@ public class JsonParser {
         if (type.isAllowMultiples() != json.getBoolean("multiple")) {
             throw new JsonParseException("incorrect multiple   for field " + json.getString("typeName", ""));
         }
-        if (type.isCompound() && !json.getString("typeClass").equals("compound")) {
+        if (type.isCompound() && !"compound".equals(json.getString("typeClass"))) {
             throw new JsonParseException("incorrect  typeClass for field " + json.getString("typeName", "") + ", should be compound.");
         }
-        if (!type.isControlledVocabulary() && type.isPrimitive() && !json.getString("typeClass").equals("primitive")) {
+        if (!type.isControlledVocabulary() && type.isPrimitive() && !"primitive".equals(json.getString("typeClass"))) {
             throw new JsonParseException("incorrect  typeClass for field: " + json.getString("typeName", "") + ", should be primitive");
         }
-        if (type.isControlledVocabulary() && !json.getString("typeClass").equals("controlledVocabulary")) {
+        if (type.isControlledVocabulary() && !"controlledVocabulary".equals(json.getString("typeClass"))) {
             throw new JsonParseException("incorrect  typeClass for field " + json.getString("typeName", "") + ", should be controlledVocabulary");
         }
        
@@ -354,7 +354,7 @@ public class JsonParser {
 
         DatasetField keywordField = null;
         for (DatasetField field : fields) {
-            if (field.getDatasetFieldType().getName().equals("keyword")) {
+            if ("keyword".equals(field.getDatasetFieldType().getName())) {
                 keywordField = field;
                 break;
             }
@@ -506,7 +506,7 @@ public class JsonParser {
                     throw new ControlledVocabularyException("Value '" + strValue + "' does not exist in type '" + cvvType.getName() + "'", cvvType, strValue);
                 }
                 // Only add value to the list if it is not a duplicate 
-                if (strValue.equals("Other")) {
+                if ("Other".equals(strValue)) {
                     System.out.println("vals = "+vals+", contains: "+vals.contains(cvv));
                 }
                 if (!vals.contains(cvv)) {

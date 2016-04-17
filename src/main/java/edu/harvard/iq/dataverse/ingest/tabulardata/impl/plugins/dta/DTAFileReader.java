@@ -827,11 +827,11 @@ public class DTAFileReader extends TabularDataFileReader{
                 
                 if (typeLabel != null) {
                     dataTable.getDataVariables().get(i).setTypeNumeric();
-                    if (typeLabel.equals("Byte") || typeLabel.equals("Integer") || typeLabel.equals("Long")) {
+                    if ("Byte".equals(typeLabel) || "Integer".equals(typeLabel) || "Long".equals(typeLabel)) {
                         // these are treated as discrete:
                         dataTable.getDataVariables().get(i).setIntervalDiscrete();
                         
-                    } else if (typeLabel.equals("Float") || typeLabel.equals("Double")) {
+                    } else if ("Float".equals(typeLabel) || "Double".equals(typeLabel)) {
                         // these are treated as contiuous:
                         dataTable.getDataVariables().get(i).setIntervalContinuous();
                         
@@ -1063,7 +1063,7 @@ public class DTAFileReader extends TabularDataFileReader{
         dbgLog.info("labelNames=\n" + StringUtils.join(labelNames, ",\n") + "\n");
 
         for (int i = 0; i < nvar; i++) {
-            if ((labelNames[i] != null) && (!labelNames[i].equals(""))) {
+            if ((labelNames[i] != null) && (!"".equals(labelNames[i]))) {
                 valueLabelsLookupTable[i] = labelNames[i];
             }
         }
@@ -1753,7 +1753,7 @@ public class DTAFileReader extends TabularDataFileReader{
                 // 4.0 Check if this is a time/date variable: 
                 boolean isDateTimeDatum = false; 
                 String formatCategory = dataTable.getDataVariables().get(columnCounter).getFormatCategory();
-                if (formatCategory != null && (formatCategory.equals("time") || formatCategory.equals("date"))) {
+                if (formatCategory != null && ("time".equals(formatCategory) || "date".equals(formatCategory))) {
                     isDateTimeDatum = true; 
                 }
 
@@ -1948,7 +1948,7 @@ public class DTAFileReader extends TabularDataFileReader{
                             dbgLog.finer(i + "-th row " + columnCounter
                                     + "=th column string =" + string_datum);
                         }
-                        if (string_datum.equals("")) {
+                        if ("".equals(string_datum)) {
                             if (dbgLog.isLoggable(Level.FINER)) {
                                 dbgLog.finer(i + "-th row " + columnCounter
                                         + "=th column string missing value=" + string_datum);

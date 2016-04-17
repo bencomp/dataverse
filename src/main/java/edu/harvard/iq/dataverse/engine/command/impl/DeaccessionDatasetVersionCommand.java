@@ -48,10 +48,10 @@ public class DeaccessionDatasetVersionCommand extends AbstractCommand<DatasetVer
 
             String doiProvider = ctxt.settings().getValueForKey(SettingsServiceBean.Key.DoiProvider, nonNullDefaultIfKeyNotFound);
 
-            if (doiProvider.equals("EZID")) {
+            if ("EZID".equals(doiProvider)) {
                 ctxt.doiEZId().deleteIdentifier(ds);
             }
-            if (doiProvider.equals("DataCite")) {
+            if ("DataCite".equals(doiProvider)) {
                 try {
                     ctxt.doiDataCite().deleteIdentifier(ds);
                 } catch (Exception e) {

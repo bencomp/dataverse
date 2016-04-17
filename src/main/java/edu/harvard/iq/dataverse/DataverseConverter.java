@@ -30,7 +30,7 @@ public class DataverseConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext facesContext, UIComponent component, Object value) {
-        if (value == null || value.equals("")) {
+        if (value == null || "".equals(value)) {
             return "";
         } else {
             return ((Dataverse) value).getId().toString();

@@ -380,7 +380,7 @@ public class ContainerManagerImpl implements ContainerManager {
         urlManager.processUrl(uri);
         String servlet = urlManager.getServlet();
         if (servlet != null) {
-            return servlet.equals("statement");
+            return "statement".equals(servlet);
         } else {
             throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Unable to determine requested IRI from URL: " + uri);
         }

@@ -58,7 +58,7 @@ public class DatasetField implements Serializable {
         
         DatasetField dsfv = createNewEmptyDatasetField(dsfType);
         //TODO - a better way to handle this?
-        if (dsv.getClass().getName().equals("edu.harvard.iq.dataverse.DatasetVersion")){
+        if ("edu.harvard.iq.dataverse.DatasetVersion".equals(dsv.getClass().getName())){
                    dsfv.setDatasetVersion((DatasetVersion)dsv); 
         } else {
             dsfv.setTemplate((Template)dsv);
@@ -251,7 +251,7 @@ public class DatasetField implements Serializable {
         String returnString = "";
         for (String value : getValues()) {
             if(value == null) value="";
-            returnString += (returnString.equals("") ? "" : "; ") + value.trim();
+            returnString += ("".equals(returnString) ? "" : "; ") + value.trim();
         }
         return returnString;
     }
@@ -262,7 +262,7 @@ public class DatasetField implements Serializable {
             for (DatasetField dsf : dscv.getChildDatasetFields()) {
                 for (String value : dsf.getValues()) {
                     if (!(value == null)) {
-                        returnString += (returnString.equals("") ? "" : "; ") + value.trim();
+                        returnString += ("".equals(returnString) ? "" : "; ") + value.trim();
                     }
                 }
             }
@@ -444,7 +444,7 @@ public class DatasetField implements Serializable {
         dsf.setDatasetFieldType(datasetFieldType);
         
         if (version != null) {
-            if (version.getClass().getName().equals("edu.harvard.iq.dataverse.DatasetVersion")) {
+            if ("edu.harvard.iq.dataverse.DatasetVersion".equals(version.getClass().getName())) {
                 dsf.setDatasetVersion((DatasetVersion) version);               
             } else {
                 dsf.setTemplate((Template) version);

@@ -58,7 +58,7 @@ public class DOIDataCiteRegisterService {
         String status = metadata.get("_status").trim();
         String target = metadata.get("_target");
         String retString = "";
-        if (status.equals("reserved")) {
+        if ("reserved".equals(status)) {
             DOIDataCiteRegisterCache rc = findByDOI(identifier);
             if (rc == null) {
                 rc = new DOIDataCiteRegisterCache();
@@ -74,7 +74,7 @@ public class DOIDataCiteRegisterService {
                 rc.setUrl(target);
             }
             retString = "success to reserved " + identifier;
-        } else if (status.equals("public")) {
+        } else if ("public".equals(status)) {
             DOIDataCiteRegisterCache rc = findByDOI(identifier);
             if (rc != null) {
                 rc.setDoi(identifier);
@@ -92,7 +92,7 @@ public class DOIDataCiteRegisterService {
                     Logger.getLogger(DOIDataCiteRegisterService.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        } else if (status.equals("unavailable")) {
+        } else if ("unavailable".equals(status)) {
             DOIDataCiteRegisterCache rc = findByDOI(identifier);
             try (DataCiteRESTfullClient client = openClient()) {
                 if (rc != null) {
@@ -259,13 +259,13 @@ class DataCiteMetadataTemplate {
 
             if (author.getIdType() != null && author.getIdValue() != null && !author.getIdType().isEmpty() && !author.getIdValue().isEmpty() && author.getAffiliation() != null && !author.getAffiliation().getDisplayValue().isEmpty()) {
 
-                if (author.getIdType().equals("ORCID")) {
+                if ("ORCID".equals(author.getIdType())) {
                     creatorsElement.append("<nameIdentifier schemeURI=\"http://orcid.org/\" nameIdentifierScheme=\"ORCID\">" + author.getIdValue() + "</nameIdentifier>");
                 }
-                if (author.getIdType().equals("ISNI")) {
+                if ("ISNI".equals(author.getIdType())) {
                     creatorsElement.append("<nameIdentifier schemeURI=\"http://isni.org/isni/\" nameIdentifierScheme=\"ISNI\">" + author.getIdValue() + "</nameIdentifier>");
                 }
-                if (author.getIdType().equals("LCNA")) {
+                if ("LCNA".equals(author.getIdType())) {
                     creatorsElement.append("<nameIdentifier schemeURI=\"http://id.loc.gov/authorities/names/\" nameIdentifierScheme=\"LCNA\">" + author.getIdValue() + "</nameIdentifier>");
                 }
             }

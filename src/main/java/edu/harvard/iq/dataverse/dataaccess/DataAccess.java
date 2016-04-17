@@ -42,7 +42,7 @@ public class DataAccess {
 
         if (df == null ||
                 df.getStorageIdentifier() == null ||
-                df.getStorageIdentifier().equals("")) {
+                "".equals(df.getStorageIdentifier())) {
             throw new IOException ("createDataAccessObject: null or invalid datafile.");
         }
 

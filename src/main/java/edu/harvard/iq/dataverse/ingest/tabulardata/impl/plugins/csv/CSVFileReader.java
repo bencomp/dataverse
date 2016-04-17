@@ -144,7 +144,7 @@ public class CSVFileReader extends TabularDataFileReader {
         for (int i = 0; i < variableCount; i++) {
             String varName = valueTokens[i];
             
-            if (varName == null || varName.equals("")) {
+            if (varName == null || "".equals(varName)) {
                 // TODO: 
                 // Add a sensible variable name validation algorithm.
                 // -- L.A. 4.0 alpha 1
@@ -278,17 +278,17 @@ public class CSVFileReader extends TabularDataFileReader {
                     // If we haven't given up on the "numeric" status of this 
                     // variable, let's perform some tests on it, and see if 
                     // this value is still a parsable number:
-                    if (valueTokens[i] != null && (!valueTokens[i].equals(""))) {
+                    if (valueTokens[i] != null && (!"".equals(valueTokens[i]))) {
 
                         boolean isNumeric = false; 
                         boolean isInteger = false; 
                         
-                        if (valueTokens[i].equalsIgnoreCase("NaN")
-                                || valueTokens[i].equalsIgnoreCase("NA")
-                                || valueTokens[i].equalsIgnoreCase("Inf")
-                                || valueTokens[i].equalsIgnoreCase("+Inf")
-                                || valueTokens[i].equalsIgnoreCase("-Inf")
-                                || valueTokens[i].equalsIgnoreCase("null")) {
+                        if ("NaN".equalsIgnoreCase(valueTokens[i])
+                                || "NA".equalsIgnoreCase(valueTokens[i])
+                                || "Inf".equalsIgnoreCase(valueTokens[i])
+                                || "+Inf".equalsIgnoreCase(valueTokens[i])
+                                || "-Inf".equalsIgnoreCase(valueTokens[i])
+                                || "null".equalsIgnoreCase(valueTokens[i])) {
                             isNumeric = true;
                         } else {
                             try {
@@ -326,7 +326,7 @@ public class CSVFileReader extends TabularDataFileReader {
                     Date dateResult = null; 
                     
                     if (isTimeVariable[i]) {
-                        if (valueTokens[i] != null && (!valueTokens[i].equals(""))) {
+                        if (valueTokens[i] != null && (!"".equals(valueTokens[i]))) {
                             boolean isTime = false;
 
                             if (selectedDateTimeFormat[i] != null) {
@@ -378,7 +378,7 @@ public class CSVFileReader extends TabularDataFileReader {
                     }
 
                     if (isDateVariable[i]) {
-                        if (valueTokens[i] != null && (!valueTokens[i].equals(""))) {
+                        if (valueTokens[i] != null && (!"".equals(valueTokens[i]))) {
                             boolean isDate = false;
 
                             // TODO: 
@@ -521,21 +521,21 @@ public class CSVFileReader extends TabularDataFileReader {
         
             for (int i = 0; i < variableCount; i++) {
                 if (isNumericVariable[i]) {
-                    if (valueTokens[i] == null || valueTokens[i].equalsIgnoreCase("") || valueTokens[i].equalsIgnoreCase("NA")) {
+                    if (valueTokens[i] == null || "".equalsIgnoreCase(valueTokens[i]) || "NA".equalsIgnoreCase(valueTokens[i])) {
                         // Missing value - represented as an empty string in 
                         // the final tab file
                         caseRow[i] = "";
-                    } else if (valueTokens[i].equalsIgnoreCase("NaN")) {
+                    } else if ("NaN".equalsIgnoreCase(valueTokens[i])) {
                         // "Not a Number" special value: 
                         caseRow[i] = "NaN";
-                    } else if (valueTokens[i].equalsIgnoreCase("Inf")
-                            || valueTokens[i].equalsIgnoreCase("+Inf")) {
+                    } else if ("Inf".equalsIgnoreCase(valueTokens[i])
+                            || "+Inf".equalsIgnoreCase(valueTokens[i])) {
                         // Positive infinity:
                         caseRow[i] = "Inf";
-                    } else if (valueTokens[i].equalsIgnoreCase("-Inf")) {
+                    } else if ("-Inf".equalsIgnoreCase(valueTokens[i])) {
                         // Negative infinity: 
                         caseRow[i] = "-Inf";
-                    } else if (valueTokens[i].equalsIgnoreCase("null")) {
+                    } else if ("null".equalsIgnoreCase(valueTokens[i])) {
                         // By request from Gus - "NULL" is recognized as a 
                         // numeric zero: 
                         if (isIntegerVariable[i]) {

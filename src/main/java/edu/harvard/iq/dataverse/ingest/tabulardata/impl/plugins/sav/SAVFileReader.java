@@ -444,8 +444,8 @@ public class SAVFileReader  extends TabularDataFileReader{
                 // -- L.A. 4.0 alpha
                 String variableFormatType = variableFormatTypeList[indx];
                 if (variableFormatType != null) {
-                    if (variableFormatType.equals("time")
-                        || variableFormatType.equals("date")) {
+                    if ("time".equals(variableFormatType)
+                        || "date".equals(variableFormatType)) {
                         simpleType = 1; 
                     
                         String formatCategory = formatCategoryTable.get(varName);
@@ -458,12 +458,12 @@ public class SAVFileReader  extends TabularDataFileReader{
                                 dataTable.getDataVariables().get(indx).setFormat(dateFormatList[indx]);
                             }
                         }
-                    } else if (variableFormatType.equals("other")) {
+                    } else if ("other".equals(variableFormatType)) {
                         dbgLog.fine("Variable of format type \"other\"; type adjustment may be needed");
                         dbgLog.fine("SPSS print format: "+printFormatTable.get(dataTable.getDataVariables().get(indx).getName()));
                         
-                        if (printFormatTable.get(dataTable.getDataVariables().get(indx).getName()).equals("WKDAY")
-                            || printFormatTable.get(dataTable.getDataVariables().get(indx).getName()).equals("MONTH")) {
+                        if ("WKDAY".equals(printFormatTable.get(dataTable.getDataVariables().get(indx).getName()))
+                            || "MONTH".equals(printFormatTable.get(dataTable.getDataVariables().get(indx).getName()))) {
                             // week day or month; 
                             // These are not treated as time/date values (meaning, we 
                             // don't define time/date formats for them; there's likely 
@@ -506,7 +506,7 @@ public class SAVFileReader  extends TabularDataFileReader{
             
             if (shortToLongVariableNameTable.containsKey(varName)) {
                 String longName = shortToLongVariableNameTable.get(varName); 
-                if (longName != null && !longName.equals("")) {
+                if (longName != null && !"".equals(longName)) {
                     dataTable.getDataVariables().get(indx).setName(longName);
                 }
             }
@@ -641,7 +641,7 @@ public class SAVFileReader  extends TabularDataFileReader{
             // productInfo tag. 
             // -- L.A. 4.0 beta
             
-            if (spssVersionTag == null || spssVersionTag.equals("")) {
+            if (spssVersionTag == null || "".equals(spssVersionTag)) {
                 // Later versions of SPSS have different formatting of the
                 // productInfo line:
                 regexpVersionNumber = ".* IBM SPSS STATISTICS.* ([^ ]*) ([0-9][0-9]*)([^ ]*)";
@@ -662,7 +662,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                 }
             }
             
-            if (spssVersionTag != null && !spssVersionTag.equals("")) {
+            if (spssVersionTag != null && !"".equals(spssVersionTag)) {
                 spssVersionNumber = Integer.valueOf(spssVersionTag).intValue();
                 
 
@@ -1335,7 +1335,7 @@ public class SAVFileReader  extends TabularDataFileReader{
 
 
                             missingValues[i] = bb_missig_value_code[i].getDouble();
-                            if (Double.toHexString(missingValues[i]).equals("-0x1.ffffffffffffep1023")){
+                            if ("-0x1.ffffffffffffep1023".equals(Double.toHexString(missingValues[i]))){
                                 dbgLog.fine("1st value is LOWEST");
                                 mv.add(Double.toHexString(missingValues[i]));
                             } else if (Double.valueOf(missingValues[i]).equals(Double.MAX_VALUE)){
@@ -2158,7 +2158,7 @@ public class SAVFileReader  extends TabularDataFileReader{
 
                         String dataCharSet = new String(rt7st20bytes,"US-ASCII");
 
-                        if (dataCharSet != null && !(dataCharSet.equals(""))) {
+                        if (dataCharSet != null && !("".equals(dataCharSet))) {
                             dbgLog.fine("RT7-20: data charset: "+ dataCharSet);
                             defaultCharSet = dataCharSet; 
                         }
@@ -2711,7 +2711,7 @@ public class SAVFileReader  extends TabularDataFileReader{
 
                                 String paddRemoved = StringUtils.stripEnd(casewiseRecordForTabFile.get(k).toString(), null);
                                 // TODO: clean this up.  For now, just make sure that strings contain at least one blank space.
-                                if (paddRemoved.equals("")) {
+                                if ("".equals(paddRemoved)) {
                                     paddRemoved = " ";
                                 }
                                 //casewiseRecordForTabFile.set(k, "\"" + paddRemoved.replaceAll("\"", Matcher.quoteReplacement("\\\"")) + "\"");
@@ -2729,7 +2729,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                 int formatDecimalPointPosition = formatDecimalPointPositionList.get(k);
 				
 
-                                if (variableFormatType.equals("date")) {
+                                if ("date".equals(variableFormatType)) {
                                     dbgLog.finer("date case");
 
                                     long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString()) * 1000L - SPSS_DATE_OFFSET;
@@ -2741,11 +2741,11 @@ public class SAVFileReader  extends TabularDataFileReader{
                                     casewiseRecordForTabFile.set(k, newDatum);
                                     dateFormatList[k] = sdf_ymd.toPattern();
                                 //formatCategoryTable.put(variableNameList.get(k), "date");
-                                } else if (variableFormatType.equals("time")) {
+                                } else if ("time".equals(variableFormatType)) {
                                     dbgLog.finer("time case:DTIME or DATETIME or TIME");
                                     //formatCategoryTable.put(variableNameList.get(k), "time");
 
-                                    if (printFormatTable.get(variableNameList.get(k)).equals("DTIME")) {
+                                    if ("DTIME".equals(printFormatTable.get(variableNameList.get(k)))) {
                                         // We're not even going to try to handle "DTIME"
                                         // values as time/dates in dataverse; this is a weird
                                         // format that nobody uses outside of SPSS.
@@ -2774,7 +2774,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                             dbgLog.finer("k=" + k + ":" + sb_time.toString());
                                             casewiseRecordForTabFile.set(k, sb_time.toString());
                                         }
-                                    } else if (printFormatTable.get(variableNameList.get(k)).equals("DATETIME")) {
+                                    } else if ("DATETIME".equals(printFormatTable.get(variableNameList.get(k)))) {
                                         // TODO: 
                                         // (for both datetime and "dateless" time)
                                         // keep the longest of the matching formats - i.e., if there are *some*
@@ -2804,7 +2804,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                             casewiseRecordForTabFile.set(k, sb_time.toString());
                                             dateFormatList[k] = sdf_ymdhms.toPattern() + (formatDecimalPointPosition > 0 ? ".S" : "" );
                                         }
-                                    } else if (printFormatTable.get(variableNameList.get(k)).equals("TIME")) {
+                                    } else if ("TIME".equals(printFormatTable.get(variableNameList.get(k)))) {
                                         // TODO: 
                                         // double-check that we are handling "dateless" time correctly... -- L.A. Aug. 2014
                                         if (!casewiseRecordForTabFile.get(k).toString().contains(".")) {
@@ -2838,17 +2838,17 @@ public class SAVFileReader  extends TabularDataFileReader{
                                         }
                                     }
 				    
-                                } else if (variableFormatType.equals("other")) {
+                                } else if ("other".equals(variableFormatType)) {
                                     dbgLog.finer("other non-date/time case:=" + i);
 
-                                    if (printFormatTable.get(variableNameList.get(k)).equals("WKDAY")) {
+                                    if ("WKDAY".equals(printFormatTable.get(variableNameList.get(k)))) {
                                         // day of week
                                         dbgLog.finer("data k=" + k + ":" + casewiseRecordForTabFile.get(k));
                                         dbgLog.finer("data k=" + k + ":" + SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString()) - 1));
                                         String newDatum = SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString()) - 1);
                                         casewiseRecordForTabFile.set(k, newDatum);
                                         dbgLog.finer("wkday:k=" + k + ":" + casewiseRecordForTabFile.get(k));
-                                    } else if (printFormatTable.get(variableNameList.get(k)).equals("MONTH")) {
+                                    } else if ("MONTH".equals(printFormatTable.get(variableNameList.get(k)))) {
                                         // month
                                         dbgLog.finer("data k=" + k + ":" + casewiseRecordForTabFile.get(k));
                                         dbgLog.finer("data k=" + k + ":" + SPSSConstants.MONTH_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString()) - 1));
@@ -2872,10 +2872,10 @@ public class SAVFileReader  extends TabularDataFileReader{
 
                         // numeric contents-check
                         for (int l = 0; l < casewiseRecordForTabFile.size(); l++) {
-                            if (variableFormatTypeList[l].equals("date")
-                                    || variableFormatTypeList[l].equals("time")
-                                    || printFormatTable.get(variableNameList.get(l)).equals("WKDAY")
-                                    || printFormatTable.get(variableNameList.get(l)).equals("MONTH")) {
+                            if ("date".equals(variableFormatTypeList[l])
+                                    || "time".equals(variableFormatTypeList[l])
+                                    || "WKDAY".equals(printFormatTable.get(variableNameList.get(l)))
+                                    || "MONTH".equals(printFormatTable.get(variableNameList.get(l)))) {
                                 // TODO: 
                                 // figure out if any special handling is still needed here in 4.0. 
                                 // -- L.A. - Aug. 2014
@@ -3041,8 +3041,8 @@ public class SAVFileReader  extends TabularDataFileReader{
                                 offset, offset+LENGTH_SAV_OBS_BLOCK)));
                         dbgLog.finer("dphex="+ dphex);
                             
-                        if ((dphex.equals("ffffffffffffefff"))||
-                            (dphex.equals("ffefffffffffffff"))){
+                        if (("ffffffffffffefff".equals(dphex))||
+                            ("ffefffffffffffff".equals(dphex))){
                             //casewiseRecordForTabFile.add(systemMissingValue);
                             // add the numeric missing value
 			    dbgLog.fine("SAV Reader: adding: Missing Value (numeric)");
@@ -3148,7 +3148,7 @@ public class SAVFileReader  extends TabularDataFileReader{
 
 			String paddRemoved = StringUtils.stripEnd(casewiseRecordForTabFile.get(k).toString(), null);
 			// TODO: clean this up.  For now, just make sure that strings contain at least one blank space.
-			if (paddRemoved.equals("")) {
+			if ("".equals(paddRemoved)) {
 			    paddRemoved = " ";
 			}
 
@@ -3167,7 +3167,7 @@ public class SAVFileReader  extends TabularDataFileReader{
 
                         int formatDecimalPointPosition = formatDecimalPointPositionList.get(k);
 
-                        if (variableFormatType.equals("date")){
+                        if ("date".equals(variableFormatType)){
                             dbgLog.finer("date case");
 
                             long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString())*1000L- SPSS_DATE_OFFSET;
@@ -3177,7 +3177,7 @@ public class SAVFileReader  extends TabularDataFileReader{
 
                             casewiseRecordForTabFile.set(k, newDatum);
                             dateFormatList[k] = sdf_ymd.toPattern();
-                        } else if (variableFormatType.equals("time")) {
+                        } else if ("time".equals(variableFormatType)) {
                             dbgLog.finer("time case:DTIME or DATETIME or TIME");
                             //formatCategoryTable.put(variableNameList.get(k), "time");
                             // not treating DTIME as date/time; see comment elsewhere in 
@@ -3185,7 +3185,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                             // (but we do need to remember to treat the resulting values 
                             // as character strings, not numerics!)
                             
-                            if (printFormatTable.get(variableNameList.get(k)).equals("DTIME")){
+                            if ("DTIME".equals(printFormatTable.get(variableNameList.get(k)))){
 
                                 if (!casewiseRecordForTabFile.get(k).toString().contains(".")){
                                     long dateDatum  = Long.parseLong(casewiseRecordForTabFile.get(k).toString())*1000L - SPSS_DATE_BIAS;
@@ -3210,7 +3210,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                     dbgLog.finer("k="+k+":"+sb_time.toString());
                                     casewiseRecordForTabFile.set(k, sb_time.toString());
                                 }
-                            } else if (printFormatTable.get(variableNameList.get(k)).equals("DATETIME")){
+                            } else if ("DATETIME".equals(printFormatTable.get(variableNameList.get(k)))){
                                 // TODO: 
                                 // (for both datetime and "dateless" time)
                                 // keep the longest of the matching formats - i.e., if there are *some*
@@ -3242,7 +3242,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                     // datetime with milliseconds:
                                     dateFormatList[k] = sdf_ymdhms.toPattern() + (formatDecimalPointPosition > 0 ? ".S" : "" );
                                 }
-                            } else if (printFormatTable.get(variableNameList.get(k)).equals("TIME")){
+                            } else if ("TIME".equals(printFormatTable.get(variableNameList.get(k)))){
                                 if (!casewiseRecordForTabFile.get(k).toString().contains(".")){
                                     long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString())*1000L;
                                     String newDatum = sdf_hms.format(new Date(dateDatum));
@@ -3273,17 +3273,17 @@ public class SAVFileReader  extends TabularDataFileReader{
                                     }
                                 }
                             }
-                        } else if (variableFormatType.equals("other")){
+                        } else if ("other".equals(variableFormatType)){
                             dbgLog.finer("other non-date/time case");
 
-                            if (printFormatTable.get(variableNameList.get(k)).equals("WKDAY")){
+                            if ("WKDAY".equals(printFormatTable.get(variableNameList.get(k)))){
                                 // day of week
                                 dbgLog.finer("data k="+k+":"+casewiseRecordForTabFile.get(k));
                                 dbgLog.finer("data k="+k+":"+SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString())-1));
                                 String newDatum = SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString())-1);
                                 casewiseRecordForTabFile.set(k, newDatum);
                                 dbgLog.finer("wkday:k="+k+":"+casewiseRecordForTabFile.get(k));
-                            } else if (printFormatTable.get(variableNameList.get(k)).equals("MONTH")){
+                            } else if ("MONTH".equals(printFormatTable.get(variableNameList.get(k)))){
                                 // month
                                 dbgLog.finer("data k="+k+":"+casewiseRecordForTabFile.get(k));
                                 dbgLog.finer("data k="+k+":"+SPSSConstants.MONTH_LIST.get(Integer.valueOf(casewiseRecordForTabFile.get(k).toString())-1));
@@ -3305,10 +3305,10 @@ public class SAVFileReader  extends TabularDataFileReader{
 		
                 // numeric contents-check
                 for (int l = 0; l < casewiseRecordForTabFile.size(); l++){
-                    if ( variableFormatTypeList[l].equals("date") ||
-                         variableFormatTypeList[l].equals("time") ||
-                         printFormatTable.get(variableNameList.get(l)).equals("WKDAY") ||
-                         printFormatTable.get(variableNameList.get(l)).equals("MONTH") ) {
+                    if ("date".equals(variableFormatTypeList[l]) ||
+                            "time".equals(variableFormatTypeList[l]) ||
+                            "WKDAY".equals(printFormatTable.get(variableNameList.get(l))) ||
+                            "MONTH".equals(printFormatTable.get(variableNameList.get(l)))) {
                         
                     } else { 
                         if (variableTypelList.get(l) <= 0) {

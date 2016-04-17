@@ -194,7 +194,7 @@ public class Index extends AbstractApiBean {
                     }
                 }
             }
-            if (sb.toString().equals("javax.ejb.EJBException: Transaction aborted javax.transaction.RollbackException java.lang.IllegalStateException ")) {
+            if ("javax.ejb.EJBException: Transaction aborted javax.transaction.RollbackException java.lang.IllegalStateException ".equals(sb.toString())) {
                 return okResponse("indexing went as well as can be expected... got java.lang.IllegalStateException but some indexing may have happened anyway");
             } else {
                 return errorResponse(Status.INTERNAL_SERVER_ERROR, sb.toString());
@@ -217,7 +217,7 @@ public class Index extends AbstractApiBean {
     @Path("{type}/{id}")
     public Response indexTypeById(@PathParam("type") String type, @PathParam("id") Long id) {
         try {
-            if (type.equals("dataverses")) {
+            if ("dataverses".equals(type)) {
                 Dataverse dataverse = dataverseService.find(id);
                 if (dataverse != null) {
                     /**
@@ -229,7 +229,7 @@ public class Index extends AbstractApiBean {
                     String response = indexService.removeSolrDocFromIndex(IndexServiceBean.solrDocIdentifierDataverse + id);
                     return notFound("Could not find dataverse with id of " + id + ". Result from deletion attempt: " + response);
                 }
-            } else if (type.equals("datasets")) {
+            } else if ("datasets".equals(type)) {
                 Dataset dataset = datasetService.find(id);
                 if (dataset != null) {
                     boolean doNormalSolrDocCleanUp = true;
@@ -243,7 +243,7 @@ public class Index extends AbstractApiBean {
                     String response = indexService.removeSolrDocFromIndex(IndexServiceBean.solrDocIdentifierDataset + id + IndexServiceBean.draftSuffix);
                     return notFound("Could not find dataset with id of " + id + ". Result from deletion attempt: " + response);
                 }
-            } else if (type.equals("files")) {
+            } else if ("files".equals(type)) {
                 DataFile dataFile = dataFileService.find(id);
                 Dataset datasetThatOwnsTheFile = datasetService.find(dataFile.getOwner().getId());
                 /**

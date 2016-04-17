@@ -356,16 +356,16 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
                 */
                 
                 String objectString = hduHeader.getStringValue("OBJECT");
-                if (objectString != null && !objectString.equals("")) {
+                if (objectString != null && !"".equals(objectString)) {
                     metadataKeys.add("OBJECT");
                 } else {
                     objectString = hduHeader.getStringValue("TARGNAME");
-                    if (objectString != null && !objectString.equals("")) {
+                    if (objectString != null && !"".equals(objectString)) {
                         metadataKeys.add("TARGNAME");
                     }
                 }
                 
-                if (objectString != null && !objectString.equals("")) {
+                if (objectString != null && !"".equals(objectString)) {
                     if (fitsMetaMap.get(ATTRIBUTE_OBJECT) == null) {
                         fitsMetaMap.put(ATTRIBUTE_OBJECT, new HashSet<String>());
                     }
@@ -385,15 +385,15 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
                 // them all: 
                 
                 String obsDateString = hduHeader.getStringValue("DATE-OBS");
-                if (obsDateString != null && !obsDateString.equals("")) {
+                if (obsDateString != null && !"".equals(obsDateString)) {
                     metadataKeys.add("DATE-OBS");
                 } else {
                     obsDateString = hduHeader.getStringValue("DATE_OBS");
-                    if (obsDateString != null && !obsDateString.equals("")) {
+                    if (obsDateString != null && !"".equals(obsDateString)) {
                         metadataKeys.add("DATE_OBS");
                     } else {
                         obsDateString = hduHeader.getStringValue("OBS-DATE");
-                        if (obsDateString != null && !obsDateString.equals("")) {
+                        if (obsDateString != null && !"".equals(obsDateString)) {
                             metadataKeys.add("OBS-DATE");
                         }
                     }
@@ -473,7 +473,7 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
                             String obsTimeString = hduHeader.getStringValue("TIME-OBS");
                             Date startDateTime = null; 
                             
-                            if (obsTimeString != null && !obsTimeString.equals("")) {
+                            if (obsTimeString != null && !"".equals(obsTimeString)) {
                                 String newObsDateString = DATE_FORMATS[0].format(startDate) + "T" + obsTimeString;
                                 
                                 for (SimpleDateFormat format : TIME_FORMATS) {
@@ -640,7 +640,7 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
                                 fitsMetaMap.get(indexableKey).add(headerValue);
                             }
 
-                        } else if (headerKey.equals("COMMENT") && headerComment != null) {
+                        } else if ("COMMENT".equals(headerKey) && headerComment != null) {
                             dbgLog.fine("comment: " + headerComment);
                             if (fitsMetaMap.get(indexableKey) == null) {
                                 fitsMetaMap.put(indexableKey, new HashSet<String>());
@@ -709,12 +709,12 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
         
         // start time and and stop time: 
         
-        if (!startObsTime.equals("")) {
+        if (!"".equals(startObsTime)) {
             fitsMetaMap.put(ATTRIBUTE_START_TIME, new HashSet<String>());
             fitsMetaMap.get(ATTRIBUTE_START_TIME).add(startObsTime);
         }
 
-        if (!stopObsTime.equals("")) {
+        if (!"".equals(stopObsTime)) {
             fitsMetaMap.put(ATTRIBUTE_STOP_TIME, new HashSet<String>());
             fitsMetaMap.get(ATTRIBUTE_STOP_TIME).add(stopObsTime);
         }
@@ -740,12 +740,12 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
         Properties p = System.getProperties();
         String domainRoot = p.getProperty("com.sun.aas.instanceRoot");
         dbgLog.fine("PROPERTY: com.sun.aas.instanceRoot="+domainRoot);
-        if (domainRoot == null || domainRoot.equals("")) {
+        if (domainRoot == null || "".equals(domainRoot)) {
             domainRoot = "/usr/local/glassfish4/glassfish/domains/domain1";
         }
         int nConfiguredKeys = 0; 
 
-        if (domainRoot != null && !(domainRoot.equals(""))) {
+        if (domainRoot != null && !("".equals(domainRoot))) {
             String configFileName = domainRoot + "/config/fits.conf_DONOTREAD"; 
             File configFile = new File (configFileName);
             BufferedReader configFileReader = null; 
@@ -780,12 +780,12 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
 
                             if (configTokens[0].equalsIgnoreCase(CONFIG_TOKEN_META_KEY)) {
                                 if (configTokens[1] != null
-                                        && !(configTokens[1].equals(""))) {
+                                        && !("".equals(configTokens[1]))) {
                                     dbgLog.fine("FITS plugin: found metadata key config entry for " +
                                             configTokens[1]);
                                     recognizedFitsMetadataKeys.put(configTokens[1], 0);
                                     if (configTokens.length > 2 && configTokens[2] != null
-                                            && !(configTokens[2].equals(""))) {
+                                            && !("".equals(configTokens[2]))) {
                                         indexableFitsMetaKeys.put(configTokens[1], configTokens[2]);
                                     } else {
                                         dbgLog.fine("FITS plugin: (warning) no index name specified for "+configTokens[1]);
@@ -807,12 +807,12 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
                                 }
                             } else if (configTokens[0].equalsIgnoreCase(CONFIG_TOKEN_COLUMN_KEY)) {
                                 if (configTokens[1] != null
-                                        && !(configTokens[1].equals(""))) {
+                                        && !("".equals(configTokens[1]))) {
                                     dbgLog.fine("FITS plugin: found column key config entry for " +
                                             configTokens[1]);
                                     recognizedFitsColumnKeys.put(configTokens[1], 0);
                                     if (configTokens.length > 2 && configTokens[2] != null
-                                            && !(configTokens[2].equals(""))) {
+                                            && !("".equals(configTokens[2]))) {
                                         indexableFitsMetaKeys.put(configTokens[1], configTokens[2]);
                                     } else {
                                         dbgLog.fine("FITS plugin: (warning) no index name specified for "+configTokens[1]);
@@ -1000,7 +1000,7 @@ public class FITSFileMetadataExtractor extends FileMetadataExtractor {
     }
     
     private int typeCount (List<String> typeList, String typeToken) {
-        if (typeToken == null || typeToken.equals("")) {
+        if (typeToken == null || "".equals(typeToken)) {
             return 0;
         }
         

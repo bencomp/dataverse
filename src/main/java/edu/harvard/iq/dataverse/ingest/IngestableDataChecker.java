@@ -167,7 +167,7 @@ public class IngestableDataChecker implements java.io.Serializable {
         if (DEBUG) {
             out.println("from string=" + hdr4sav);
         }
-        if (hdr4sav.equals("$FL2")) {
+        if ("$FL2".equals(hdr4sav)) {
             if (DEBUG) {
                 out.println("this file is spss-sav type");
             }

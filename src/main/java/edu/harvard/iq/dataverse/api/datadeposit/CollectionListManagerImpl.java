@@ -45,7 +45,7 @@ public class CollectionListManagerImpl implements CollectionListManager {
         DataverseRequest dvReq = new DataverseRequest(user, request);
         urlManager.processUrl(iri.toString());
         String dvAlias = urlManager.getTargetIdentifier();
-        if (urlManager.getTargetType().equals("dataverse") && dvAlias != null) {
+        if ("dataverse".equals(urlManager.getTargetType()) && dvAlias != null) {
 
             Dataverse dv = dataverseService.findByAlias(dvAlias);
 

@@ -265,17 +265,17 @@ public class FieldDTO {
      */
     public Object getConvertedValue() {
         if (multiple) {
-            if (typeClass.equals("compound")) {
+            if ("compound".equals(typeClass)) {
                 return getMultipleCompound();
-            } else if (typeClass.equals("controlledVocabulary")){
+            } else if ("controlledVocabulary".equals(typeClass)){
                 return getMultipleVocab();
             } else return getMultiplePrimitive();
             
 
         } else {
-            if (typeClass.equals("compound")) {
+            if ("compound".equals(typeClass)) {
                 return getSingleCompound();
-            } else if (typeClass.equals("controlledVocabulary")){
+            } else if ("controlledVocabulary".equals(typeClass)){
                 return getSingleVocab();
             } else {
                 return getSinglePrimitive();

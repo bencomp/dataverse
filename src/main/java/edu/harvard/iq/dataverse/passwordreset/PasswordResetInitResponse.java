@@ -25,7 +25,7 @@ public class PasswordResetInitResponse {
         String finalHostname = "localhost";
         String configuredHostname = System.getProperty(SystemConfig.FQDN);
         if (configuredHostname != null) {
-            if (configuredHostname.equals("localhost")) {
+            if ("localhost".equals(configuredHostname)) {
                 // must be a dev environment
                 finalHostname = "localhost:8181";
             } else {

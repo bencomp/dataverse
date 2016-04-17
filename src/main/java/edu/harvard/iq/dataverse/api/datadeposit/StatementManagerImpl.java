@@ -49,7 +49,7 @@ public class StatementManagerImpl implements StatementManager {
         AuthenticatedUser user = swordAuth.auth(authCredentials);
         urlManager.processUrl(editUri);
         String globalId = urlManager.getTargetIdentifier();
-        if (urlManager.getTargetType().equals("study") && globalId != null) {
+        if ("study".equals(urlManager.getTargetType()) && globalId != null) {
 
             logger.fine("request for sword statement by user " + user.getDisplayInfo().getTitle());
             Dataset dataset = datasetService.findByGlobalId(globalId);

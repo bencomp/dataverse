@@ -56,11 +56,11 @@ public class DataTableImportDDI {
 
         for (int event = xmlr.next(); event != XMLStreamConstants.END_DOCUMENT; event = xmlr.next()) {
             if (event == XMLStreamConstants.START_ELEMENT) {
-                if (xmlr.getLocalName().equals("var")) {
+                if ("var".equals(xmlr.getLocalName())) {
                     processVar(xmlr, dataTablesMap, varsPerFileMap);
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
-                if (xmlr.getLocalName().equals("dataDscr")) {
+                if ("dataDscr".equals(xmlr.getLocalName())) {
 
                     for (Object fileId : dataTablesMap.keySet()) {
                         Integer numberOfVariables = (Integer) varsPerFileMap.get(fileId);
@@ -122,33 +122,33 @@ public class DataTableImportDDI {
 
         for (int event = xmlr.next(); event != XMLStreamConstants.END_DOCUMENT; event = xmlr.next()) {
             if (event == XMLStreamConstants.START_ELEMENT) {
-                if (xmlr.getLocalName().equals("location")) {
+                if ("location".equals(xmlr.getLocalName())) {
                     processLocation(xmlr, dv, dataTablesMap, varsPerFileMap);
                 }
-                else if (xmlr.getLocalName().equals("labl")) {
+                else if ("labl".equals(xmlr.getLocalName())) {
                     String _labl = processLabl( xmlr, LEVEL_VARIABLE );
-                    if (_labl != null && !_labl.equals("") ) {
+                    if (_labl != null && !"".equals(_labl)) {
                         dv.setLabel( _labl );
                     }
-                } else if (xmlr.getLocalName().equals("universe")) {
+                } else if ("universe".equals(xmlr.getLocalName())) {
                     dv.setUniverse( parseText(xmlr) );
-                } else if (xmlr.getLocalName().equals("invalrng")) {
+                } else if ("invalrng".equals(xmlr.getLocalName())) {
                     processInvalrng( xmlr, dv );
-                } else if (xmlr.getLocalName().equals("varFormat")) {
+                } else if ("varFormat".equals(xmlr.getLocalName())) {
                     processVarFormat( xmlr, dv );
-                } else if (xmlr.getLocalName().equals("sumStat")) {
+                } else if ("sumStat".equals(xmlr.getLocalName())) {
                     processSumStat( xmlr, dv );
-                } else if (xmlr.getLocalName().equals("catgry")) {
+                } else if ("catgry".equals(xmlr.getLocalName())) {
                     processCatgry( xmlr, dv );
-                } else if (xmlr.getLocalName().equals("notes")) {
+                } else if ("notes".equals(xmlr.getLocalName())) {
                     String _note = parseNoteByType( xmlr, NOTE_TYPE_UNF );
-                    if (_note != null && !_note.equals("") ) {
+                    if (_note != null && !"".equals(_note)) {
                         dv.setUnf( parseUNF( _note ) );
                     }
                 }
 
             } else if (event == XMLStreamConstants.END_ELEMENT) {
-                if (xmlr.getLocalName().equals("var")) return;
+                if ("var".equals(xmlr.getLocalName())) return;
             }
         }
     }
@@ -172,7 +172,7 @@ public class DataTableImportDDI {
         if (dv.getDataTable() == null) {
             String fileId = xmlr.getAttributeValue(null, "fileid");
 
-            if (fileId != null && !fileId.equals("")) {
+            if (fileId != null && !"".equals(fileId)) {
 
                 DataTable datatable = null;
 
@@ -203,14 +203,14 @@ public class DataTableImportDDI {
     private void processInvalrng(XMLStreamReader xmlr, DataVariable dv) throws XMLStreamException {
         for (int event = xmlr.next(); event != XMLStreamConstants.END_DOCUMENT; event = xmlr.next()) {
             if (event == XMLStreamConstants.START_ELEMENT) {
-                if (xmlr.getLocalName().equals("item")) {
+                if ("item".equals(xmlr.getLocalName())) {
                     VariableRange range = new VariableRange();
                     dv.getInvalidRanges().add(range);
                     range.setDataVariable(dv);
 
                     range.setBeginValue( xmlr.getAttributeValue(null, "VALUE") );
                     range.setBeginValueTypePoint();
-                } else if (xmlr.getLocalName().equals("range")) {
+                } else if ("range".equals(xmlr.getLocalName())) {
                     VariableRange range = new VariableRange();
                     dv.getInvalidRanges().add(range);
                     range.setDataVariable(dv);
@@ -237,7 +237,7 @@ public class DataTableImportDDI {
                     }
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
-                if (xmlr.getLocalName().equals("invalrng")) return;
+                if ("invalrng".equals(xmlr.getLocalName())) return;
             }
         }
     }
@@ -340,25 +340,25 @@ public class DataTableImportDDI {
 
         for (int event = xmlr.next(); event != XMLStreamConstants.END_DOCUMENT; event = xmlr.next()) {
             if (event == XMLStreamConstants.START_ELEMENT) {
-                if (xmlr.getLocalName().equals("labl")) {
+                if ("labl".equals(xmlr.getLocalName())) {
                     String _labl = processLabl( xmlr, LEVEL_CATEGORY );
-                    if (_labl != null && !_labl.equals("") ) {
+                    if (_labl != null && !"".equals(_labl)) {
                         cat.setLabel( _labl );
                     }
-                } else if (xmlr.getLocalName().equals("catValu")) {
+                } else if ("catValu".equals(xmlr.getLocalName())) {
                     cat.setValue( parseText(xmlr, false) );
                 }
-                else if (xmlr.getLocalName().equals("catStat")) {
+                else if ("catStat".equals(xmlr.getLocalName())) {
                     String type = xmlr.getAttributeValue(null, "type");
                     if (type == null || CAT_STAT_TYPE_FREQUENCY.equalsIgnoreCase( type ) ) {
                         String _freq = parseText(xmlr);
-                        if (_freq != null && !_freq.equals("") ) {
+                        if (_freq != null && !"".equals(_freq)) {
                             cat.setFrequency( new Double( _freq ) );
                         }
                     }
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
-                if (xmlr.getLocalName().equals("catgry")) return;
+                if ("catgry".equals(xmlr.getLocalName())) return;
             }
         }
     }

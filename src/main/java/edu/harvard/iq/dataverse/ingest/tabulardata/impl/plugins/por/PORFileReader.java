@@ -190,18 +190,18 @@ public class PORFileReader  extends TabularDataFileReader{
                 
                 dbgLog.fine("////////////////////// headerId="+headerId+ "//////////////////////");
                 
-                if (headerId.equals("Z")){
+                if ("Z".equals(headerId)){
                     throw new IOException("reading failure: wrong headerId(Z) here");
                 }
                 
-                if (headerId.equals("F")) {
+                if ("F".equals(headerId)) {
                     // missing value
                     if ((missingValueTable !=null) && (!missingValueTable.isEmpty())){
                         processMissingValueData();
                     }
                 }
                                 
-                if (headerId.equals("8") && isCurrentVariableString){
+                if ("8".equals(headerId) && isCurrentVariableString){
                     headerId = "8S";
                 }
 
@@ -209,7 +209,7 @@ public class PORFileReader  extends TabularDataFileReader{
 
                 
                 // for last iteration
-                if (headerId.equals("F")){
+                if ("F".equals(headerId)){
                     // finished the last block (F == data) 
                     // without reaching the end of this file.
                     break;
@@ -280,8 +280,8 @@ public class PORFileReader  extends TabularDataFileReader{
                 String variableFormatType = variableFormatTypeList[indx];
                 
                 if (variableFormatType != null) {
-                    if (variableFormatType.equals("time")
-                        || variableFormatType.equals("date")) {
+                    if ("time".equals(variableFormatType)
+                        || "date".equals(variableFormatType)) {
                         simpleType = 1; 
                     
                         String formatCategory = formatCategoryTable.get(varName);
@@ -294,12 +294,12 @@ public class PORFileReader  extends TabularDataFileReader{
                                 variableList.get(indx).setFormat(dateFormatList[indx]);
                             }
                         }
-                    } else if (variableFormatType.equals("other")) {
+                    } else if ("other".equals(variableFormatType)) {
                         dbgLog.fine("Variable of format type \"other\"; type adjustment may be needed");
                         dbgLog.fine("SPSS print format: "+printFormatTable.get(variableList.get(indx).getName()));
                         
-                        if (printFormatTable.get(variableList.get(indx).getName()).equals("WKDAY")
-                            || printFormatTable.get(variableList.get(indx).getName()).equals("MONTH")) {
+                        if ("WKDAY".equals(printFormatTable.get(variableList.get(indx).getName()))
+                            || "MONTH".equals(printFormatTable.get(variableList.get(indx).getName()))) {
                             // week day or month; 
                             // These are not treated as time/date values (meaning, we 
                             // don't define time/date formats for them; there's likely 
@@ -369,22 +369,22 @@ public class PORFileReader  extends TabularDataFileReader{
     }
     
     private void decode(String headerId, BufferedReader reader) throws IOException{
-        if (headerId.equals("1")) decodeProductName(reader);
-        else if (headerId.equals("2")) decodeLicensee(reader);
-        else if (headerId.equals("3")) decodeFileLabel(reader);
-        else if (headerId.equals("4")) decodeNumberOfVariables(reader);
-        else if (headerId.equals("5")) decodeFieldNo5(reader);
-        else if (headerId.equals("6")) decodeWeightVariable(reader);
-        else if (headerId.equals("7")) decodeVariableInformation(reader);
-        else if (headerId.equals("8")) decodeMissValuePointNumeric(reader);
-        else if (headerId.equals("8S")) decodeMissValuePointString(reader);
-        else if (headerId.equals("9")) decodeMissValueRangeLow(reader);
-        else if (headerId.equals("A")) decodeMissValueRangeHigh(reader);
-        else if (headerId.equals("B")) decodeMissValueRange(reader);
-        else if (headerId.equals("C")) decodeVariableLabel(reader);
-        else if (headerId.equals("D")) decodeValueLabel(reader);
-        else if (headerId.equals("E")) decodeDocument(reader);
-        else if (headerId.equals("F")) decodeData(reader);
+        if ("1".equals(headerId)) decodeProductName(reader);
+        else if ("2".equals(headerId)) decodeLicensee(reader);
+        else if ("3".equals(headerId)) decodeFileLabel(reader);
+        else if ("4".equals(headerId)) decodeNumberOfVariables(reader);
+        else if ("5".equals(headerId)) decodeFieldNo5(reader);
+        else if ("6".equals(headerId)) decodeWeightVariable(reader);
+        else if ("7".equals(headerId)) decodeVariableInformation(reader);
+        else if ("8".equals(headerId)) decodeMissValuePointNumeric(reader);
+        else if ("8S".equals(headerId)) decodeMissValuePointString(reader);
+        else if ("9".equals(headerId)) decodeMissValueRangeLow(reader);
+        else if ("A".equals(headerId)) decodeMissValueRangeHigh(reader);
+        else if ("B".equals(headerId)) decodeMissValueRange(reader);
+        else if ("C".equals(headerId)) decodeVariableLabel(reader);
+        else if ("D".equals(headerId)) decodeValueLabel(reader);
+        else if ("E".equals(headerId)) decodeDocument(reader);
+        else if ("F".equals(headerId)) decodeData(reader);
     }
     
 
@@ -636,7 +636,7 @@ public class PORFileReader  extends TabularDataFileReader{
         dbgLog.fine("format signature [SPSSPORT] detected="+leader_string);
 
 
-        if (leader_string.equals("SPSSPORT")){
+        if ("SPSSPORT".equals(leader_string)){
             dbgLog.fine("signature was correctly detected");
 
         } else {
@@ -731,7 +731,7 @@ public class PORFileReader  extends TabularDataFileReader{
 
         while (reader.read(tmp) > 0) {
             temp = Character.toString(tmp[0]);
-            if (temp.equals("/")) {
+            if ("/".equals(temp)) {
                 break;
             } else {
                 sb.append(temp);
@@ -743,7 +743,7 @@ public class PORFileReader  extends TabularDataFileReader{
 
         String numberOfVariables = StringUtils.stripStart((StringUtils.strip(rawNumberOfVariables)), "0");
         
-        if ((numberOfVariables.equals("")) && (numberOfVariables.length() == rawLength)){
+        if (("".equals(numberOfVariables)) && (numberOfVariables.length() == rawLength)){
             numberOfVariables ="0";
         }
 
@@ -1142,9 +1142,9 @@ public class PORFileReader  extends TabularDataFileReader{
                         int nint;
                         while((nint = reader.read(tmp))>0){
                             buffer =  Character.toString(tmp[0]);
-                            if (buffer.equals("/")){
+                            if ("/".equals(buffer)){
                                 break;
-                            } else if (buffer.equals("Z")){
+                            } else if ("Z".equals(buffer)){
                                 if (i == 0){
                                     // the reader has passed the last case; subtract 1 from the j counter
                                     caseQnty = j-1;
@@ -1198,9 +1198,9 @@ public class PORFileReader  extends TabularDataFileReader{
                             sb_datumNumericBase30.append(buffer);
                             buffer = Character.toString(tmp[0]);
 
-                            if (buffer.equals("/")){
+                            if ("/".equals(buffer)){
                                 break;
-                            } else if (buffer.equals("Z")){
+                            } else if ("Z".equals(buffer)){
                                 if (i == 0){
                                     // the reader has passed the last case
                                     // subtract 1 from the j counter
@@ -1208,7 +1208,7 @@ public class PORFileReader  extends TabularDataFileReader{
                                     caseQnty = j-1;
                                     break FBLOCK;
                                 }
-                            } else if (buffer.equals("*")) {
+                            } else if ("*".equals(buffer)) {
                                 // '*' is the first character of the system missing value
                                 datumForTabFile = MissingValueForTextDataFile;
                                 datum = null;
@@ -1244,17 +1244,17 @@ public class PORFileReader  extends TabularDataFileReader{
                             // now check format (if date or time)
                             String variableFormatType = variableFormatTypeList[i];
 
-                            if (variableFormatType.equals("date")){
+                            if ("date".equals(variableFormatType)){
                                 variableTypeFinal[i]=-1;
                                 long dateDatum = Long.parseLong(datum)*1000L- SPSS_DATE_OFFSET;
                                 datum = sdf_ymd.format(new Date(dateDatum));
                                 datumDateFormat = sdf_ymd.toPattern();
 
-                            } else if (variableFormatType.equals("time")) {
+                            } else if ("time".equals(variableFormatType)) {
                                 variableTypeFinal[i]=-1;
                                 int formatDecimalPointPosition = formatDecimalPointPositionList.get(i);
 
-                                if (printFormatTable.get(variableNameList.get(i)).equals("DTIME")){
+                                if ("DTIME".equals(printFormatTable.get(variableNameList.get(i)))){
 
                                     if (!datum.contains(".")){
                                         long dateDatum  = Long.parseLong(datum)*1000L - SPSS_DATE_BIAS;
@@ -1276,7 +1276,7 @@ public class PORFileReader  extends TabularDataFileReader{
                                         // this variable as a datetime. 
                                     }
 
-                                } else if (printFormatTable.get(variableNameList.get(i)).equals("DATETIME")){
+                                } else if ("DATETIME".equals(printFormatTable.get(variableNameList.get(i)))){
                                     // TODO: 
                                     // (for both datetime and "dateless" time)
                                     // keep the longest of the matching formats - i.e., if there are *some*
@@ -1302,7 +1302,7 @@ public class PORFileReader  extends TabularDataFileReader{
                                         datumDateFormat = sdf_ymdhms.toPattern() + (formatDecimalPointPosition > 0 ? ".S" : "" );
                                     }
 
-                                } else if (printFormatTable.get(variableNameList.get(i)).equals("TIME")){
+                                } else if ("TIME".equals(printFormatTable.get(variableNameList.get(i)))){
 
                                     if (!datum.contains(".")){
                                         long dateDatum = Long.parseLong(datum)*1000L;
@@ -1323,14 +1323,14 @@ public class PORFileReader  extends TabularDataFileReader{
                                     }
                                 }
 
-                            } else if (variableFormatType.equals("other")){
+                            } else if ("other".equals(variableFormatType)){
 
-                                if (printFormatTable.get(variableNameList.get(i)).equals("WKDAY")){
+                                if ("WKDAY".equals(printFormatTable.get(variableNameList.get(i)))){
                                     // day of week
                                     variableTypeFinal[i]=-1;
                                     datum = SPSSConstants.WEEKDAY_LIST.get(Integer.valueOf(datum)-1);
 
-                                } else if (printFormatTable.get(variableNameList.get(i)).equals("MONTH")){
+                                } else if ("MONTH".equals(printFormatTable.get(variableNameList.get(i)))){
                                     // month
                                     variableTypeFinal[i]=-1;
                                     datum = SPSSConstants.MONTH_LIST.get(Integer.valueOf(datum)-1);
@@ -1412,24 +1412,24 @@ public class PORFileReader  extends TabularDataFileReader{
             int type;
             InvalidData invalidDataInfo = null;
             if (valueList.size() == 3) {
-                if (codeList.get(0).equals("8") && codeList.get(1).equals("8") &&
-                        codeList.get(2).equals("8")) {
+                if ("8".equals(codeList.get(0)) && "8".equals(codeList.get(1)) &&
+                        "8".equals(codeList.get(2))) {
                     type = 3;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList);
-                } else if (codeList.get(0).equals("9") && codeList.get(1).equals("8")) {
+                } else if ("9".equals(codeList.get(0)) && "8".equals(codeList.get(1))) {
                     type = -3;
 
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList.subList(2, 3));
                     invalidDataInfo.setInvalidRange(valueList.subList(0, 2));
 
-                } else if (codeList.get(0).equals("A") && codeList.get(1).equals("8")) {
+                } else if ("A".equals(codeList.get(0)) && "8".equals(codeList.get(1))) {
                     type = -3;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList.subList(2, 3));
                     invalidDataInfo.setInvalidRange(valueList.subList(0, 2));
-                } else if (codeList.get(0).equals("B") && codeList.get(1).equals("8")) {
+                } else if ("B".equals(codeList.get(0)) && "8".equals(codeList.get(1))) {
                     type = -3;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList.subList(2, 3));
@@ -1439,21 +1439,21 @@ public class PORFileReader  extends TabularDataFileReader{
                 }
 
             } else if (valueList.size() == 2) {
-                if (codeList.get(0).equals("8") && codeList.get(1).equals("8")) {
+                if ("8".equals(codeList.get(0)) && "8".equals(codeList.get(1))) {
                     type = 2;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList);
 
-                } else if (codeList.get(0).equals("9")) {
+                } else if ("9".equals(codeList.get(0))) {
                     type = -2;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidRange(valueList.subList(0, 2));
 
-                } else if (codeList.get(0).equals("A")) {
+                } else if ("A".equals(codeList.get(0))) {
                     type = -2;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidRange(valueList.subList(0, 2));
-                } else if (codeList.get(0).equals("B")) {
+                } else if ("B".equals(codeList.get(0))) {
                     type = -2;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidRange(valueList.subList(0, 2));
@@ -1462,7 +1462,7 @@ public class PORFileReader  extends TabularDataFileReader{
                     dbgLog.severe("unknown missing value combination(2 values)");
                 }
             } else if (valueList.size() == 1) {
-                if (codeList.get(0).equals("8")) {
+                if ("8".equals(codeList.get(0))) {
                     type = 1;
                     invalidDataInfo = new InvalidData(type);
                     invalidDataInfo.setInvalidValues(valueList);
@@ -1486,7 +1486,7 @@ public class PORFileReader  extends TabularDataFileReader{
             dbgLog.finer("var=" + variable + "\tvalue=" + valueList + "\t code" + codeList);
             List<String> temp = new ArrayList<String>();
             for (int j = 0; j < codeList.size(); j++) {
-                if (codeList.get(j).equals("8")) {
+                if ("8".equals(codeList.get(j))) {
                     temp.add(valueList.get(j));
                 }
             }
@@ -1505,7 +1505,7 @@ public class PORFileReader  extends TabularDataFileReader{
         StringBuilder sb = new StringBuilder();
         while(reader.read(tmp) > 0 ){
             temp = Character.toString(tmp[0]);//new String(tmp);
-            if (temp.equals("/")){
+            if ("/".equals(temp)){
                 break;
             } else {
                 sb.append(temp);
@@ -1526,7 +1526,7 @@ public class PORFileReader  extends TabularDataFileReader{
         StringBuilder sb = new StringBuilder();
         while(reader.read(tmp) > 0 ){
             temp = Character.toString(tmp[0]);//new String(tmp);
-            if (temp.equals("/")){
+            if ("/".equals(temp)){
                 break;
             } else {
                 sb.append(temp);
@@ -1552,7 +1552,7 @@ public class PORFileReader  extends TabularDataFileReader{
         StringBuilder sb = new StringBuilder();
         while(reader.read(tmp) > 0 ){
             temp = Character.toString(tmp[0]);//new String(tmp);
-            if (temp.equals("/")){
+            if ("/".equals(temp)){
                 break;
             } else {
                 sb.append(temp);

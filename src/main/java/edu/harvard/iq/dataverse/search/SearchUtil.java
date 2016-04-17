@@ -69,10 +69,10 @@ public class SearchUtil {
 
         if (StringUtils.isBlank(sortField)) {
             sortField = SearchFields.RELEVANCE;
-        } else if (sortField.equals("name")) {
+        } else if ("name".equals(sortField)) {
             // "name" sounds better than "name_sort" so we convert it here so users don't have to pass in "name_sort"
             sortField = SearchFields.NAME_SORT;
-        } else if (sortField.equals("date")) {
+        } else if ("date".equals(sortField)) {
             // "date" sounds better than "release_or_create_date_dt"
             sortField = SearchFields.RELEASE_OR_CREATE_DATE;
         }

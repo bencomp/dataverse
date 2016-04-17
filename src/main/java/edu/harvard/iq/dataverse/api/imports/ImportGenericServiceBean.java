@@ -243,7 +243,7 @@ public class ImportGenericServiceBean {
 
                         // Process the payload of this XML element:
                         //xxString dataverseFieldName = mappingDefined.getDatasetfieldName();
-                        if (dataverseFieldName != null && !dataverseFieldName.equals("")) {
+                        if (dataverseFieldName != null && !"".equals(dataverseFieldName)) {
                             FieldDTO value = FieldDTO.createPrimitiveFieldDTO(dataverseFieldName, parseText(xmlr));
                             DatasetFieldType dataverseFieldType = datasetfieldService.findByNameOpt(dataverseFieldName);
                             if (dataverseFieldType != null) {
@@ -555,7 +555,7 @@ public class ImportGenericServiceBean {
                 if (text != "") { text += "\n";}
                 text += xmlr.getText().trim().replace('\n',' ');
             } else if (event == XMLStreamConstants.START_ELEMENT) {
-                if (xmlr.getLocalName().equals("ExtLink")) {
+                if ("ExtLink".equals(xmlr.getLocalName())) {
                     String mapKey  = ("image".equalsIgnoreCase( xmlr.getAttributeValue(null, "role") ) || "logo".equalsIgnoreCase(xmlr.getAttributeValue(null, "title")))? "logo" : "url";
                     returnMap.put( mapKey, xmlr.getAttributeValue(null, "URI") );
                     parseText(xmlr, "ExtLink"); // this line effectively just skips though until the end of the tag
@@ -579,24 +579,24 @@ public class ImportGenericServiceBean {
         Map returnMap = null;
 
         while (true) {
-            if (!returnString.equals("")) { returnString += "\n";}
+            if (!"".equals(returnString)) { returnString += "\n";}
             int event = xmlr.next();
             if (event == XMLStreamConstants.CHARACTERS) {
                 returnString += xmlr.getText().trim().replace('\n',' ');
            } else if (event == XMLStreamConstants.START_ELEMENT) {
-                if (xmlr.getLocalName().equals("p")) {
+                if ("p".equals(xmlr.getLocalName())) {
                     returnString += "<p>" + parseText(xmlr, "p") + "</p>";
-                } else if (xmlr.getLocalName().equals("emph")) {
+                } else if ("emph".equals(xmlr.getLocalName())) {
                     returnString += "<em>" + parseText(xmlr, "emph") + "</em>";
-                } else if (xmlr.getLocalName().equals("hi")) {
+                } else if ("hi".equals(xmlr.getLocalName())) {
                     returnString += "<strong>" + parseText(xmlr, "hi") + "</strong>";
-                } else if (xmlr.getLocalName().equals("ExtLink")) {
+                } else if ("ExtLink".equals(xmlr.getLocalName())) {
                     String uri = xmlr.getAttributeValue(null, "URI");
                     String text = parseText(xmlr, "ExtLink").trim();
                     returnString += "<a href=\"" + uri + "\">" + ( StringUtil.isEmpty(text) ? uri : text) + "</a>";
-                } else if (xmlr.getLocalName().equals("list")) {
+                } else if ("list".equals(xmlr.getLocalName())) {
                     returnString += parseText_list(xmlr);
-                } else if (xmlr.getLocalName().equals("citation")) {
+                } else if ("citation".equals(xmlr.getLocalName())) {
                     if (SOURCE_DVN_3_0.equals(xmlr.getAttributeValue(null, "source")) ) {
                         returnMap = parseDVNCitation(xmlr);
                     } else {
@@ -646,13 +646,13 @@ public class ImportGenericServiceBean {
         while (true) {
             int event = xmlr.next();
             if (event == XMLStreamConstants.START_ELEMENT) {
-                if (xmlr.getLocalName().equals("itm")) {
+                if ("itm".equals(xmlr.getLocalName())) {
                     listString += "<li>" + parseText(xmlr,"itm") + "</li>\n";
                 } else {
                     throw new EJBException("ERROR occurred in mapDDI (parseText): ListType does not currently supported contained LabelType.");
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
-                if (xmlr.getLocalName().equals("list")) break;
+                if ("list".equals(xmlr.getLocalName())) break;
             }
         }
 
@@ -667,18 +667,18 @@ public class ImportGenericServiceBean {
         while (true) {
             int event = xmlr.next();
             if (event == XMLStreamConstants.START_ELEMENT) {
-                if (xmlr.getLocalName().equals("titlStmt")) {
+                if ("titlStmt".equals(xmlr.getLocalName())) {
                     while (true) {
                         event = xmlr.next();
                         if (event == XMLStreamConstants.START_ELEMENT) {
-                            if (xmlr.getLocalName().equals("titl")) {
+                            if ("titl".equals(xmlr.getLocalName())) {
                                 citation += parseText(xmlr);
                             }
                         } else if (event == XMLStreamConstants.END_ELEMENT) {
-                            if (xmlr.getLocalName().equals("titlStmt")) break;
+                            if ("titlStmt".equals(xmlr.getLocalName())) break;
                         }
                     }
-                } else if (xmlr.getLocalName().equals("holdings")) {
+                } else if ("holdings".equals(xmlr.getLocalName())) {
                     String uri = xmlr.getAttributeValue(null, "URI");
                     String holdingsText = parseText(xmlr);
 
@@ -697,7 +697,7 @@ public class ImportGenericServiceBean {
                     }
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
-                if (xmlr.getLocalName().equals("citation")) break;
+                if ("citation".equals(xmlr.getLocalName())) break;
             }
         }
 
@@ -722,23 +722,23 @@ public class ImportGenericServiceBean {
         while (true) {
             int event = xmlr.next();
             if (event == XMLStreamConstants.START_ELEMENT) {
-               if (xmlr.getLocalName().equals("IDNo")) {
+               if ("IDNo".equals(xmlr.getLocalName())) {
                     returnValues.put("idType", xmlr.getAttributeValue(null, "agency") );
                     returnValues.put("idNumber", parseText(xmlr) );                   
                }
-                else if (xmlr.getLocalName().equals("biblCit")) {
+                else if ("biblCit".equals(xmlr.getLocalName())) {
                     returnValues.put("text", parseText(xmlr) );                   
                 }
-                else if (xmlr.getLocalName().equals("holdings")) {
+                else if ("holdings".equals(xmlr.getLocalName())) {
                     returnValues.put("url", xmlr.getAttributeValue(null, "URI") );                 
                 }
-                else if (xmlr.getLocalName().equals("notes")) {
+                else if ("notes".equals(xmlr.getLocalName())) {
                     if (NOTE_TYPE_REPLICATION_FOR.equals(xmlr.getAttributeValue(null, "type")) ) {
                         returnValues.put("replicationData", new Boolean(true));
                     }
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
-                if (xmlr.getLocalName().equals("citation")) break;
+                if ("citation".equals(xmlr.getLocalName())) break;
             }
         } 
         

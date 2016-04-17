@@ -302,7 +302,7 @@ public class SolrSearchResult {
         }
 
         Highlight highlight = highlightsAsMap.get(SearchFields.DESCRIPTION);
-        if (type.equals("datasets")) {
+        if ("datasets".equals(type)) {
             highlight = highlightsAsMap.get(SearchFields.DATASET_DESCRIPTION);
         }
         if (highlight != null) {
@@ -692,7 +692,7 @@ public class SolrSearchResult {
                     && !field.equals(SearchFields.DESCRIPTION)
                     && !field.equals(SearchFields.DATASET_DESCRIPTION)
                     && !field.equals(SearchFields.AFFILIATION)
-                    && !field.equals("title")) {
+                    && !"title".equals(field)) {
                 filtered.add(highlight);
             }
         }

@@ -85,7 +85,7 @@ public class UrlManager {
         } catch (ArrayIndexOutOfBoundsException ex) {
             throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Unable to determine servlet path from URL: " + url);
         }
-        if (!servlet.equals("service-document")) {
+        if (!"service-document".equals(servlet)) {
             List<String> targetTypeAndIdentifier;
             try {
                 //               6          7         8
@@ -96,7 +96,7 @@ public class UrlManager {
             }
             this.targetType = targetTypeAndIdentifier.get(0);
             if (targetType != null) {
-                if (targetType.equals("dataverse")) {
+                if ("dataverse".equals(targetType)) {
                     String dvAlias;
                     try {
                         dvAlias = targetTypeAndIdentifier.get(1);
@@ -116,7 +116,7 @@ public class UrlManager {
                      * examine all the places where we return the string "study"
                      * such as in the Deposit Receipt.
                      */
-                } else if (targetType.equals("study")) {
+                } else if ("study".equals(targetType)) {
                     String globalId;
                     try {
                         List<String> globalIdParts = targetTypeAndIdentifier.subList(1, targetTypeAndIdentifier.size());
@@ -125,7 +125,7 @@ public class UrlManager {
                         throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, "Invalid study global id provided in URL: " + url);
                     }
                     this.targetIdentifier = globalId;
-                } else if (targetType.equals("file")) {
+                } else if ("file".equals(targetType)) {
                     String fileIdString;
                     try {
                         // a user might reasonably pass in a filename as well [.get(2)] since
@@ -172,7 +172,7 @@ public class UrlManager {
          * @todo should this be configurable? In dev it's convenient to override
          * the JVM option and force traffic to localhost.
          */
-        if (requestedHostname.equals("localhost")) {
+        if ("localhost".equals(requestedHostname)) {
             hostName = "localhost";
         }
         /**

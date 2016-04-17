@@ -108,7 +108,7 @@ public class DatasetVersionServiceBean implements java.io.Serializable {
             //logger.fine("check version. requested: " + this.requestedVersion + " returned: " + actualVersion);
             // This may often be the case if version is not specified
             //
-            if (requestedVersion == null || requestedVersion.equals("")){
+            if (requestedVersion == null || "".equals(requestedVersion)){
                 this.wasSpecificVersionRequested = false;         
                 return;
             }

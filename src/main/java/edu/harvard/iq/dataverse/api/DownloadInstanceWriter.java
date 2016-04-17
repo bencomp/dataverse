@@ -68,7 +68,7 @@ public class DownloadInstanceWriter implements MessageBodyWriter<DownloadInstanc
                     // Image Thumbnail and Tabular data conversion: 
                     // NOTE: only supported on local files, as of 4.0.2!
                     
-                    if (di.getConversionParam().equals("imageThumb") && accessObject.isLocalFile()) {
+                    if ("imageThumb".equals(di.getConversionParam()) && accessObject.isLocalFile()) {
                         if ("".equals(di.getConversionParamValue())) {
                             accessObject = ImageThumbConverter.getImageThumb((FileAccessIO)accessObject); 
                         } else {
@@ -85,10 +85,10 @@ public class DownloadInstanceWriter implements MessageBodyWriter<DownloadInstanc
                     
                     
                     if (sf.isTabularData()) {
-                        if (di.getConversionParam().equals("noVarHeader")) {
+                        if ("noVarHeader".equals(di.getConversionParam())) {
                             accessObject.setNoVarHeader(Boolean.TRUE);
                             accessObject.setVarHeader(null);
-                        } else if (di.getConversionParam().equals("format")  && accessObject.isLocalFile()) {
+                        } else if ("format".equals(di.getConversionParam()) && accessObject.isLocalFile()) {
                             
                             if ("original".equals(di.getConversionParamValue())) {
                                 accessObject = StoredOriginalFile.retreive(accessObject);
@@ -106,7 +106,7 @@ public class DownloadInstanceWriter implements MessageBodyWriter<DownloadInstanc
                                         (FileAccessIO)accessObject, 
                                         di.getConversionParamValue(), requestedMimeType);
                             } 
-                        } else if (di.getConversionParam().equals("subset")) {
+                        } else if ("subset".equals(di.getConversionParam())) {
                             logger.fine("processing subset request.");
                             
                             // TODO: 

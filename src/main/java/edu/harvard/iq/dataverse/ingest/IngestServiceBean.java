@@ -272,7 +272,7 @@ public class IngestServiceBean {
         try {
             recognizedType = FileUtil.determineFileType(tempFile.toFile(), fileName);
             logger.fine("File utility recognized the file as " + recognizedType);
-            if (recognizedType != null && !recognizedType.equals("")) {
+            if (recognizedType != null && !"".equals(recognizedType)) {
                 // is it any better than the type that was supplied to us,
                 // if any?
                 // This is not as trivial a task as one might expect... 
@@ -294,7 +294,7 @@ public class IngestServiceBean {
                 // ingestable types. 
                 
                 if (suppliedContentType == null
-                        || suppliedContentType.equals("")
+                        || "".equals(suppliedContentType)
                         || suppliedContentType.equalsIgnoreCase(MIME_TYPE_UNDETERMINED_DEFAULT)
                         || suppliedContentType.equalsIgnoreCase(MIME_TYPE_UNDETERMINED_BINARY)
                         || (ingestableAsTabular(suppliedContentType)
@@ -302,7 +302,7 @@ public class IngestServiceBean {
                             && !suppliedContentType.equalsIgnoreCase(MIME_TYPE_CSV_ALT)
                             && !suppliedContentType.equalsIgnoreCase(MIME_TYPE_XLSX))
                         || ingestableAsTabular(recognizedType)
-                        || recognizedType.equals("application/fits-gzipped")
+                        || "application/fits-gzipped".equals(recognizedType)
                         || recognizedType.equalsIgnoreCase(ShapefileHandler.SHAPEFILE_FILE_TYPE)
                         || recognizedType.equals(MIME_TYPE_ZIP)) {
                     finalType = recognizedType;
@@ -314,7 +314,7 @@ public class IngestServiceBean {
         }
         
         if (finalType == null) {
-            finalType = (suppliedContentType == null || suppliedContentType.equals("")) 
+            finalType = (suppliedContentType == null || "".equals(suppliedContentType))
                 ? MIME_TYPE_UNDETERMINED_DEFAULT
                 : suppliedContentType;
         }
@@ -324,7 +324,7 @@ public class IngestServiceBean {
         // if this is a gzipped FITS file, we'll uncompress it, and ingest it as
         // a regular FITS file:
         
-        if (finalType.equals("application/fits-gzipped")) {
+        if ("application/fits-gzipped".equals(finalType)) {
 
             InputStream uncompressedIn = null;
             String finalFileName = fileName;
@@ -365,7 +365,7 @@ public class IngestServiceBean {
                 
         // If it's a ZIP file, we are going to unpack it and create multiple 
         // DataFile objects from its contents:
-          } else if (finalType.equals("application/zip")) {   
+          } else if ("application/zip".equals(finalType)) {
             
             ZipInputStream unZippedIn = null; 
             ZipEntry zipEntry = null; 
@@ -435,7 +435,7 @@ public class IngestServiceBean {
                         String fileEntryName = zipEntry.getName();
                         logger.fine("ZipEntry, file: "+fileEntryName);
 
-                        if (fileEntryName != null && !fileEntryName.equals("")) {
+                        if (fileEntryName != null && !"".equals(fileEntryName)) {
 
                             String shortName = fileEntryName.replaceFirst("^.*[\\/]", "");
 
@@ -467,7 +467,7 @@ public class IngestServiceBean {
                                     try {
                                         recognizedType = FileUtil.determineFileType(new File(tempFileName), shortName);
                                         logger.fine("File utility recognized unzipped file as " + recognizedType);
-                                        if (recognizedType != null && !recognizedType.equals("")) {
+                                        if (recognizedType != null && !"".equals(recognizedType)) {
                                              datafile.setContentType(recognizedType);
                                         }
                                     } catch (Exception ex) {
@@ -697,17 +697,17 @@ public class IngestServiceBean {
     
     private static String generateOriginalExtension(String fileType) {
 
-        if (fileType.equalsIgnoreCase("application/x-spss-sav")) {
+        if ("application/x-spss-sav".equalsIgnoreCase(fileType)) {
             return ".sav";
-        } else if (fileType.equalsIgnoreCase("application/x-spss-por")) {
+        } else if ("application/x-spss-por".equalsIgnoreCase(fileType)) {
             return ".por";
-        } else if (fileType.equalsIgnoreCase("application/x-stata")) {
+        } else if ("application/x-stata".equalsIgnoreCase(fileType)) {
             return ".dta";
-        } else if (fileType.equalsIgnoreCase( "application/x-rlang-transport")) {
+        } else if ("application/x-rlang-transport".equalsIgnoreCase(fileType)) {
             return ".RData";
-        } else if (fileType.equalsIgnoreCase("text/csv")) {
+        } else if ("text/csv".equalsIgnoreCase(fileType)) {
             return ".csv";
-        } else if (fileType.equalsIgnoreCase( "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+        } else if ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".equalsIgnoreCase(fileType)) {
             return ".xlsx";
         }
 
@@ -763,7 +763,7 @@ public class IngestServiceBean {
             contentType = null;
         }
 
-       if ((contentType==null)||(contentType.equals(""))){
+       if ((contentType==null)||("".equals(contentType))){
             contentType = MIME_TYPE_UNDETERMINED_DEFAULT;
        }
        return contentType;
@@ -1045,7 +1045,7 @@ public class IngestServiceBean {
     
     public String getFilesTempDirectory() {
         String filesRootDirectory = System.getProperty("dataverse.files.directory");
-        if (filesRootDirectory == null || filesRootDirectory.equals("")) {
+        if (filesRootDirectory == null || "".equals(filesRootDirectory)) {
             filesRootDirectory = "/tmp/files";
         }
 
@@ -1400,7 +1400,7 @@ public class IngestServiceBean {
         IngestRequest ingestRequest = dataFile.getIngestRequest();
         if (ingestRequest != null) {
             if (ingestRequest.getTextEncoding() != null 
-                    && !ingestRequest.getTextEncoding().equals("") ) {
+                    && !"".equals(ingestRequest.getTextEncoding())) {
                 logger.fine("Setting language encoding to "+ingestRequest.getTextEncoding());
                 ingestPlugin.setDataLanguageEncoding(ingestRequest.getTextEncoding());
             }
@@ -1748,9 +1748,9 @@ public class IngestServiceBean {
                                         // fields from the Astronomy Metadata block. 
                                         // TODO: rather than hard-coded, this needs to be
                                         // programmatically defined. -- L.A. 4.0
-                                        if (dsfName.equals("resolution.Temporal")
-                                                || dsfName.equals("resolution.Spatial")
-                                                || dsfName.equals("resolution.Spectral")) {
+                                        if ("resolution.Temporal".equals(dsfName)
+                                                || "resolution.Spatial".equals(dsfName)
+                                                || "resolution.Spectral".equals(dsfName)) {
                                             // For these values, we aggregate the minimum-maximum 
                                             // pair, for the entire set. 
                                             // So first, we need to go through the values found by 
@@ -1792,7 +1792,7 @@ public class IngestServiceBean {
                                                 if (dsf.getDatasetFieldValues() != null && dsf.getDatasetFieldValues().get(0) != null) {
                                                     storedValue = dsf.getDatasetFieldValues().get(0).getValue();
                                                 
-                                                    if (storedValue != null && !storedValue.equals("")) {
+                                                    if (storedValue != null && !"".equals(storedValue)) {
                                                         try {
 
                                                             if (storedValue.contains(" - ")) {
@@ -1967,7 +1967,7 @@ public class IngestServiceBean {
                                         for (DatasetField cdsf : dsfcv.getChildDatasetFields()) {
                                             String cdsfName = cdsf.getDatasetFieldType().getName();
                                             String cdsfValue = cdsf.getDatasetFieldValues().get(0).getValue();
-                                            if (cdsfValue != null && !cdsfValue.equals("")) {
+                                            if (cdsfValue != null && !"".equals(cdsfValue)) {
                                                 String extractedValue = (String)fileMetadataMap.get(cdsfName).toArray()[0];
                                                 logger.fine("values: existing: "+cdsfValue+", extracted: "+extractedValue);
                                                 if (cdsfValue.equals(extractedValue)) {
@@ -2005,14 +2005,14 @@ public class IngestServiceBean {
         
         String metadataSummary = fileLevelMetadata.getMetadataSummary();
         if (metadataSummary != null) {
-            if (!metadataSummary.equals("")) {
+            if (!"".equals(metadataSummary)) {
                 // The file upload page allows a user to enter file description 
                 // on ingest. We don't want to overwrite whatever they may 
                 // have entered. Rather, we'll append this generated metadata summary 
                 // to the existing value. 
                 String userEnteredFileDescription = fileMetadata.getDescription();
                 if (userEnteredFileDescription != null
-                        && !(userEnteredFileDescription.equals(""))) {
+                        && !("".equals(userEnteredFileDescription))) {
 
                     metadataSummary = userEnteredFileDescription.concat(";\n" + metadataSummary);
                 }
@@ -2048,7 +2048,7 @@ public class IngestServiceBean {
     private void saveIngestedOriginal(DataFile dataFile, InputStream originalFileStream) throws IOException {
         String ingestedFileName = dataFile.getStorageIdentifier();
 
-        if (ingestedFileName != null && !ingestedFileName.equals("")) {
+        if (ingestedFileName != null && !"".equals(ingestedFileName)) {
             Path savedOriginalPath = Paths.get(dataFile.getOwner().getFileSystemDirectory().toString(), "_" + ingestedFileName);
             Files.copy(originalFileStream, savedOriginalPath);
         } else {
@@ -2137,7 +2137,7 @@ public class IngestServiceBean {
             dateFormats = new String[dataVector.length];
             String savedDateTimeFormat = dataFile.getDataTable().getDataVariables().get(varnum).getFormat();
             String timeFormat = null;
-            if (savedDateTimeFormat != null && !savedDateTimeFormat.equals("")) {
+            if (savedDateTimeFormat != null && !"".equals(savedDateTimeFormat)) {
                 timeFormat = savedDateTimeFormat;
             } else {
                 timeFormat = dateTimeFormat_ymdhmsS;
@@ -2197,7 +2197,7 @@ public class IngestServiceBean {
             String savedDateFormat = dataFile.getDataTable().getDataVariables().get(varnum).getFormat();
             for (int i = 0; i < dataVector.length; i++) {
                 if (dataVector[i] != null) {
-                    if (savedDateFormat != null && !savedDateFormat.equals("")) {
+                    if (savedDateFormat != null && !"".equals(savedDateFormat)) {
                         dateFormats[i] = savedDateFormat;
                     } else {
                         dateFormats[i] = dateFormat_ymd;

@@ -43,7 +43,7 @@ public class UpdateDatasetTargetURLCommand extends AbstractVoidCommand  {
                 this,  Collections.singleton(Permission.EditDataset), target);                
         }
         
-        if (target.getProtocol().equals("doi")){
+        if ("doi".equals(target.getProtocol())){
             HashMap<String, String> metadata = ctxt.doiEZId().getMetadataFromDatasetForTargetURL(target);
             String doiRetString = ctxt.doiEZId().modifyIdentifier(target, metadata);
             if (doiRetString.contains(target.getIdentifier())) {

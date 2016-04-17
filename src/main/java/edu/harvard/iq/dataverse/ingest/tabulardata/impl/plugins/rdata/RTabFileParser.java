@@ -120,7 +120,7 @@ public class RTabFileParser implements java.io.Serializable {
                     } else {
                         // discrete by default:
                         isContinuousVariable[i] = false; 
-                        if (var.getFormatCategory() != null && var.getFormatCategory().equals("Boolean")) {
+                        if (var.getFormatCategory() != null && "Boolean".equals(var.getFormatCategory())) {
                             isBooleanVariable[i] = true; 
                         }
                     }
@@ -157,7 +157,7 @@ public class RTabFileParser implements java.io.Serializable {
                 if (isCharacterVariable[i]) {
                     // String. Adding to the table, quoted.
                     // Empty strings stored as " " (one white space):
-                    if (valueTokens[i] != null && (!valueTokens[i].equals(""))) {
+                    if (valueTokens[i] != null && (!"".equals(valueTokens[i]))) {
                         String charToken = valueTokens[i];
                         // Dealing with quotes: 
                         // remove the leading and trailing quotes, if present:
@@ -197,15 +197,15 @@ public class RTabFileParser implements java.io.Serializable {
                     // remove the leading and trailing quotes, if present:
                     valueTokens[i] = valueTokens[i].replaceFirst("^\"", "");
                     valueTokens[i] = valueTokens[i].replaceFirst("\"$", "");
-                    if (valueTokens[i] != null && valueTokens[i].equalsIgnoreCase("NA")) {
+                    if (valueTokens[i] != null && "NA".equalsIgnoreCase(valueTokens[i])) {
                         caseRow[i] = "";
-                    } else if (valueTokens[i] != null && valueTokens[i].equalsIgnoreCase("NaN")) {
+                    } else if (valueTokens[i] != null && "NaN".equalsIgnoreCase(valueTokens[i])) {
                         caseRow[i] = "NaN";
                     } else if (valueTokens[i] != null && 
-                            ( valueTokens[i].equalsIgnoreCase("Inf")
-                            || valueTokens[i].equalsIgnoreCase("+Inf"))) {
+                            ("Inf".equalsIgnoreCase(valueTokens[i])
+                            || "+Inf".equalsIgnoreCase(valueTokens[i]))) {
                         caseRow[i] = "Inf";
-                    } else if (valueTokens[i] != null && valueTokens[i].equalsIgnoreCase("-Inf")) {
+                    } else if (valueTokens[i] != null && "-Inf".equalsIgnoreCase(valueTokens[i])) {
                         caseRow[i] = "-Inf";
                     } else {
                         try {
@@ -230,11 +230,11 @@ public class RTabFileParser implements java.io.Serializable {
                         charToken = charToken.replaceFirst("^\"", "");
                         charToken = charToken.replaceFirst("\"$", "");
                         
-                        if (charToken.equals("FALSE")) {
+                        if ("FALSE".equals(charToken)) {
                             caseRow[i] = "0";
-                        } else if (charToken.equals("TRUE")) {
+                        } else if ("TRUE".equals(charToken)) {
                             caseRow[i] = "1";
-                        } else if (charToken.equals("")) {
+                        } else if ("".equals(charToken)) {
                             // Legit case - Missing Value!
                             caseRow[i] = charToken;
                         } else {
@@ -254,7 +254,7 @@ public class RTabFileParser implements java.io.Serializable {
                     // result in an exception, that would be intercepted below,
                     // with the same end result)
                     dbgLog.fine("R Tab File Parser; integer value: "+valueTokens[i]);
-                    if (valueTokens[i] != null && valueTokens[i].equalsIgnoreCase("NA")) {
+                    if (valueTokens[i] != null && "NA".equalsIgnoreCase(valueTokens[i])) {
                         caseRow[i] = "";
                     } else {
                         try {

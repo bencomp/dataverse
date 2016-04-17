@@ -136,7 +136,7 @@ public class DOIDataCiteServiceBean {
 
         String idStatus = (String) doiMetadata.get("_status");
 
-        if (idStatus == null || idStatus.equals("reserved")) {
+        if (idStatus == null || "reserved".equals(idStatus)) {
             logger.log(Level.INFO, "Delete status is reserved..");
             try {
                 doiDataCiteRegisterService.deleteIdentifier(identifier);
@@ -169,7 +169,7 @@ public class DOIDataCiteServiceBean {
 
         String idStatus = (String) doiMetadata.get("_status");
 
-        if (idStatus != null && idStatus.equals("reserved")) {
+        if (idStatus != null && "reserved".equals(idStatus)) {
             logger.log(Level.INFO, "Delete status is reserved..");
             try {
                 doiDataCiteRegisterService.deleteIdentifier(identifier);
@@ -182,7 +182,7 @@ public class DOIDataCiteServiceBean {
             }
             return;
         }
-        if (idStatus != null && idStatus.equals("public")) {
+        if (idStatus != null && "public".equals(idStatus)) {
             //if public then it has been released set to unavailable and reset target to n2t url
             updateIdentifierStatus(datasetIn, "unavailable");
         }
@@ -232,7 +232,7 @@ public class DOIDataCiteServiceBean {
         String targetUrl = "";
         DOISHOULDER = "doi:" + datasetIn.getAuthority();
 
-        if (inetAddress.equals("localhost")) {
+        if ("localhost".equals(inetAddress)) {
             targetUrl = "http://localhost:8080" + "/dataset.xhtml?persistentId=" + DOISHOULDER
                     + datasetIn.getDoiSeparator() + datasetIn.getIdentifier();
         } else {
@@ -250,7 +250,7 @@ public class DOIDataCiteServiceBean {
         String targetUrl = "";     
         DOISHOULDER = "doi:" + datasetIn.getAuthority();
         
-        if (inetAddress.equals("localhost")){                    
+        if ("localhost".equals(inetAddress)){
            targetUrl ="http://localhost:8080" + "/dataset.xhtml?persistentId=" + DOISHOULDER 
                     + datasetIn.getDoiSeparator()       + datasetIn.getIdentifier();
         } else{

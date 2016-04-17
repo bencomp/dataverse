@@ -155,10 +155,10 @@ public class ManageTemplatesPage implements java.io.Serializable {
             JsfHelper.addFlashMessage(successMessage);
         } catch (CommandException ex) {
             String failMessage = "Template update failed";
-            if(successMessage.equals("The template has been deleted")){
+            if("The template has been deleted".equals(successMessage)){
                 failMessage = "The dataset template cannot be deleted.";
             }
-            if(successMessage.equals("The template has been selected as the default template for this dataverse")){
+            if("The template has been selected as the default template for this dataverse".equals(successMessage)){
                 failMessage = "The dataset template cannot be made default.";
             }
             JH.addMessage(FacesMessage.SEVERITY_FATAL, failMessage);

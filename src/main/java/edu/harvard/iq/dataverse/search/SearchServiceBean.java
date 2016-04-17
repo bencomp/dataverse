@@ -448,7 +448,7 @@ public class SearchServiceBean {
             /**
              * @todo start using SearchConstants class here
              */
-            if (type.equals("dataverses")) {
+            if ("dataverses".equals(type)) {
                 solrSearchResult.setName(name);
                 solrSearchResult.setHtmlUrl(baseUrl + "/dataverse/" + identifier);
                 solrSearchResult.setImageUrl(baseUrl + "/api/access/dvCardImage/" + entityid);
@@ -458,7 +458,7 @@ public class SearchServiceBean {
                  * dataverses? Michael: url changed.
                  */
 //                solrSearchResult.setApiUrl(baseUrl + "/api/dataverses/" + entityid);
-            } else if (type.equals("datasets")) {
+            } else if ("datasets".equals(type)) {
                 solrSearchResult.setHtmlUrl(baseUrl + "/dataset.xhtml?globalId=" + identifier);
                 solrSearchResult.setApiUrl(baseUrl + "/api/datasets/" + entityid);
                 solrSearchResult.setImageUrl(baseUrl + "/api/access/dsCardImage/" + datasetVersionId);
@@ -486,7 +486,7 @@ public class SearchServiceBean {
                 if (authors != null) {
                     solrSearchResult.setDatasetAuthors(authors);
                 }
-            } else if (type.equals("files")) {
+            } else if ("files".equals(type)) {
                 String parentGlobalId = null;
                 Object parentGlobalIdObject = solrDocument.getFieldValue(SearchFields.PARENT_IDENTIFIER);
                 if (parentGlobalIdObject != null) {

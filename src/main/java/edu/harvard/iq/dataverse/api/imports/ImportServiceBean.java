@@ -338,7 +338,7 @@ public class ImportServiceBean {
             return true;
         }
         if (f.getDatasetField().getDatasetFieldType().getName().equals(DatasetFieldConstant.producerURL)) {
-            if (f.getValue().equals("PRODUCER URL")) {
+            if ("PRODUCER URL".equals(f.getValue())) {
                 String msg = "Data modified - File: " + fileName + "; Field: Producer URL; "  +  "Invalid value: '" + f.getValue() + "'"  + " Converted Value: 'NA'"; 
                 cleanupLog.println(msg);
                 f.setValue(DatasetField.NA_VALUE);
@@ -346,7 +346,7 @@ public class ImportServiceBean {
             }
         }
         if (f.getDatasetField().getDatasetFieldType().getFieldType().equals(DatasetFieldType.FieldType.DATE)) {
-            if(f.getValue().toUpperCase().equals("YYYY-MM-DD")){
+            if("YYYY-MM-DD".equals(f.getValue().toUpperCase())){
                 String msg = "Data modified - File: " + fileName + "; Field:" +  f.getDatasetField().getDatasetFieldType().getDisplayName() + "; "
                      +  "Invalid value: '" + f.getValue() + "'"  + " Converted Value: 'NA'"; 
                 cleanupLog.println(msg);

@@ -108,7 +108,7 @@ public class FileAccessIO extends DataFileIO {
             this.setSize(getLocalFileSize());
             
             if (dataFile.getContentType() != null
-                    && dataFile.getContentType().equals("text/tab-separated-values")
+                    && "text/tab-separated-values".equals(dataFile.getContentType())
                     && dataFile.isTabularData()
                     && dataFile.getDataTable() != null
                     && (!this.noVarHeader())) {

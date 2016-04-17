@@ -140,12 +140,12 @@ public class CreateDatasetCommand extends AbstractCommand<Dataset> {
         // Attempt the registration if importing dataset through the API, or the app (but not harvest or migrate)
         if ((importType == null || importType.equals(ImportType.NEW))
                 && theDataset.getGlobalIdCreateTime() == null) {
-            if (protocol.equals("doi")) {
+            if ("doi".equals(protocol)) {
                 String doiRetString = "";
-                if (doiProvider.equals("EZID")) {
+                if ("EZID".equals(doiProvider)) {
                     doiRetString = ctxt.doiEZId().createIdentifier(theDataset);
                 }
-                if (doiProvider.equals("DataCite")) {
+                if ("DataCite".equals(doiProvider)) {
                     try{
                         doiRetString = ctxt.doiDataCite().createIdentifier(theDataset);
                     } catch (Exception e){
@@ -154,7 +154,7 @@ public class CreateDatasetCommand extends AbstractCommand<Dataset> {
                 }
 
                 // Check return value to make sure registration succeeded
-                if (doiProvider.equals("EZID") && doiRetString.contains(theDataset.getIdentifier())) {
+                if ("EZID".equals(doiProvider) && doiRetString.contains(theDataset.getIdentifier())) {
                     theDataset.setGlobalIdCreateTime(createDate);
                 }
 

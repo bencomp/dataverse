@@ -826,8 +826,8 @@ public class DataFileServiceBean implements java.io.Serializable {
         // pdf and "world map" files:
         
         return (contentType != null && 
-                (contentType.startsWith("image/") || 
-                contentType.equalsIgnoreCase("application/pdf") ||
+                (contentType.startsWith("image/") ||
+                        "application/pdf".equalsIgnoreCase(contentType) ||
                 contentType.equalsIgnoreCase(MIME_TYPE_GEO_SHAPE)));
     }
     
@@ -894,7 +894,7 @@ public class DataFileServiceBean implements java.io.Serializable {
     public boolean isTemporaryPreviewAvailable(String fileSystemId, String mimeType) {
         
         String filesRootDirectory = System.getProperty("dataverse.files.directory");
-        if (filesRootDirectory == null || filesRootDirectory.equals("")) {
+        if (filesRootDirectory == null || "".equals(filesRootDirectory)) {
             filesRootDirectory = "/tmp/files";
         }
 

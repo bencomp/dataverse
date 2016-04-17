@@ -39,11 +39,11 @@ public  class MetadataBlockDTO {
         // Else, add/replace the value in the new field to the current field
         } else {
             if (current.multiple) {
-               if (newField.typeClass.equals("compound")) {
+               if ("compound".equals(newField.typeClass)) {
                     ArrayList<HashSet<FieldDTO>> currentValue = current.getMultipleCompound();
                     currentValue.addAll(newField.getMultipleCompound());
                     current.setMultipleCompound(currentValue);
-                } else if (newField.typeClass.equals("controlledVocabulary")) {
+                } else if ("controlledVocabulary".equals(newField.typeClass)) {
                     List<String> currentValue = current.getMultipleVocab();
                     currentValue.addAll(newField.getMultipleVocab());
                     current.setMultipleVocab(currentValue);

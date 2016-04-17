@@ -315,7 +315,7 @@ public class EditDatafilesPage implements java.io.Serializable {
             return null;
         }
         
-        if (!modeToken.equals("CREATE")) {
+        if (!"CREATE".equals(modeToken)) {
             logger.fine("Request to initialize Edit Files page with token " + modeToken + " (aborting).");
             return null; 
         }
@@ -954,7 +954,7 @@ public class EditDatafilesPage implements java.io.Serializable {
             }
             
             String saveErrorString = saveError.toString();
-            if (saveErrorString != null && !saveErrorString.equals("")) {
+            if (saveErrorString != null && !"".equals(saveErrorString)) {
                 logger.log(Level.INFO, "Couldn''t save dataset: {0}", saveErrorString);
                 populateDatasetUpdateFailureMessage();
                 return null;

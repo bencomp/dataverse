@@ -199,7 +199,7 @@ public class DeleteDataFileCommand extends AbstractVoidCommand {
         // <filename>.RData.
         final String baseName = dataFile.getStorageIdentifier();
 
-        if (baseName == null || baseName.equals("")) {
+        if (baseName == null || "".equals(baseName)) {
             return null;
         }
 

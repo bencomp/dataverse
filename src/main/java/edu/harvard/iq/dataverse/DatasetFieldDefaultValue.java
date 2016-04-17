@@ -126,7 +126,7 @@ public class DatasetFieldDefaultValue implements Serializable {
     }
     
      public boolean isEmpty() {
-        return ((strValue==null || strValue.trim().equals("")));
+        return ((strValue==null || "".equals(strValue.trim())));
     }
     
     private int displayOrder;

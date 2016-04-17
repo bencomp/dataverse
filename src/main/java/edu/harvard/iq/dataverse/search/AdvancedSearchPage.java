@@ -92,7 +92,7 @@ public class AdvancedSearchPage implements java.io.Serializable {
     private String constructDatasetQuery() {
         List<String> queryStrings = new ArrayList();
         for (DatasetFieldType dsfType : metadataFieldList) {
-            if (dsfType.getSearchValue() != null && !dsfType.getSearchValue().equals("")) {
+            if (dsfType.getSearchValue() != null && !"".equals(dsfType.getSearchValue())) {
                 queryStrings.add(constructQuery(dsfType.getSolrField().getNameSearchable(), dsfType.getSearchValue()));
             } else if (dsfType.getListValues() != null && !dsfType.getListValues().isEmpty()) {
                 List<String> listQueryStrings = new ArrayList();
@@ -194,11 +194,11 @@ public class AdvancedSearchPage implements java.io.Serializable {
 
         List<String> queryStrings = new ArrayList();
 
-        if (userSuppliedQuery != null && !userSuppliedQuery.equals("")) {
+        if (userSuppliedQuery != null && !"".equals(userSuppliedQuery)) {
             if (userSuppliedQuery.contains("\"")) {
                 String[] tempString = userSuppliedQuery.split(delimiter);
                 for (int i = 1; i < tempString.length; i++) {
-                    if (!tempString[i].equals(" ") && !tempString[i].isEmpty()) {
+                    if (!" ".equals(tempString[i]) && !tempString[i].isEmpty()) {
                         queryStrings.add(solrField + ":" + "\"" + tempString[i].trim() + "\"");
                     }
                 }

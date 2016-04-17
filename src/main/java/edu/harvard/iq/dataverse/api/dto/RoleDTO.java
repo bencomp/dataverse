@@ -54,7 +54,7 @@ public class RoleDTO {
 		r.setName(name);
 		if (permissions != null) {
 			if (permissions.length > 0) {
-				if (permissions[0].trim().toLowerCase().equals("all")) {
+				if ("all".equals(permissions[0].trim().toLowerCase())) {
 					r.addPermissions(EnumSet.allOf(Permission.class));
 				} else {
 					for (String ps : permissions) {
