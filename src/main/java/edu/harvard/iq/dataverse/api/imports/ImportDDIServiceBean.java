@@ -1454,7 +1454,7 @@ public class ImportDDIServiceBean {
                 }
                 else if ("notes".equals(xmlr.getLocalName())) {
                     if (NOTE_TYPE_REPLICATION_FOR.equals(xmlr.getAttributeValue(null, "type")) ) {
-                        returnValues.put("replicationData", new Boolean(true));
+                        returnValues.put("replicationData", Boolean.TRUE);
                     }
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
