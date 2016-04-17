@@ -2752,7 +2752,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                         // (but we do need to remember to treat the resulting values 
                                         // as character strings, not numerics!)
                                         
-                                        if (casewiseRecordForTabFile.get(k).toString().indexOf(".") < 0) {
+                                        if (!casewiseRecordForTabFile.get(k).toString().contains(".")) {
                                             long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString()) * 1000L - SPSS_DATE_BIAS;
                                             String newDatum = sdf_dhms.format(new Date(dateDatum));
                                             dbgLog.finer("k=" + k + ":" + newDatum);
@@ -2781,7 +2781,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                         // values in the vector that have thousands of a second, that should be 
                                         // part of the saved format!
                                         //  -- L.A. Aug. 12 2014 
-                                        if (casewiseRecordForTabFile.get(k).toString().indexOf(".") < 0) {
+                                        if (!casewiseRecordForTabFile.get(k).toString().contains(".")) {
                                             long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString()) * 1000L - SPSS_DATE_OFFSET;
                                             String newDatum = sdf_ymdhms.format(new Date(dateDatum));
                                             dbgLog.finer("k=" + k + ":" + newDatum);
@@ -2807,7 +2807,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                     } else if (printFormatTable.get(variableNameList.get(k)).equals("TIME")) {
                                         // TODO: 
                                         // double-check that we are handling "dateless" time correctly... -- L.A. Aug. 2014
-                                        if (casewiseRecordForTabFile.get(k).toString().indexOf(".") < 0) {
+                                        if (!casewiseRecordForTabFile.get(k).toString().contains(".")) {
                                             long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString()) * 1000L;
                                             String newDatum = sdf_hms.format(new Date(dateDatum));
                                             dbgLog.finer("k=" + k + ":" + newDatum);
@@ -2882,7 +2882,7 @@ public class SAVFileReader  extends TabularDataFileReader{
 
                             } else {
                                 if (variableTypelList.get(l) <= 0) {
-                                    if (casewiseRecordForTabFile.get(l).toString().indexOf(".") >= 0) {
+                                    if (casewiseRecordForTabFile.get(l).toString().contains(".")) {
                                         decimalVariableSet.add(l);
                                     }
                                 }
@@ -3187,7 +3187,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                             
                             if (printFormatTable.get(variableNameList.get(k)).equals("DTIME")){
 
-                                if (casewiseRecordForTabFile.get(k).toString().indexOf(".") < 0){
+                                if (!casewiseRecordForTabFile.get(k).toString().contains(".")){
                                     long dateDatum  = Long.parseLong(casewiseRecordForTabFile.get(k).toString())*1000L - SPSS_DATE_BIAS;
                                     String newDatum = sdf_dhms.format(new Date(dateDatum));
                                     // Note: DTIME is not a complete date, so we don't save a date format with it
@@ -3218,7 +3218,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                 // part of the saved format!
                                 //  -- L.A. Aug. 12 2014 
 
-                                if (casewiseRecordForTabFile.get(k).toString().indexOf(".") < 0){
+                                if (!casewiseRecordForTabFile.get(k).toString().contains(".")){
                                     long dateDatum  = Long.parseLong(casewiseRecordForTabFile.get(k).toString())*1000L - SPSS_DATE_OFFSET;
                                     String newDatum = sdf_ymdhms.format(new Date(dateDatum));
                                     dbgLog.finer("k="+k+":"+newDatum);
@@ -3243,7 +3243,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                                     dateFormatList[k] = sdf_ymdhms.toPattern() + (formatDecimalPointPosition > 0 ? ".S" : "" );
                                 }
                             } else if (printFormatTable.get(variableNameList.get(k)).equals("TIME")){
-                                if (casewiseRecordForTabFile.get(k).toString().indexOf(".") < 0){
+                                if (!casewiseRecordForTabFile.get(k).toString().contains(".")){
                                     long dateDatum = Long.parseLong(casewiseRecordForTabFile.get(k).toString())*1000L;
                                     String newDatum = sdf_hms.format(new Date(dateDatum));
                                     dbgLog.finer("k="+k+":"+newDatum);
@@ -3312,7 +3312,7 @@ public class SAVFileReader  extends TabularDataFileReader{
                         
                     } else { 
                         if (variableTypelList.get(l) <= 0) {
-                            if (casewiseRecordForTabFile.get(l).toString().indexOf(".") >= 0){
+                            if (casewiseRecordForTabFile.get(l).toString().contains(".")){
                                 decimalVariableSet.add(l);
                             }
                         }

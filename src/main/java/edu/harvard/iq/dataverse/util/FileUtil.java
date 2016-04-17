@@ -128,7 +128,7 @@ public class FileUtil implements java.io.Serializable  {
             if (fileType.equalsIgnoreCase(ShapefileHandler.SHAPEFILE_FILE_TYPE)){
                 return ShapefileHandler.SHAPEFILE_FILE_TYPE_FRIENDLY_NAME;
             }
-            if (fileType.indexOf(";") != -1) {
+            if (fileType.contains(";")) {
                 fileType = fileType.substring(0, fileType.indexOf(";"));
             }
             try {
@@ -145,7 +145,7 @@ public class FileUtil implements java.io.Serializable  {
         String fileType = dataFile.getContentType();
         
         if (fileType != null) {
-            if (fileType.indexOf(";") != -1) {
+            if (fileType.contains(";")) {
                 fileType = fileType.substring(0, fileType.indexOf(";"));
             }
 
@@ -170,7 +170,7 @@ public class FileUtil implements java.io.Serializable  {
         String fileType = dataFile.getOriginalFileFormat();
          
         if (fileType != null && !fileType.equals("")) {
-            if (fileType.indexOf(";") != -1) {
+            if (fileType.contains(";")) {
                 fileType = fileType.substring(0, fileType.indexOf(";"));
             }
             try {
@@ -358,7 +358,7 @@ public class FileUtil implements java.io.Serializable  {
                     if (xmlr.getLocalName().equals("graphml")) {
                         String schema = xmlr.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation");
                         logger.fine("schema = "+schema);
-                        if (schema!=null && schema.indexOf("http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd")!=-1){
+                        if (schema!=null && schema.contains("http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd")){
                             logger.fine("graphML is true");
                             isGraphML = true;
                         }

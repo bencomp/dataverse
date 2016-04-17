@@ -270,7 +270,7 @@ public class DatasetVersionUI implements Serializable {
     //TODO - make sure getCitation works
     private String getYearForCitation(String dateString) {
         //get date to first dash only
-        if (dateString.indexOf("-") > -1) {
+        if (dateString.contains("-")) {
             return dateString.substring(0, dateString.indexOf("-"));
         }
         return dateString;

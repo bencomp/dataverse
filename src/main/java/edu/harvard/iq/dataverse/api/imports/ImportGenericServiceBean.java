@@ -709,7 +709,7 @@ public class ImportGenericServiceBean {
     }
   
     private String parseUNF(String unfString) {
-        if (unfString.indexOf("UNF:") != -1) {
+        if (unfString.contains("UNF:")) {
             return unfString.substring( unfString.indexOf("UNF:") );
         } else {
             return null;

@@ -837,7 +837,7 @@ public class PORFileReader  extends TabularDataFileReader{
 
         // missing values are not always integers
         String base30value = getNumericFieldAsRawString(reader);
-        if (base30value.indexOf(".")>=0){
+        if (base30value.contains(".")){
             missingValuePoint = doubleNumberFormatter.format(base30Tobase10Conversion(base30value));
         } else {
             missingValuePoint= Integer.valueOf(base30value, 30).toString();
@@ -900,7 +900,7 @@ public class PORFileReader  extends TabularDataFileReader{
         // missing values are not always integers
         String base30value = getNumericFieldAsRawString(reader);
 
-        if (base30value.indexOf(".")>=0){
+        if (base30value.contains(".")){
             missingValueRangeLOtype = doubleNumberFormatter.format(base30Tobase10Conversion(base30value));
         } else {
             missingValueRangeLOtype= Integer.valueOf(base30value, 30).toString();
@@ -938,7 +938,7 @@ public class PORFileReader  extends TabularDataFileReader{
         // missing values are not always integers
         String base30value = getNumericFieldAsRawString(reader);
 
-        if (base30value.indexOf(".")>=0){
+        if (base30value.contains(".")){
             missingValueRangeHItype = doubleNumberFormatter.format(base30Tobase10Conversion(base30value));
         } else {
             missingValueRangeHItype= Integer.valueOf(base30value, 30).toString();
@@ -976,7 +976,7 @@ public class PORFileReader  extends TabularDataFileReader{
        // missing values are not always integers
         String base30value0 = getNumericFieldAsRawString(reader);
 
-        if (base30value0.indexOf(".")>=0){
+        if (base30value0.contains(".")){
             missingValueRange[0] = doubleNumberFormatter.format(base30Tobase10Conversion(base30value0));
         } else {
             missingValueRange[0]= Integer.valueOf(base30value0, 30).toString();
@@ -984,7 +984,7 @@ public class PORFileReader  extends TabularDataFileReader{
 
         String base30value1 = getNumericFieldAsRawString(reader);
 
-        if (base30value1.indexOf(".")>=0){
+        if (base30value1.contains(".")){
             missingValueRange[1] = doubleNumberFormatter.format(base30Tobase10Conversion(base30value1));
         } else {
             missingValueRange[1]= Integer.valueOf(base30value1, 30).toString();
@@ -1256,7 +1256,7 @@ public class PORFileReader  extends TabularDataFileReader{
 
                                 if (printFormatTable.get(variableNameList.get(i)).equals("DTIME")){
 
-                                    if (datum.indexOf(".") < 0){
+                                    if (!datum.contains(".")){
                                         long dateDatum  = Long.parseLong(datum)*1000L - SPSS_DATE_BIAS;
                                         datum = sdf_dhms.format(new Date(dateDatum));
                                         // don't save date format for dtime
@@ -1284,7 +1284,7 @@ public class PORFileReader  extends TabularDataFileReader{
                                     // part of the saved format!
                                     //  -- L.A. Aug. 12 2014 
 
-                                    if (datum.indexOf(".") < 0){
+                                    if (!datum.contains(".")){
                                         long dateDatum  = Long.parseLong(datum)*1000L - SPSS_DATE_OFFSET;
                                         datum = sdf_ymdhms.format(new Date(dateDatum));
                                         datumDateFormat = sdf_ymdhms.toPattern();
@@ -1304,7 +1304,7 @@ public class PORFileReader  extends TabularDataFileReader{
 
                                 } else if (printFormatTable.get(variableNameList.get(i)).equals("TIME")){
 
-                                    if (datum.indexOf(".") < 0){
+                                    if (!datum.contains(".")){
                                         long dateDatum = Long.parseLong(datum)*1000L;
                                         datum = sdf_hms.format(new Date(dateDatum));
                                         datumDateFormat = sdf_hms.toPattern();
@@ -1342,7 +1342,7 @@ public class PORFileReader  extends TabularDataFileReader{
 
                             // decimal-point check (variable is integer or not)
                             if (variableTypeFinal[i]==0){
-                                if (datum.indexOf(".") >=0){
+                                if (datum.contains(".")){
                                     variableTypeFinal[i] = 1;
                                     decimalVariableSet.add(i);
                                 }

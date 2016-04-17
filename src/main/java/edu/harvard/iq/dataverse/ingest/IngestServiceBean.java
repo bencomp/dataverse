@@ -1804,7 +1804,7 @@ public class IngestServiceBean {
                                                     if (storedValue != null && !storedValue.equals("")) {
                                                         try {
 
-                                                            if (storedValue.indexOf(" - ") > -1) {
+                                                            if (storedValue.contains(" - ")) {
                                                                 storedMinValue = Double.parseDouble(storedValue.substring(0, storedValue.indexOf(" - ")));
                                                                 storedMaxValue = Double.parseDouble(storedValue.substring(storedValue.indexOf(" - ") + 3));
                                                             } else {
