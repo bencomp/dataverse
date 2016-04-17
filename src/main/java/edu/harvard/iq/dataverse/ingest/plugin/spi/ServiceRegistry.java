@@ -251,9 +251,7 @@ public class ServiceRegistry {
      */
     private Iterator<SubRegistry> getSubRegistries(Object provider) {
         List<SubRegistry> l = new ArrayList<>();
-        Iterator<Class<?>> iter = categoryMap.keySet().iterator();
-        while (iter.hasNext()) {
-            Class<?> c = iter.next();
+        for (Class<?> c : categoryMap.keySet()) {
             if (c.isAssignableFrom(provider.getClass())) {
                 l.add(categoryMap.get(c));
             }
@@ -557,11 +555,10 @@ public class ServiceRegistry {
         if (providerClass == null) {
             throw new IllegalArgumentException("providerClass == null!");
         }
-        Iterator iter = categoryMap.keySet().iterator();
-        while (iter.hasNext()) {
-            Class c = (Class)iter.next();
+        for (Object o : categoryMap.keySet()) {
+            Class c = (Class) o;
             if (c.isAssignableFrom(providerClass)) {
-                SubRegistry reg = (SubRegistry)categoryMap.get(c);
+                SubRegistry reg = (SubRegistry) categoryMap.get(c);
                 T provider = reg.getServiceProviderByClass(providerClass);
                 if (provider != null) {
                     return provider;
@@ -685,9 +682,7 @@ public class ServiceRegistry {
      * categories.
      */
     public void deregisterAll() {
-        Iterator iter = categoryMap.values().iterator();
-        while (iter.hasNext()) {
-            SubRegistry reg = (SubRegistry)iter.next();
+        for (Object reg : categoryMap.values()) {
             reg.clear();
         }
     }

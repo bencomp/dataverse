@@ -216,12 +216,10 @@ public class ShapefileHandler{
     */
     private void showFileNamesSizes(){
         msgt("Hash: file names + sizes");
-        Iterator<String> keySetIterator = this.filesizeHash.keySet().iterator();
 
-        while(keySetIterator.hasNext()){
-          String key = keySetIterator.next();
-          msg("key: [" + key + "] value: [" + this.filesizeHash.get(key)+"]");
-          
+        for (String key : this.filesizeHash.keySet()) {
+            msg("key: [" + key + "] value: [" + this.filesizeHash.get(key) + "]");
+
         }
     } // end showFileNamesSizes
     

@@ -128,9 +128,7 @@ public class FieldDTO {
 
         Set<Map.Entry<String, JsonElement>> set = elem.entrySet();
 
-        Iterator<Map.Entry<String, JsonElement>> setIter = set.iterator();
-        while (setIter.hasNext()) {
-            Map.Entry<String, JsonElement> entry = setIter.next();
+        for (Map.Entry<String, JsonElement> entry : set) {
             FieldDTO field = gson.fromJson(entry.getValue(), FieldDTO.class);
             elemFields.add(field);
         }
@@ -139,18 +137,16 @@ public class FieldDTO {
 
     public List<String> getMultiplePrimitive() {
         List<String> values = new ArrayList<>();
-        Iterator<JsonElement> iter = value.getAsJsonArray().iterator();
-        while (iter.hasNext()) {
-            values.add(iter.next().getAsString());
+        for (JsonElement jsonElement : value.getAsJsonArray()) {
+            values.add(jsonElement.getAsString());
         }
         return values;
     }
 
     public List<String> getMultipleVocab() {
         List<String> values = new ArrayList<>();
-        Iterator<JsonElement> iter = value.getAsJsonArray().iterator();
-        while (iter.hasNext()) {
-            values.add(iter.next().getAsString());
+        for (JsonElement jsonElement : value.getAsJsonArray()) {
+            values.add(jsonElement.getAsString());
         }
         return values;
     }
@@ -160,16 +156,13 @@ public class FieldDTO {
         ArrayList<HashSet<FieldDTO>> fields = new ArrayList<HashSet<FieldDTO>>();
         JsonArray array = value.getAsJsonArray();
 
-        Iterator<JsonElement> iter = array.iterator();
-        while (iter.hasNext()) {
-            JsonObject elem = (JsonObject) iter.next();
+        for (JsonElement anArray : array) {
+            JsonObject elem = (JsonObject) anArray;
             HashSet<FieldDTO> elemFields = new HashSet<FieldDTO>();
             fields.add(elemFields);
             Set<Map.Entry<String, JsonElement>> set = elem.entrySet();
 
-            Iterator<Map.Entry<String, JsonElement>> setIter = set.iterator();
-            while (setIter.hasNext()) {
-                Map.Entry<String, JsonElement> entry = setIter.next();
+            for (Map.Entry<String, JsonElement> entry : set) {
                 FieldDTO field = gson.fromJson(entry.getValue(), FieldDTO.class);
                 elemFields.add(field);
             }

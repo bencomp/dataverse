@@ -114,9 +114,8 @@ public class CreateDatasetCommand extends AbstractCommand<Dataset> {
                 dsfIt.remove();
             }
         }
-        Iterator<DatasetField> dsfItSort = dsv.getDatasetFields().iterator();
-        while (dsfItSort.hasNext()) {
-            dsfItSort.next().setValueDisplayOrder();
+        for (DatasetField datasetField : dsv.getDatasetFields()) {
+            datasetField.setValueDisplayOrder();
         }
         Timestamp createDate = new Timestamp(new Date().getTime());
         dsv.setCreateTime(createDate);

@@ -2799,9 +2799,7 @@ public class DatasetPage implements java.io.Serializable {
         // more than a certain number of files... Still, needs to be revisited
         // before the final 4.0. 
         // -- L.A. 4.0
-        Iterator<FileMetadata> fmIt = workingVersion.getFileMetadatas().iterator();
-        while (fmIt.hasNext()) {
-            FileMetadata fm = fmIt.next();
+        for (FileMetadata fm : workingVersion.getFileMetadatas()) {
             String md5 = fm.getDataFile().getmd5();
             if (md5 != null) {
                 if (MD5Map.get(md5) != null) {

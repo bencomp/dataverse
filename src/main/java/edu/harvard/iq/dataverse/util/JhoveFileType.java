@@ -128,14 +128,12 @@ public class JhoveFileType implements java.io.Serializable  {
                      * throw arbitrary files at it, so we'll skip it.
                      */
                     //Iterator iter = _moduleList.iterator();
-                    Iterator<Module> iter = jb.getModuleList().iterator();
-                    while (iter.hasNext()) {
-                        Module mod = iter.next();
+                    for (Module mod : jb.getModuleList()) {
                         RepInfo infc = (RepInfo) info.clone();
 
                         if (mod.hasFeature("edu.harvard.hul.ois.jhove.canValidate")) {
                             if (DEBUG) {
-                                logger.fine("Trying to apply Jhove module "+mod.getName());
+                                logger.fine("Trying to apply Jhove module " + mod.getName());
                             }
                             try {
                                 if (!jb.processFile(jhoveApp, mod, false, file, infc)) {
@@ -145,7 +143,7 @@ public class JhoveFileType implements java.io.Serializable  {
                                     info.copy(infc);
                                     break;
                                 } else {
-			            // We want to know what modules matched the
+                                    // We want to know what modules matched the
                                     // signature, so we force the sigMatch
                                     // property
                                     // to be persistent.

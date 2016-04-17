@@ -500,9 +500,7 @@ public class IngestServiceBean {
             }
             if (!datafiles.isEmpty()) {
                 // link the data files to the dataset/version: 
-                Iterator<DataFile> itf = datafiles.iterator();
-                while (itf.hasNext()) {
-                    DataFile datafile = itf.next();
+                for (DataFile datafile : datafiles) {
                     datafile.setOwner(version.getDataset());
                     if (version.getFileMetadatas() == null) {
                         version.setFileMetadatas(new ArrayList());
@@ -627,18 +625,16 @@ public class IngestServiceBean {
     private String checkForDuplicateFileNames(DatasetVersion version, String fileName) {
         Set<String> fileNamesExisting = new HashSet<String>();
 
-        Iterator<FileMetadata> fmIt = version.getFileMetadatas().iterator();
-        while (fmIt.hasNext()) {
-            FileMetadata fm = fmIt.next();
+        for (FileMetadata fm : version.getFileMetadatas()) {
             String existingName = fm.getLabel();
-            
+
             if (existingName != null) {
                 // if it's a tabular file, we need to restore the original file name; 
                 // otherwise, we may miss a match. e.g. stata file foobar.dta becomes
                 // foobar.tab once ingested! 
                 if (fm.getDataFile().isTabularData()) {
                     String originalMimeType = fm.getDataFile().getDataTable().getOriginalFileFormat();
-                    if ( originalMimeType != null) {
+                    if (originalMimeType != null) {
                         String origFileExtension = generateOriginalExtension(originalMimeType);
                         fileNamesExisting.add(existingName.replaceAll(".tab$", origFileExtension));
                     } else {
@@ -659,19 +655,17 @@ public class IngestServiceBean {
     private void checkForDuplicateFileNamesFinal(DatasetVersion version, List<DataFile> newFiles) {
         Set<String> fileNamesExisting = new HashSet<String>();
 
-        Iterator<FileMetadata> fmIt = version.getFileMetadatas().iterator();
-        while (fmIt.hasNext()) {
-            FileMetadata fm = fmIt.next();
+        for (FileMetadata fm : version.getFileMetadatas()) {
             if (fm.getId() != null) {
                 String existingName = fm.getLabel();
-            
+
                 if (existingName != null) {
                     // if it's a tabular file, we need to restore the original file name; 
                     // otherwise, we may miss a match. e.g. stata file foobar.dta becomes
                     // foobar.tab once ingested! 
                     if (fm.getDataFile().isTabularData()) {
                         String originalMimeType = fm.getDataFile().getDataTable().getOriginalFileFormat();
-                        if ( originalMimeType != null) {
+                        if (originalMimeType != null) {
                             String origFileExtension = generateOriginalExtension(originalMimeType);
                             existingName = existingName.replaceAll(".tab$", origFileExtension);
                         } else {
@@ -683,10 +677,9 @@ public class IngestServiceBean {
             }
         }
 
-        Iterator<DataFile> dfIt = newFiles.iterator();
-        while (dfIt.hasNext()) {
-            FileMetadata fm = dfIt.next().getFileMetadata();
-            String fileName = fm.getLabel(); 
+        for (DataFile newFile : newFiles) {
+            FileMetadata fm = newFile.getFileMetadata();
+            String fileName = fm.getLabel();
             while (fileNamesExisting.contains(fileName)) {
                 fileName = generateNewFileName(fileName);
             }
@@ -1316,9 +1309,7 @@ public class IngestServiceBean {
         List<String> unfValueList = new ArrayList<>();
         
         logger.fine("recalculating UNF for dataset version.");
-        Iterator<FileMetadata> itfm = version.getFileMetadatas().iterator();
-        while (itfm.hasNext()) {            
-            FileMetadata fileMetadata = itfm.next();
+        for (FileMetadata fileMetadata : version.getFileMetadatas()) {
             if (fileMetadata != null &&
                     fileMetadata.getDataFile() != null &&
                     fileMetadata.getDataFile().isTabularData() &&
@@ -1896,9 +1887,7 @@ public class IngestServiceBean {
 
                                                         List<ControlledVocabularyValue> existingControlledVocabValues = dsf.getControlledVocabularyValues();
                                                         if (existingControlledVocabValues != null) {
-                                                            Iterator<ControlledVocabularyValue> cvvIt = existingControlledVocabValues.iterator();
-                                                            while (cvvIt.hasNext()) {
-                                                                ControlledVocabularyValue cvv = cvvIt.next();
+                                                            for (ControlledVocabularyValue cvv : existingControlledVocabValues) {
                                                                 if (fValue.equals(cvv.getStrValue())) {
                                                                     // or should I use if (legitControlledVocabularyValue.equals(cvv)) ?
                                                                     logger.fine("Controlled vocab. value " + fValue + " already exists for field " + dsfName);

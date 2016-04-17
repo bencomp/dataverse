@@ -121,9 +121,8 @@ public class UpdateDatasetCommand extends AbstractCommand<Dataset> {
                 dsfIt.remove();
             }
         }
-        Iterator<DatasetField> dsfItSort = theDataset.getEditVersion().getDatasetFields().iterator();
-        while (dsfItSort.hasNext()) {
-            dsfItSort.next().setValueDisplayOrder();
+        for (DatasetField datasetField : theDataset.getEditVersion().getDatasetFields()) {
+            datasetField.setValueDisplayOrder();
         }
         Timestamp updateTime = new Timestamp(new Date().getTime());
         theDataset.getEditVersion().setLastUpdateTime(updateTime);

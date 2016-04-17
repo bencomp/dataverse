@@ -68,9 +68,8 @@ public class CreateDatasetVersionCommand extends AbstractCommand<DatasetVersion>
                 dsfIt.remove();
             }
         }
-        Iterator<DatasetField> dsfItSort = newVersion.getDatasetFields().iterator();
-        while (dsfItSort.hasNext()) {
-            dsfItSort.next().setValueDisplayOrder();
+        for (DatasetField datasetField : newVersion.getDatasetFields()) {
+            datasetField.setValueDisplayOrder();
         }
         
         List<FileMetadata> newVersionMetadatum = new ArrayList<>(latest.getFileMetadatas().size());
