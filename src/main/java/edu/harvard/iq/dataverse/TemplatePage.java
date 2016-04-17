@@ -51,7 +51,7 @@ public class TemplatePage implements java.io.Serializable {
     public enum EditMode {
 
         CREATE, METADATA, LICENSE, LICENSEADD
-    };
+    }
 
     private Template template;
     private Dataverse dataverse;

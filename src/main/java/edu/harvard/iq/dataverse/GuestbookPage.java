@@ -53,7 +53,7 @@ public class GuestbookPage implements java.io.Serializable {
     public enum EditMode {
 
         CREATE, METADATA, CLONE
-    };
+    }
 
     private Guestbook guestbook;
     private Dataverse dataverse;

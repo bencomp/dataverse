@@ -224,7 +224,7 @@ public class Shib implements java.io.Serializable {
         REGULAR_LOGIN_INTO_EXISTING_SHIB_ACCOUNT,
         PROMPT_TO_CREATE_NEW_ACCOUNT,
         PROMPT_TO_CONVERT_EXISTING_ACCOUNT,
-    };
+    }
 
     public void init() {
         state = State.INIT;
@@ -475,7 +475,7 @@ public class Shib implements java.io.Serializable {
         HARVARD1,
         HARVARD2,
         TWO_EMAILS,
-    };
+    }
 
     private DevShibAccountType getDevShibAccountType() {
         DevShibAccountType saneDefault = DevShibAccountType.PRODUCTION;

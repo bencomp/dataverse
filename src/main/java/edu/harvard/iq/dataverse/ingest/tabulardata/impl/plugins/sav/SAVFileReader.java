@@ -111,7 +111,7 @@ public class SAVFileReader  extends TabularDataFileReader{
     private static final int LENGTH_TYPE_CODE = 4;
     private static final int LENGTH_LABEL_FOLLOWS = 4;
     private static final int LENGTH_MISS_VALUE_FORMAT_CODE= 4;
-    private static final int LENGTH_PRINT_FORMAT_CODE = 4;;
+    private static final int LENGTH_PRINT_FORMAT_CODE = 4;
     private static final int LENGTH_WRITE_FORMAT_CODE = 4;
     private static final int LENGTH_VARIABLE_NAME =  8;
     private static final int LENGTH_VARIABLE_LABEL= 4;

@@ -98,8 +98,8 @@ public class EditDatafilesPage implements java.io.Serializable {
     public enum FileEditMode {
 
         EDIT, UPLOAD, CREATE, SINGLE
-    };
-    
+    }
+
     @EJB
     DatasetServiceBean datasetService;
     @EJB

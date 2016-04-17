@@ -87,7 +87,7 @@ public class DataVariable implements Serializable {
 
     
 
-    public enum VariableInterval { DISCRETE, CONTINUOUS, NOMINAL, DICHOTOMOUS }; // former VariableIntervalType
+    public enum VariableInterval { DISCRETE, CONTINUOUS, NOMINAL, DICHOTOMOUS } // former VariableIntervalType
     /*
      * Interval: <FINALIZED>
      * former VariableIntervalType
@@ -96,7 +96,7 @@ public class DataVariable implements Serializable {
     private VariableInterval interval;
 
     
-    public enum VariableType { NUMERIC, CHARACTER }; // former VariableFormatType
+    public enum VariableType { NUMERIC, CHARACTER } // former VariableFormatType
 
     /*
      * Type: <FINALIZED>

@@ -426,7 +426,7 @@ public abstract class AbstractApiBean {
         }
     }
  
-    protected boolean isNumeric( String str ) { return Util.isNumeric(str); };
+    protected boolean isNumeric( String str ) { return Util.isNumeric(str); }
 }
 
 class LazyRef<T> {

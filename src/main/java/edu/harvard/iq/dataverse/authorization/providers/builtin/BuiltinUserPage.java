@@ -64,7 +64,7 @@ public class BuiltinUserPage implements java.io.Serializable {
     public enum EditMode {
 
         CREATE, EDIT, CHANGE_PASSWORD, FORGOT
-    };
+    }
 
     @Inject
     DataverseSession session;

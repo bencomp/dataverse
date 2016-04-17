@@ -74,7 +74,7 @@ public class DatasetVersion implements Serializable {
     public enum VersionState {
 
         DRAFT, RELEASED, ARCHIVED, DEACCESSIONED
-    };
+    }
 
     public enum License {
         NONE, CC0
@@ -1071,8 +1071,6 @@ public class DatasetVersion implements Serializable {
         return serverName + "/dataset.xhtml?id=" + dset.getId() + "&versionId" + this.getId();
     }
 
-    ;
-    
     public List<DatasetField> copyDatasetFields(List<DatasetField> copyFromList) {
         List<DatasetField> retList = new ArrayList();
 

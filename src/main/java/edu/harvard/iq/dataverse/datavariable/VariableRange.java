@@ -60,7 +60,7 @@ public class VariableRange implements Serializable {
      */
     private String endValue;
 
-    public enum VariableRangeType { MIN, MAX, MIN_EXCLUSIVE, MAX_EXCLUSIVE, POINT};
+    public enum VariableRangeType { MIN, MAX, MIN_EXCLUSIVE, MAX_EXCLUSIVE, POINT}
     /*
      * beginValueType: type of the value that opens the range.
      */

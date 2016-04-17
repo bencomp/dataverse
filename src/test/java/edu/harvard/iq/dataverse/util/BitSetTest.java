@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 public class BitSetTest {
 	
 	enum TestEnum {
-		Hello, World, This, Is, A, Test;
+		Hello, World, This, Is, A, Test
 	}
 	
 	public BitSetTest() {

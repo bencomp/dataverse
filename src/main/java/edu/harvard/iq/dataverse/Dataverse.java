@@ -57,8 +57,8 @@ public class Dataverse extends DvObjectContainer {
 
     public enum DataverseType {
         RESEARCHERS, RESEARCH_PROJECTS, JOURNALS, ORGANIZATIONS_INSTITUTIONS, TEACHING_COURSES, UNCATEGORIZED
-    };
-    
+    }
+
     private static final long serialVersionUID = 1L;
 
     @NotBlank(message = "Please enter a name.")

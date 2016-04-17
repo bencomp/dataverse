@@ -728,9 +728,9 @@ public class WorldMapRelatedData extends AbstractApiBean {
        //
        if (!(this.mapLayerMetadataService.deleteMapLayerMetadataObject(mapLayerMetadata, wmToken.getDataverseUser()))){
             return errorResponse(Response.Status.PRECONDITION_FAILED, "Failed to delete layer");               
-       };
-       
-       return okResponse("Map layer metadata deleted.");
+       }
+
+        return okResponse("Map layer metadata deleted.");
         
     }  // end deleteWorldMapLayerData
 

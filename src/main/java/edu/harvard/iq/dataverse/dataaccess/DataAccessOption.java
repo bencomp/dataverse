@@ -26,6 +26,6 @@ package edu.harvard.iq.dataverse.dataaccess;
  */
 public enum DataAccessOption {
     READ_ACCESS,
-    WRITE_ACCESS;
-    
+    WRITE_ACCESS
+
 }

@@ -54,8 +54,8 @@ public class SummaryStatistic implements Serializable {
      * type of this Summary Statistic value (for ex., "median", "mean", etc.)
      */
     
-    public enum SummaryStatisticType {MEAN, MEDN, MODE, MIN, MAX, STDEV, VALD, INVD}; 
-    
+    public enum SummaryStatisticType {MEAN, MEDN, MODE, MIN, MAX, STDEV, VALD, INVD}
+
     //@ManyToOne
     //@JoinColumn(nullable=false)
     private SummaryStatisticType type;

@@ -352,7 +352,7 @@ public class ImportGenericServiceBean {
     public static final String NOTE_TYPE_REPLICATION_FOR = "DVN:REPLICATION_FOR";
     private XMLInputFactory xmlInputFactory = null;
     private ImportType importType;
-    public enum ImportType{ NEW, MIGRATION, HARVEST};
+    public enum ImportType{ NEW, MIGRATION, HARVEST}
 
     public ImportGenericServiceBean() {
     }

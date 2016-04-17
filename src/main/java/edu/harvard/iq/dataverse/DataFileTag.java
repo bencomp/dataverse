@@ -53,8 +53,8 @@ public class DataFileTag implements Serializable {
     // add a mechanism for defining tags in the database, in addition to 
     // these built-in tags (?). 
     // -- L.A. 4.0 beta 9
-    public enum TagType {Survey, TimeSeries, Panel, Event, Genomics, Network, Geospatial};
-    
+    public enum TagType {Survey, TimeSeries, Panel, Event, Genomics, Network, Geospatial}
+
     private static final Map<TagType, String> TagTypeToLabels = new HashMap<>();
     
     private static final Map<String, TagType> TagLabelToTypes = new HashMap<>();

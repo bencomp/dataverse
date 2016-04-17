@@ -164,9 +164,9 @@ public class ShapefileHandler{
             return;
         }
         this.finalRezippedFiles.add(finalFile);
-    };
+    }
 
-    
+
     private void addErrorMessage(String m){
         if (m == null){
             return;

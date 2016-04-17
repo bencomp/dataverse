@@ -50,7 +50,7 @@ public class SettingsWrapper implements java.io.Serializable {
             initSettingsMap();
         }
         
-        String val = settingsMap.get(settingKey);;
+        String val = settingsMap.get(settingKey);
         return ( val==null ) ? safeDefaultIfKeyNotFound : TRUE_VALUES.contains(val.trim().toLowerCase() );
     }
 

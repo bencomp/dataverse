@@ -1337,6 +1337,6 @@ public class SearchIncludeFragment implements java.io.Serializable {
     public enum SortOrder {
 
         asc, desc
-    };
+    }
 
 }
