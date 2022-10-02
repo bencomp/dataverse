@@ -37,7 +37,7 @@ public class SolrQueryFormatterTest {
 
             Random r = new Random();
 
-            Long[] array = Long.valueOf[listCount];
+            Long[] array = new Long[listCount];
             long last = 0;
             for (int idx = 0; idx < listCount; idx++) {
                 last = r.nextInt(topNumber);// + 1;
@@ -47,7 +47,7 @@ public class SolrQueryFormatterTest {
         }
 
         private Long[] getListOfLongs(int listCount){
-            Long[] array = Long.valueOf[listCount];
+            Long[] array = new Long[listCount];
             for (long a = 0; a < array.length; a++) {
                 array[(int)a] = a+1;
             }
