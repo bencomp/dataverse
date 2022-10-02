@@ -664,7 +664,7 @@ public class DTAFileReader extends TabularDataFileReader{
             dbgLog.fine("reversed nobs=" + int_nobs);
         }
 
-        // smd.getFileInformation().put("caseQnty", new Integer(int_nobs));
+        // smd.getFileInformation().put("caseQnty", Integer.valueOf(int_nobs));
         dataTable.setCaseQuantity(Long.valueOf(int_nobs));
 
         /* 

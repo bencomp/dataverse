@@ -260,7 +260,7 @@ public class RTabFileParser implements java.io.Serializable {
                         caseRow[i] = "";
                     } else {
                         try {
-                            Integer testIntegerValue = new Integer(valueTokens[i]);
+                            Integer testIntegerValue = Integer.valueOf(valueTokens[i]);
                             caseRow[i] = testIntegerValue.toString();
                         } catch (Exception ex) {
                             dbgLog.fine("caught exception reading numeric value; variable: " + i + ", case: " + lineCounter + "; value: " + valueTokens[i]);

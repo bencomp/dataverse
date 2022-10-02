@@ -203,7 +203,7 @@ class PartialOrderIterator implements Iterator {
         while (iter.hasNext()) {
             DigraphNode node = (DigraphNode)iter.next();
             int inDegree = node.getInDegree();
-            inDegrees.put(node, new Integer(inDegree));
+            inDegrees.put(node, Integer.valueOf(inDegree));
 
             // Add nodes with zero in-degree to the zero list
             if (inDegree == 0) {
@@ -224,7 +224,7 @@ class PartialOrderIterator implements Iterator {
         while (outNodes.hasNext()) {
             DigraphNode node = (DigraphNode)outNodes.next();
             int inDegree = ((Integer)inDegrees.get(node)).intValue() - 1;
-            inDegrees.put(node, new Integer(inDegree));
+            inDegrees.put(node, Integer.valueOf(inDegree));
 
             // If the in-degree has fallen to 0, place the node on the list
             if (inDegree == 0) {

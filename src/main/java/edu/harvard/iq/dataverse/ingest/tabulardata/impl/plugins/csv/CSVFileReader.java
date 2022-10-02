@@ -382,7 +382,7 @@ public class CSVFileReader extends TabularDataFileReader {
                             /*
                              if (isIntegerVariable[i]) {
                                 try {
-                                    Integer testIntegerValue = new Integer(varString);
+                                    Integer testIntegerValue = Integer.valueOf(varString);
                                     caseRow[i] = testIntegerValue.toString();
                                 } catch (NumberFormatException ex) {
                                     throw new IOException("Failed to parse a value recognized as an integer in the first pass! (?)");

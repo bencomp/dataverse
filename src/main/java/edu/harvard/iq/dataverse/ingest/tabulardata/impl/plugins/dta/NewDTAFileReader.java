@@ -1308,7 +1308,7 @@ public class NewDTAFileReader extends TabularDataFileReader {
             String stringLengthToken = variableType.substring(3);
             Integer stringLength;
             try {
-                stringLength = new Integer(stringLengthToken);
+                stringLength = Integer.valueOf(stringLengthToken);
             } catch (NumberFormatException nfe) {
                 stringLength = null;
             }

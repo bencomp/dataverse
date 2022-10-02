@@ -572,7 +572,7 @@ public class SystemConfig {
         String fragSize = settingsService.getValueForKey(SettingsServiceBean.Key.SearchHighlightFragmentSize);
         if (fragSize != null) {
             try {
-                return new Integer(fragSize);
+                return Integer.valueOf(fragSize);
             } catch (NumberFormatException nfe) {
                 logger.info("Could not convert " + SettingsServiceBean.Key.SearchHighlightFragmentSize + " to int: " + nfe);
             }

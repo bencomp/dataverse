@@ -3513,7 +3513,7 @@ public class DatasetPage implements java.io.Serializable {
 
         UIInput reasonRadio = (UIInput) toValidate.getAttributes().get("reasonRadio");
         Object reasonRadioValue = reasonRadio.getValue();
-        Integer radioVal = new Integer(reasonRadioValue.toString());
+        Integer radioVal = Integer.valueOf(reasonRadioValue.toString());
 
         if (radioVal == 7 && (value == null || value.toString().isEmpty())) {
             ((UIInput) toValidate).setValid(false);

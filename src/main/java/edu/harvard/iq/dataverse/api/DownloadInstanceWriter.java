@@ -261,7 +261,7 @@ public class DownloadInstanceWriter implements MessageBodyWriter<DownloadInstanc
                             storageIO = ImageThumbConverter.getImageThumbnailAsInputStream(storageIO, ImageThumbConverter.DEFAULT_THUMBNAIL_SIZE);
                         } else {
                             try {
-                                int size = new Integer(di.getConversionParamValue());
+                                int size = Integer.parseInt(di.getConversionParamValue());
                                 if (size > 0) {
                                     storageIO = ImageThumbConverter.getImageThumbnailAsInputStream(storageIO, size);
                                 }

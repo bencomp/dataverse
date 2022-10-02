@@ -746,7 +746,7 @@ public class TabularSubsetGenerator implements SubsetGenerator {
                 filename = filename.replaceFirst("^_", "");
                 Integer fnumvalue = null; 
                 try {
-                    fnumvalue = new Integer(filename);
+                    fnumvalue = Integer.valueOf(filename);
                 } catch (Exception ex){
                     fnumvalue = null; 
                 }
@@ -1400,9 +1400,9 @@ public class TabularSubsetGenerator implements SubsetGenerator {
     public static void main(String[] args) {
         
         String tabFileName = args[0]; 
-        int varcount = new Integer(args[1]).intValue();
-        int casecount = new Integer(args[2]).intValue();
-        int column = new Integer(args[3]).intValue();
+        int varcount = Integer.parseInt(args[1]);
+        int casecount = Integer.parseInt(args[2]);
+        int column = Integer.parseInt(args[3]);
         String type = args[4];
         
         File tabFile = new File(tabFileName);
