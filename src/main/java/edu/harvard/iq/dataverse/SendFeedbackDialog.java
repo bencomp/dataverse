@@ -97,8 +97,8 @@ public class SendFeedbackDialog implements java.io.Serializable {
         userMessage = "";
         messageSubject = "";
         Random random = new Random();
-        op1 = new Long(random.nextInt(10));
-        op2 = new Long(random.nextInt(10));
+        op1 = Long.valueOf(random.nextInt(10));
+        op2 = Long.valueOf(random.nextInt(10));
         userSum = null;
         String systemEmail = settingsService.getValueForKey(SettingsServiceBean.Key.SystemEmail);
         systemAddress = MailUtil.parseSystemAddress(systemEmail);

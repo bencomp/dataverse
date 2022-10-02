@@ -523,7 +523,7 @@ public class TabularSubsetGenerator implements SubsetGenerator {
      * Not a resource hog though - will only try to store one vector in memory. 
      */
     public static Long[] subsetLongVector(InputStream in, int column, int numCases) {
-        Long[] retVector = new Long[numCases];
+        Long[] retVector = Long.valueOf[numCases];
         Scanner scanner = new Scanner(in);
         scanner.useDelimiter("\\n");
 
@@ -531,7 +531,7 @@ public class TabularSubsetGenerator implements SubsetGenerator {
             if (scanner.hasNext()) {
                 String[] line = (scanner.next()).split("\t", -1);
                 try {
-                    retVector[caseIndex] = new Long(line[column]);
+                    retVector[caseIndex] = Long.valueOf(line[column]);
                 } catch (NumberFormatException ex) {
                     retVector[caseIndex] = null; // assume missing value
                 }
@@ -819,7 +819,7 @@ public class TabularSubsetGenerator implements SubsetGenerator {
             retVector = new Double[casecount];
         } else if (columntype == COLUMN_TYPE_LONG) {
             isLong = true; 
-            retVector = new Long[casecount];
+            retVector = Long.valueOf[casecount];
         } else if (columntype == COLUMN_TYPE_FLOAT){
             isFloat = true;
             retVector = new Float[casecount];
@@ -998,7 +998,7 @@ public class TabularSubsetGenerator implements SubsetGenerator {
                         }
                     } else if (isLong) {
                         try {
-                            retVector[caseindex] = new Long(token);
+                            retVector[caseindex] = Long.valueOf(token);
                         } catch (NumberFormatException ex) {
                             retVector[caseindex] = null; // assume missing value
                         }

@@ -1025,8 +1025,8 @@ public class NewDTAFileReader extends TabularDataFileReader {
                                 String[] voTokens = voPair.split(",", 2);
 
                                 try {
-                                    v = new Long(voTokens[0]);
-                                    o = new Long(voTokens[1]);
+                                    v = Long.valueOf(voTokens[0]);
+                                    o = Long.valueOf(voTokens[1]);
                                 } catch (NumberFormatException nfex) {
                                     throw new IOException("Illegal v,o value: " + voPair + " for variable "
                                             + varindex + ", observation " + obsindex);

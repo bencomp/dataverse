@@ -314,7 +314,7 @@ public class XLSXFileReader extends TabularDataFileReader {
                     dbglog.warning("Invalid spans attribute in the first row element: "+spansAttribute+"!");
                 }
                 try {
-                    varCount = new Long(spansAttribute.substring(colIndex + 1, spansAttribute.length()));
+                    varCount = Long.valueOf(spansAttribute.substring(colIndex + 1, spansAttribute.length()));
                 } catch (Exception ex) {
                     varCount = null; 
                 }
@@ -521,7 +521,7 @@ public class XLSXFileReader extends TabularDataFileReader {
             }
             
             if (name.equals("sheetData")) {
-                dataTable.setCaseQuantity(new Long(caseCount));
+                dataTable.setCaseQuantity(Long.valueOf(caseCount));
             
                 // Re-type the variables that we've determined are numerics:
         

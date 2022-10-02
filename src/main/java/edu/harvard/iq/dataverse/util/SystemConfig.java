@@ -589,7 +589,7 @@ public class SystemConfig {
         
         if (limitEntry != null) {
             try {
-                Long sizeOption = new Long(limitEntry);
+                Long sizeOption = Long.valueOf(limitEntry);
                 return sizeOption;
             } catch (NumberFormatException nfe) {
                 logger.warning("Invalid value for TabularIngestSizeLimit option? - " + limitEntry);
@@ -614,7 +614,7 @@ public class SystemConfig {
                 
         if (limitEntry != null) {
             try {
-                Long sizeOption = new Long(limitEntry);
+                Long sizeOption = Long.valueOf(limitEntry);
                 return sizeOption;
             } catch (NumberFormatException nfe) {
                 logger.warning("Invalid value for TabularIngestSizeLimit:" + formatName + "? - " + limitEntry );
@@ -1164,7 +1164,7 @@ public class SystemConfig {
 
         if (limitEntry != null) {
             try {
-                Long sizeOption = new Long(limitEntry);
+                Long sizeOption = Long.valueOf(limitEntry);
                 return sizeOption;
             } catch (NumberFormatException nfe) {
                 logger.warning("Invalid value for DatasetValidationSizeLimit option? - " + limitEntry);
@@ -1179,7 +1179,7 @@ public class SystemConfig {
 
         if (limitEntry != null) {
             try {
-                Long sizeOption = new Long(limitEntry);
+                Long sizeOption = Long.valueOf(limitEntry);
                 return sizeOption;
             } catch (NumberFormatException nfe) {
                 logger.warning("Invalid value for FileValidationSizeLimit option? - " + limitEntry);

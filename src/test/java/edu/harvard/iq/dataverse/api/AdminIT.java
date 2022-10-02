@@ -835,7 +835,7 @@ public class AdminIT {
          
         System.out.print("delete id: " + deleteId);
         
-        Response deleteBannerMessageResponse = UtilIT.deleteBannerMessage(new Long (deleteId));
+        Response deleteBannerMessageResponse = UtilIT.deleteBannerMessage(Long.valueOf (deleteId));
         deleteBannerMessageResponse.prettyPrint();
         body = deleteBannerMessageResponse.getBody().asString();
         status = JsonPath.from(body).getString("status");

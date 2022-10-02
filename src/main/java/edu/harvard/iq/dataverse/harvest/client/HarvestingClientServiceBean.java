@@ -181,9 +181,9 @@ public class HarvestingClientServiceBean implements java.io.Serializable {
             
             currentRun.setSuccess();
             currentRun.setFinishTime(currentTime);
-            currentRun.setHarvestedDatasetCount(new Long(harvestedCount));
-            currentRun.setFailedDatasetCount(new Long(failedCount));
-            currentRun.setDeletedDatasetCount(new Long(deletedCount));
+            currentRun.setHarvestedDatasetCount(Long.valueOf(harvestedCount));
+            currentRun.setFailedDatasetCount(Long.valueOf(failedCount));
+            currentRun.setDeletedDatasetCount(Long.valueOf(deletedCount));
         }
     }
 

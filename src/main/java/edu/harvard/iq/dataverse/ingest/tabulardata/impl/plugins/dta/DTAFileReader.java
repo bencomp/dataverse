@@ -626,7 +626,7 @@ public class DTAFileReader extends TabularDataFileReader{
         }
 
         short shrt_nvar = bbnvar.getShort();
-        dataTable.setVarQuantity(new Long(shrt_nvar));
+        dataTable.setVarQuantity(Long.valueOf(shrt_nvar));
         int nvar = shrt_nvar;
         
         if (dbgLog.isLoggable(Level.INFO)) {
@@ -665,7 +665,7 @@ public class DTAFileReader extends TabularDataFileReader{
         }
 
         // smd.getFileInformation().put("caseQnty", new Integer(int_nobs));
-        dataTable.setCaseQuantity(new Long(int_nobs));
+        dataTable.setCaseQuantity(Long.valueOf(int_nobs));
 
         /* 
          the "data label" - 

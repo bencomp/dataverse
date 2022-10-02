@@ -112,9 +112,9 @@ public class CSVFileReaderTest {
 
         assertNotNull(result.getDataVariables());
 
-        assertEquals(result.getVarQuantity(), new Long(result.getDataVariables().size()));
+        assertEquals(result.getVarQuantity(), Long.valueOf(result.getDataVariables().size()));
 
-        assertEquals(result.getVarQuantity(), new Long(expectedVariableTypes.length));
+        assertEquals(result.getVarQuantity(), Long.valueOf(expectedVariableTypes.length));
 
         assertEquals(expectedNumberOfCases, result.getCaseQuantity());
 
@@ -165,7 +165,7 @@ public class CSVFileReaderTest {
 
         assertNotNull(generatedDataTable.getDataVariables());
 
-        assertEquals(generatedDataTable.getVarQuantity(), new Long(generatedDataTable.getDataVariables().size()));
+        assertEquals(generatedDataTable.getVarQuantity(), Long.valueOf(generatedDataTable.getDataVariables().size()));
 
         assertEquals(generatedDataTable.getVarQuantity(), expectedNumberOfVariables);
 
@@ -309,7 +309,7 @@ public class CSVFileReaderTest {
 
         assertNotNull(generatedDataTable.getDataVariables());
 
-        assertEquals(generatedDataTable.getVarQuantity(), new Long(generatedDataTable.getDataVariables().size()));
+        assertEquals(generatedDataTable.getVarQuantity(), Long.valueOf(generatedDataTable.getDataVariables().size()));
 
         assertEquals(generatedDataTable.getVarQuantity(), expectedNumberOfVariables);
 

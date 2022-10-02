@@ -381,7 +381,7 @@ public class Access extends AbstractApiBean {
                                 String token = variableIdParams[i].replaceFirst("^v", "");
                                 Long variableId = null;
                                 try {
-                                    variableId = new Long(token);
+                                    variableId = Long.valueOf(token);
                                 } catch (NumberFormatException nfe) {
                                     variableId = null;
                                 }
@@ -859,7 +859,7 @@ public class Access extends AbstractApiBean {
                         logger.fine("token: " + fileIdParams[i]);
                         Long fileId = null;
                         try {
-                            fileId = new Long(fileIdParams[i]);
+                            fileId = Long.valueOf(fileIdParams[i]);
                         } catch (NumberFormatException nfe) {
                             fileId = null;
                         }
@@ -2031,7 +2031,7 @@ public class Access extends AbstractApiBean {
         for (int i = 0; i < fileIdParams.length; i++) {
             Long fileId = null;
             try {
-                fileId = new Long(fileIdParams[i]);
+                fileId = Long.valueOf(fileIdParams[i]);
                 validIdCount++;
             } catch (NumberFormatException nfe) {
                 fileId = null;

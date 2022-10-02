@@ -659,7 +659,7 @@ public class DatasetPage implements java.io.Serializable {
     }
 
     public void showAll(){
-        setNumberOfFilesToShow(new Long(fileMetadatasSearch.size()));
+        setNumberOfFilesToShow(Long.valueOf(fileMetadatasSearch.size()));
     }
 
     private List<FileMetadata> selectFileMetadatasForDisplay() {
@@ -5702,7 +5702,7 @@ public class DatasetPage implements java.io.Serializable {
     private static final Comparator<FileMetadata> compareBySize = new Comparator<FileMetadata>() {
         @Override
         public int compare(FileMetadata o1, FileMetadata o2) {
-            return (new Long(o1.getDataFile().getFilesize())).compareTo(new Long(o2.getDataFile().getFilesize()));
+            return (Long.valueOf(o1.getDataFile().getFilesize())).compareTo(Long.valueOf(o2.getDataFile().getFilesize()));
         }
     };
 

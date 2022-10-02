@@ -646,7 +646,7 @@ public class RDATAFileReader extends TabularDataFileReader {
                 varQnty++;
             }
 
-            dataTable.setVarQuantity(new Long(varQnty));
+            dataTable.setVarQuantity(Long.valueOf(varQnty));
             dataTable.setDataVariables(variableList);
         
             // Get the Variable Meta Data Table while Populating 
@@ -661,7 +661,7 @@ public class RDATAFileReader extends TabularDataFileReader {
                     // bummer! - but not fatal. 
                 }
                 if (caseQuantity > 0) {
-                    dataTable.setCaseQuantity(new Long(caseQuantity));
+                    dataTable.setCaseQuantity(Long.valueOf(caseQuantity));
                 }
             }
     }

@@ -1486,7 +1486,7 @@ public class DataFileServiceBean implements java.io.Serializable {
         String identifier;
         Long retVal;
 
-        retVal = new Long(0);
+        retVal = Long.valueOf(0);
 
         do {
             retVal++;
