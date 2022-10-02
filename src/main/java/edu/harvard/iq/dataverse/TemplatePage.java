@@ -179,7 +179,7 @@ public class TemplatePage implements java.io.Serializable {
         
         boolean create = false;
         Command<Void> cmd;
-        Long createdId = Long.valueOf(0);
+        Long createdId = 0L;
         Template created;
         try {
 
@@ -189,7 +189,7 @@ public class TemplatePage implements java.io.Serializable {
             
             if (editMode == EditMode.CREATE) {
                 template.setCreateTime(new Timestamp(new Date().getTime()));
-                template.setUsageCount(Long.valueOf(0));
+                template.setUsageCount(0L);
                 dataverse.getTemplates().add(template);
                 created = commandEngine.submit(new CreateTemplateCommand(template, dvRequestService.getDataverseRequest(), dataverse));
                 createdId = created.getId();

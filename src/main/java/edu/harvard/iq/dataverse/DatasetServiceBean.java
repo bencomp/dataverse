@@ -394,7 +394,7 @@ public class DatasetServiceBean implements java.io.Serializable {
 
     public Long getMaximumExistingDatafileIdentifier(Dataset dataset) {
         //Cannot rely on the largest table id having the greatest identifier counter
-        long zeroFiles = Long.valueOf(0);
+        long zeroFiles = 0L;
         Long retVal = zeroFiles;
         Long testVal;
         List<Object> idResults;

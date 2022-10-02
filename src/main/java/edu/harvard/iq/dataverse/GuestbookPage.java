@@ -163,7 +163,7 @@ public class GuestbookPage implements java.io.Serializable {
             guestbook = sourceGB.copyGuestbook(sourceGB, dataverse);
             String name = BundleUtil.getStringFromBundle("page.copy") +" " + sourceGB.getName();
             guestbook.setName(name);
-            guestbook.setUsageCount(Long.valueOf(0));
+            guestbook.setUsageCount(0L);
             guestbook.setCreateTime(new Timestamp(new Date().getTime()));
             if (guestbook.getCustomQuestions() == null || guestbook.getCustomQuestions().isEmpty()) {
                 guestbook.setCustomQuestions(new ArrayList<CustomQuestion>());
@@ -290,7 +290,7 @@ public class GuestbookPage implements java.io.Serializable {
         try {
             if (editMode == EditMode.CREATE || editMode == EditMode.CLONE ) {
                 guestbook.setCreateTime(new Timestamp(new Date().getTime()));
-                guestbook.setUsageCount(Long.valueOf(0));
+                guestbook.setUsageCount(0L);
                 guestbook.setEnabled(true);
                 dataverse.getGuestbooks().add(guestbook);
                 cmd = new UpdateDataverseCommand(dataverse, null, null, dvRequestService.getDataverseRequest(), null);                

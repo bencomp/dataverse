@@ -86,7 +86,7 @@ public class SolrQueryResponse {
 
         for (String var : requiredVars){
             if (!publicationStatusCounts.containsKey(var)){
-                publicationStatusCounts.put(var, Long.valueOf(0));
+                publicationStatusCounts.put(var, 0L);
             }
         }
         return this.getMapCountsAsJSON(publicationStatusCounts);
@@ -102,7 +102,7 @@ public class SolrQueryResponse {
         //String[] requiredVars = { "dataverses_count", "datasets_count", "files_count"};
         for (String var : SolrQueryResponse.DVOBJECT_COUNT_KEYS){
             if (!dvObjectCounts.containsKey(var)){
-                dvObjectCounts.put(var, Long.valueOf(0));
+                dvObjectCounts.put(var, 0L);
             }
         }
         

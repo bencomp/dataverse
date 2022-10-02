@@ -1484,9 +1484,7 @@ public class DataFileServiceBean implements java.io.Serializable {
     
     private String generateIdentifierFromStoredProcedureDependent(DataFile datafile, GlobalIdServiceBean idServiceBean, String prepend) {
         String identifier;
-        Long retVal;
-
-        retVal = Long.valueOf(0);
+        Long retVal = 0L;
 
         do {
             retVal++;
