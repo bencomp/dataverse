@@ -36,8 +36,8 @@ public class DatasetFieldTest {
 
     @Test
     public void testEquality() {
-        DatasetField field1 = DatasetField.createNewEmptyDatasetField(MocksFactory.makeDatasetFieldType(), (DatasetVersion) null);
-        DatasetField field2 = DatasetField.createNewEmptyDatasetField(MocksFactory.makeDatasetFieldType(), (DatasetVersion) null);
+        DatasetField field1 = DatasetField.createNewEmptyDatasetField(MocksFactory.makeDatasetFieldType(), new DatasetVersion());
+        DatasetField field2 = DatasetField.createNewEmptyDatasetField(MocksFactory.makeDatasetFieldType(), new DatasetVersion());
         // DatasetFields without ids or any other data are not equal
         assertFalse(field1.equals(field2));
         // DatasetFields with and without ids are not equal
@@ -53,7 +53,7 @@ public class DatasetFieldTest {
 
     @Test
     public void testCopy() {
-        DatasetField field1 = DatasetField.createNewEmptyDatasetField(MocksFactory.makeDatasetFieldType(), (DatasetVersion) null);
+        DatasetField field1 = DatasetField.createNewEmptyDatasetField(MocksFactory.makeDatasetFieldType(), new DatasetVersion());
         field1.setId(1L);
         DatasetField fieldCopy = field1.copy((DatasetVersion) null);
         assertFalse(field1.equals(fieldCopy));
