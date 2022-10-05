@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 // import org.junit.jupiter.api.BeforeAll;
 // import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class DatasetFieldTest {
     
@@ -46,6 +46,8 @@ public class DatasetFieldTest {
         // DatasetFields with the same ids are equal
         field1.setId(2L);
         assertTrue(field1.equals(field2));
+        // If the objects are equal, their hashCodes must be equal
+        assertEquals(field1.hashCode(), field2.hashCode());
     }
 
     @Test
