@@ -25,7 +25,7 @@ public class DatasetFieldTest {
     //     BrandingUtilTest.setupMocks();
     // }
 
-    // @Test
+    @Test
     public void testEqualityWithoutIds() {
         DatasetField field1 = DatasetField.createNewEmptyDatasetField(MocksFactory.makeDatasetFieldType(), new DatasetVersion());
         DatasetField field2 = DatasetField.createNewEmptyDatasetField(MocksFactory.makeDatasetFieldType(), new DatasetVersion());

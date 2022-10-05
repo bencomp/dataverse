@@ -537,7 +537,7 @@ public class DatasetField implements Serializable {
             return false;
         }
         DatasetField other = (DatasetField) object;
-        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
+        return !((this.id == null && other.id == null) || (this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
