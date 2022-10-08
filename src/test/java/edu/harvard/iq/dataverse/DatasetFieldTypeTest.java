@@ -6,10 +6,7 @@
 package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.search.SolrField;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import javax.faces.model.SelectItem;
+import edu.harvard.iq.dataverse.mocks.MocksFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -42,7 +39,61 @@ public class DatasetFieldTypeTest {
     public void tearDown() {
     }
 
-
+    @Test
+    public void testInitializedValues() {
+        // Create a sample TEXT field type that doesn't allow multiple values
+        DatasetFieldType type = MocksFactory.makeDatasetFieldType();
+        assertFalse(type.isAllowControlledVocabulary());
+        assertFalse(type.isAdvancedSearchFieldType());
+        assertFalse(type.isAllowMultiples());
+        assertFalse(type.isChild());
+        assertFalse(type.isCompound());
+        assertFalse(type.isControlledVocabulary());
+        assertFalse(type.isDisplayOnCreate());
+        // assertFalse(type.isEscapeOutputText());
+        assertFalse(type.isFacetable());
+        assertFalse(type.isHasChildren());
+        assertFalse(type.isHasParent());
+        assertFalse(type.isHasRequiredChildren());
+        assertFalse(type.isInclude());
+        assertTrue(type.isPrimitive());
+        assertFalse(type.isRequired());
+        assertFalse(type.isRequiredDV());
+        assertFalse(type.isSanitizeHtml());
+        assertFalse(type.isSubField());
+        // Test constructor initializes childDatasetFieldTypes
+        assertNotNull(type.getChildDatasetFieldTypes());
+        assertNull(type.getControlledVocabularyValues());
+        assertNull(type.getDatasetFieldDefaultValues());
+        assertNull(type.getDatasetFields());
+        assertNull(type.getDataverseFacets());
+        assertNull(type.getDataverseFieldTypeInputLevels());
+        assertNull(type.getDescription());
+        assertNull(type.getDisplayFormat());
+        // Mock sets a name
+        assertNotNull(type.getDisplayName());
+        assertEquals(0, type.getDisplayOrder());
+        // Mock sets an ID
+        assertNotNull(type.getId());
+        // Without a MetadataBlock, getJsonLDTerm throws a NullPointerException
+        // assertNotNull(type.getJsonLDTerm());
+        assertNull(type.getListValues());
+        assertNull(type.getLocaleDescription());
+        // Mock sets a name and title
+        assertNotNull(type.getLocaleTitle());
+        assertNull(type.getLocaleWatermark());
+        assertNull(type.getMetadataBlock());
+        assertNotNull(type.getName());
+        assertNull(type.getOptionSelectItems());
+        assertNull(type.getParentDatasetFieldType());
+        assertNull(type.getSearchValue());
+        assertNotNull(type.getSolrField());
+        assertNotNull(type.getTitle());
+        assertNotNull(type.getTmpNullFieldTypeIdentifier());
+        assertNull(type.getUri());
+        assertNull(type.getValidationFormat());
+        assertNull(type.getWatermark());
+    }
 
     /**
      * Test of setInclude method, of class DatasetFieldType.
