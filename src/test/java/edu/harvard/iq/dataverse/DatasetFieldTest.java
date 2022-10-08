@@ -32,13 +32,19 @@ public class DatasetFieldTest {
         DatasetField field = new DatasetField();
         // These methods always return a non-null value
         assertNotNull(field.getDatasetFieldValues());
+        assertTrue(field.getDatasetFieldValues().isEmpty());
         assertNotNull(field.getControlledVocabularyValues());
+        assertTrue(field.getControlledVocabularyValues().isEmpty());
         assertNotNull(field.getSingleValue());
         assertNotNull(field.getValues());
+        assertTrue(field.getValues().isEmpty());
         assertNotNull(field.getRawValuesList());
+        assertTrue(field.getRawValuesList().isEmpty());
         assertNotNull(field.getRawValue());
         assertNotNull(field.getCompoundRawValue());
         assertNotNull(field.getCompoundDisplayValue());
+        assertNotNull(field.getValues_nondisplay());
+        assertTrue(field.getValues_nondisplay().isEmpty());
         // These methods return null if no data were added
         assertNull(field.getValue());
         assertNull(field.getSingleControlledVocabularyValue());
