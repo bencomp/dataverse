@@ -6,6 +6,8 @@ import edu.harvard.iq.dataverse.mocks.MocksFactory;
 // import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 // import org.junit.jupiter.api.BeforeAll;
 // import org.junit.jupiter.api.AfterAll;
@@ -24,6 +26,23 @@ public class DatasetFieldTest {
     // public static void tearDown() {
     //     BrandingUtilTest.setupMocks();
     // }
+
+    @Test
+    public void testInitializedValues() {
+        DatasetField field = new DatasetField();
+        // These methods always return a non-null value
+        assertNotNull(field.getDatasetFieldValues());
+        assertNotNull(field.getControlledVocabularyValues());
+        assertNotNull(field.getSingleValue());
+        assertNotNull(field.getValues());
+        assertNotNull(field.getRawValuesList());
+        assertNotNull(field.getRawValue());
+        assertNotNull(field.getCompoundRawValue());
+        assertNotNull(field.getCompoundDisplayValue());
+        // These methods return null if no data were added
+        assertNull(field.getValue());
+        assertNull(field.getSingleControlledVocabularyValue());
+    }
 
     @Test
     public void testEqualityWithoutIds() {
