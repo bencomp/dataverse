@@ -283,6 +283,10 @@ public class DatasetFieldType implements Serializable, Comparable<DatasetFieldTy
         this.displayOnCreate = displayOnCreate;
     }
     
+    /**
+     * 
+     * @return true if this DFT has CVVs
+     */
     public boolean isControlledVocabulary() {
         return controlledVocabularyValues != null && !controlledVocabularyValues.isEmpty();
     }
