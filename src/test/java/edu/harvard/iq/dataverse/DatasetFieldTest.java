@@ -82,4 +82,24 @@ public class DatasetFieldTest {
         DatasetField fieldCopy = field1.copy((DatasetVersion) null);
         assertFalse(field1.equals(fieldCopy));
     }
+
+    /**
+     * FIXME: Checks existing assumptions only
+     */
+    @Test
+    public void testNeedsTextCleaning() {
+        DatasetField field = new DatasetField();
+        // a new field has no type, so doesn't need cleaning
+        assertFalse(field.needsTextCleaning());
+        DatasetFieldType fieldType = new DatasetFieldType();
+        field.setDatasetFieldType(fieldType);
+        // a new fieldtype has no type, so the field doesn't need cleaning
+        assertFalse(field.needsTextCleaning());
+        // a field with fieldtype TEXT needs cleaning
+        fieldType.setFieldType(FieldType.TEXT);
+        assertTrue(field.needsTextCleaning());
+        // a field with fieldtype TEXTBOX needs cleaning
+        fieldType.setFieldType(FieldType.TEXTBOX);
+        assertTrue(field.needsTextCleaning());
+    }
 }
