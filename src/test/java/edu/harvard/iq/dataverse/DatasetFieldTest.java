@@ -101,5 +101,8 @@ public class DatasetFieldTest {
         // a field with fieldtype TEXTBOX needs cleaning
         fieldType.setFieldType(FieldType.TEXTBOX);
         assertTrue(field.needsTextCleaning());
+        // a field with fieldtype FLOAT needs no cleaning
+        fieldType.setFieldType(FieldType.FLOAT);
+        assertFalse(field.needsTextCleaning());
     }
 }
