@@ -64,7 +64,7 @@ public class DatasetFieldTypeTest {
         // Test constructor initializes childDatasetFieldTypes
         assertNotNull(type.getChildDatasetFieldTypes());
         assertNull(type.getControlledVocabularyValues());
-        assertNull(type.getDatasetFieldDefaultValues());
+        // assertNull(type.getDatasetFieldDefaultValues());
         assertNull(type.getDatasetFields());
         assertNull(type.getDataverseFacets());
         assertNull(type.getDataverseFieldTypeInputLevels());
