@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 // import org.junit.jupiter.api.BeforeAll;
 // import org.junit.jupiter.api.AfterAll;
 import org.junit.Test;
+import java.util.ArrayList;
 
 public class DatasetFieldTest {
     
@@ -104,5 +105,19 @@ public class DatasetFieldTest {
         // a field with fieldtype FLOAT needs no cleaning
         fieldType.setFieldType(FieldType.FLOAT);
         assertFalse(field.needsTextCleaning());
+    }
+
+    @Test
+    public void testIsRequired() {
+        DatasetField field = new DatasetField();
+        field.setDatasetVersion(new DatasetVersion());
+        // Is not required when the field type is not required
+        DatasetFieldType type = new DatasetFieldType();
+        field.setDatasetFieldType(type);
+        // assertFalse(field.isRequired());
+        // Is required when primitive field type is required
+        type.setRequired(true);
+        type.setChildDatasetFieldTypes(new ArrayList<DatasetFieldType>());
+        assertTrue(field.isRequired());
     }
 }
