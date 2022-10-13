@@ -1,6 +1,7 @@
 package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.DatasetFieldType.FieldType;
+import edu.harvard.iq.dataverse.branding.BrandingUtilTest;
 // import edu.harvard.iq.dataverse.license.License;
 import edu.harvard.iq.dataverse.mocks.MocksFactory;
 // import java.util.logging.Logger;
@@ -9,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-// import org.junit.jupiter.api.BeforeAll;
-// import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.Test;
 import java.util.ArrayList;
 
@@ -18,15 +19,15 @@ public class DatasetFieldTest {
     
     // private static final Logger logger = Logger.getLogger(DatasetField.class.getCanonicalName());
     
-    // @BeforeAll
-    // public static void setUp() {
-    //     BrandingUtilTest.setupMocks();
-    // }
+    @BeforeAll
+    public static void setUp() {
+        BrandingUtilTest.setupMocks();
+    }
     
-    // @AfterAll
-    // public static void tearDown() {
-    //     BrandingUtilTest.setupMocks();
-    // }
+    @AfterAll
+    public static void tearDown() {
+        BrandingUtilTest.setupMocks();
+    }
 
     @Test
     public void testInitializedValues() {
