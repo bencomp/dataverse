@@ -352,8 +352,7 @@ public class DatasetField implements Serializable {
      * list of values (as opposed to display values).
      * used for passing to solr for indexing
      */
-    public List<String> getValues_nondisplay()
-    {
+    public List<String> getValues_nondisplay() {
         List<String> returnList = new ArrayList<>();
         if (!datasetFieldValues.isEmpty()) {
             for (DatasetFieldValue dsfv : datasetFieldValues) {
@@ -393,7 +392,7 @@ public class DatasetField implements Serializable {
 
     private boolean isEmpty(boolean forDisplay) {
         if (datasetFieldType.isPrimitive()) { // primitive
-        	List<String> values = forDisplay ? getValues() : getValues_nondisplay();
+            List<String> values = forDisplay ? getValues() : getValues_nondisplay();
             for (String value : values) {
                 if (!StringUtils.isBlank(value) && !(forDisplay && DatasetField.NA_VALUE.equals(value))) {
                     return false;
@@ -457,8 +456,7 @@ public class DatasetField implements Serializable {
             
             // since we don't currently support the use case where the parent is required
             // but no specific children are (the "true/false" case), we override this as false
-            if (required && this.datasetFieldType.isCompound() && !isHasRequiredChildren())
-            {
+            if (required && this.datasetFieldType.isCompound() && !isHasRequiredChildren()) {
                 required = false;
             }
         }
