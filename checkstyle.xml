@@ -126,8 +126,9 @@
         <module name="MethodParamPad"/>
         <module name="NoWhitespaceAfter"/>
         <module name="NoWhitespaceBefore"/>
-        <module name="OperatorWrap"/>
+        <module name="OperatorWrap"/> -->
         <module name="ParenPad"/>
+        <!--
         <module name="TypecastParenPad"/>
         <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround"/>
@@ -155,8 +156,9 @@
         <!-- See http://checkstyle.sf.net/config_coding.html -->
         <!--
         <module name="AvoidInlineConditionals"/>
-        <module name="EmptyStatement"/>
+        <module name="EmptyStatement"/> -->
         <module name="EqualsHashCode"/>
+        <!--
         <module name="HiddenField">
             <property name="ignoreConstructorParameter" value="true"/>
             <property name="ignoreSetter" value="true"/>
@@ -181,11 +183,12 @@
         <!-- See http://checkstyle.sf.net/config_misc.html -->
         <!-- <module name="ArrayTypeStyle"/> -->
         <!-- <module name="FinalParameters"/> -->
-        <!--
+
         <module name="TodoComment">
             <property name="severity" value="info"/>
+            <property name="format" value="(TODO)|(FIXME)|(@?todo)"/>
         </module>
-        -->
+
         <!-- <module name="UpperEll"/> -->
 
     </module>
