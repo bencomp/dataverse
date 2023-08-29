@@ -4,6 +4,10 @@ on:
        paths:
            - "**.java"
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
     checkstyle_job:
         runs-on: ubuntu-latest
@@ -16,7 +20,7 @@ jobs:
               with:
                   fail_on_error: true
                   level: error
-                  reporter: github-pr-review
+                  reporter: github-pr-check
+                  filter_mode: nofilter
                   checkstyle_config: checkstyle.xml
                   github_token: ${{ secrets.GITHUB_TOKEN }}
-
