@@ -20,7 +20,7 @@ jobs:
               with:
                   fail_on_error: true
                   level: error
-                  reporter: github-pr-check
-                  filter_mode: nofilter
+                  reporter: github-pr-review
+                  filter_mode: added
                   checkstyle_config: checkstyle.xml
                   github_token: ${{ secrets.GITHUB_TOKEN }}
