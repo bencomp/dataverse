@@ -18,8 +18,7 @@ public class Cart {
         return entry;
     }
     
-    public void addItem(String title, String persistentId) throws Exception 
-    {
+    public void addItem(String title, String persistentId) throws Exception {
         if (!checkCartForItem(title, persistentId)) {
             contents.add(createEntry(title, persistentId));
         } else {
