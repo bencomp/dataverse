@@ -127,7 +127,6 @@ public class DatasetServiceBean implements java.io.Serializable {
             .setHint("eclipselink.left-join-fetch", "o.files.dataFileTags")
             .setHint("eclipselink.left-join-fetch", "o.files.fileMetadatas")
             .setHint("eclipselink.left-join-fetch", "o.files.fileMetadatas.fileCategories")
-            //.setHint("eclipselink.left-join-fetch", "o.files.guestbookResponses")
             .setHint("eclipselink.left-join-fetch", "o.files.embargo")
             .setHint("eclipselink.left-join-fetch", "o.files.fileAccessRequests")
             .setHint("eclipselink.left-join-fetch", "o.files.owner")
@@ -198,13 +197,6 @@ public class DatasetServiceBean implements java.io.Serializable {
         List<Dataset> ret = new ArrayList<>();
         if (ds != null) ret.add(ds);
 
-
-        /*
-        List<Dataset> ret = em.createNamedQuery("Dataset.filterByPid", Dataset.class)
-            .setParameter("affiliation", "%" + filterQuery.toLowerCase() + "%").getResultList();
-        //logger.info("created native query: select o from Dataverse o where o.alias LIKE '" + filterQuery + "%' order by o.alias");
-        logger.info("created named query");
-        */
         if (ret != null) {
             logger.info("results list: "+ret.size()+" results.");
         }
@@ -422,7 +414,6 @@ public class DatasetServiceBean implements java.io.Serializable {
         dataset.addLock(lock);
         lock.setStartTime( new Date() );
         em.persist(lock);
-        //em.merge(dataset);
         return lock;
     }
 

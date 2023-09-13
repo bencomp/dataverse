@@ -162,8 +162,6 @@ public class DatasetFieldConstant implements java.io.Serializable  {
     public final static String conditions="conditions";
     public final static String disclaimer="disclaimer";
     public final static String relatedMaterial="relatedMaterial";
-    //public final static String replicationFor="replicationFor";
-    //public final static String relatedPublications="relatedPublications";
     public final static String relatedDatasets="relatedDatasets";
     public final static String otherReferences="otherReferences";
     public final static String notesText="notesText";
@@ -510,11 +508,6 @@ public class DatasetFieldConstant implements java.io.Serializable  {
         return relatedMaterial;
     }
     
-    /*
-    public String getRelatedPublications() {
-        return relatedPublications;
-    }*/
-    
     public String getRelatedDatasets() {
         return relatedDatasets;
     }
@@ -558,11 +551,6 @@ public class DatasetFieldConstant implements java.io.Serializable  {
     public String getSubTitle() {
         return subTitle;
     }
-
-    /*
-    public String getReplicationFor() {
-        return replicationFor;
-    }*/
 
     public String getWestLongitude() {
         return westLongitude;

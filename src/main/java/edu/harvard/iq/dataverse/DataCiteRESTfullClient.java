@@ -221,16 +221,4 @@ public class DataCiteRESTfullClient implements Closeable {
 //		client2.close();
 }
 
-    
-//    private static String readAndClose(String file, String encoding) throws IOException{
-//        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file),encoding));
-//        StringBuilder str = new StringBuilder();
-//        String line;
-//        while((line = in.readLine()) != null){
-//            str.append(line);
-//        }
-//        in.close();
-//        return str.toString();
-//    }
-
 }

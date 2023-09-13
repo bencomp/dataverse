@@ -134,17 +134,7 @@ public class DataFileServiceBean implements java.io.Serializable {
     
     public DataFile find(Object pk) {
         return em.find(DataFile.class, pk);
-    }   
-    
-    /*public DataFile findByMD5(String md5Value){
-        if (md5Value == null){
-            return null;
-        }
-        Query query = em.createQuery("select object(o) from DataFile as o where o.md5 =:md5Value order by o.id");
-        query.setParameter("md5Value", md5Value);
-        return (DataFile)query.getSingleResult();
-        
-    }*/
+    }
     
     public DataFile findByGlobalId(String globalId) {
             return (DataFile) dvObjectService.findByGlobalId(globalId, DvObject.DType.DataFile);
@@ -391,37 +381,6 @@ public class DataFileServiceBean implements java.io.Serializable {
         dataFile.setPermissionModificationTime(permissionModificationTime);
         dataFile.setPublicationDate(publicationDate);
 
-        // no support for users yet!
-        // (no need to - so far? -- L.A. 4.2.2) 
-        /*
-         Long creatorId = (Long) result[7];
-         if (creatorId != null) {
-         AuthenticatedUser creator = userMap.get(creatorId);
-         if (creator == null) {
-         creator = userService.find(creatorId);
-         if (creator != null) {
-         userMap.put(creatorId, creator);
-         }
-         }
-         if (creator != null) {
-         dataFile.setCreator(creator);
-         }
-         }
-
-         Long releaseUserId = (Long) result[8];
-         if (releaseUserId != null) {
-         AuthenticatedUser releaseUser = userMap.get(releaseUserId);
-         if (releaseUser == null) {
-         releaseUser = userService.find(releaseUserId);
-         if (releaseUser != null) {
-         userMap.put(releaseUserId, releaseUser);
-         }
-         }
-         if (releaseUser != null) {
-         dataFile.setReleaseUser(releaseUser);
-         }
-         }
-         */
         Boolean previewAvailable = (Boolean) result[9];
         if (previewAvailable != null) {
             dataFile.setPreviewImageAvailable(previewAvailable);
@@ -680,10 +639,6 @@ public class DataFileServiceBean implements java.io.Serializable {
         FileMetadata newFileMetadata = em.merge(fileMetadata);
         em.flush();
         
-        // Set the initial value of the rootDataFileId
-        //    (does nothing if it's already set)
-        //DataFile updatedDataFile = setAndCheckFileReplaceAttributes(newFileMetadata.getDataFile());
-               
         return newFileMetadata;
     }
     
@@ -745,15 +700,6 @@ public class DataFileServiceBean implements java.io.Serializable {
     public boolean isSpssSavFile (DataFile file) {
         return (file != null) ? MIME_TYPE_SPSS_SAV.equalsIgnoreCase(file.getContentType()) : false;
     }
-    
-    /*
-    public boolean isSpssPorFile (FileMetadata fileMetadata) {
-        if (fileMetadata != null && fileMetadata.getDataFile() != null) {
-            return isSpssPorFile(fileMetadata.getDataFile());
-        }
-        return false; 
-    }
-    */
     
     /*
      * This method will return true if the thumbnail is *actually available* and
@@ -936,18 +882,6 @@ public class DataFileServiceBean implements java.io.Serializable {
         return MIME_TYPE_NETWORK_GRAPHML.equalsIgnoreCase(contentType);
         
     }
-    
-    /* 
-     * we don't really need a method for "other" - 
-     * it's "other" if it fails to identify as any specific class... 
-     * (or do we?)
-    public boolean isFileClassOther (DataFile file) {
-        if (file == null) {
-            return false;
-        }
-        
-    }
-    */
     
     public boolean isFileClassGeo (DataFile file) {
         if (file == null) {

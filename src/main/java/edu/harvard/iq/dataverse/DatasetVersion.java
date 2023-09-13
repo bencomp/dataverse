@@ -685,12 +685,6 @@ public class DatasetVersion implements Serializable {
             
             for (FileMetadata fm : this.getFileMetadatas()) {
                 FileMetadata newFm = new FileMetadata();
-                // TODO: 
-                // the "category" will be removed, shortly. 
-                // (replaced by multiple, tag-like categories of 
-                // type DataFileCategory) -- L.A. beta 10
-                //newFm.setCategory(fm.getCategory());
-                // yep, these are the new categories:
                 newFm.setCategories(fm.getCategories());
                 newFm.setDescription(fm.getDescription());
                 newFm.setLabel(fm.getLabel());
@@ -710,7 +704,6 @@ public class DatasetVersion implements Serializable {
             } else {
                 TermsOfUseAndAccess terms = new TermsOfUseAndAccess();
                 terms.setDatasetVersion(dsv);
-               // terms.setLicense(TermsOfUseAndAccess.License.CC0);
                 dsv.setTermsOfUseAndAccess(terms);
             }
 
@@ -1700,10 +1693,6 @@ public class DatasetVersion implements Serializable {
         } else{
             return versionNumber + "." + minorVersionNumber;            
         }
-        //     return VersionState.DEACCESSIONED.name();
-       // } else {
-       //     return "-unkwn semantic version-";
-       // }
     }
 
     public List<ConstraintViolation<DatasetField>> validateRequired() {

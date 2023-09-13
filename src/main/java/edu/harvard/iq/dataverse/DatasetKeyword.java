@@ -30,15 +30,6 @@ public class DatasetKeyword  {
     public void setDatasetVersion(DatasetVersion metadata) {
         this.datasetVersion = metadata;
     }
-    /*
-    @Version
-    private Long version;
-    public Long getVersion() {
-        return this.version;
-    }
-    public void setVersion(Long version) {
-        this.version = version;
-    }  */  
 
     private DatasetField vocab;
     public DatasetField getVocab() {

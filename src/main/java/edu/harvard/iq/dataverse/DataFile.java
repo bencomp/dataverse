@@ -77,11 +77,6 @@ public class DataFile extends DvObject implements Comparable {
         this.fileAccessRequests = fileAccessRequests;
     }
 
-//    @Expose    
-//    @SerializedName("storageIdentifier")
-//    @Column( nullable = false )
-//    private String fileSystemName;
-
     /**
      * End users will see "SHA-1" (with a hyphen) rather than "SHA1" in the GUI
      * and API but in the "datafile" table we persist "SHA1" (no hyphen) for
