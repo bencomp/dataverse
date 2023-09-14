@@ -255,11 +255,11 @@ public class OAIRecordServiceBean implements java.io.Serializable {
         logger.fine("findOAIRecordBySetNameandGlobalId; query: "+queryString+"; globalId: "+globalId+"; setName: "+setName);
                 
         
-        TypedQuery query = em.createQuery(queryString, OAIRecord.class).setParameter("globalId",globalId);
+        TypedQuery<OAIRecord> query = em.createQuery(queryString, OAIRecord.class).setParameter("globalId",globalId);
         if (setName != null) { query.setParameter("setName",setName); }        
         
         try {
-           oaiRecord = (OAIRecord) query.setMaxResults(1).getSingleResult();
+           oaiRecord = query.setMaxResults(1).getSingleResult();
         } catch (jakarta.persistence.NoResultException e) {
            // Do nothing, just return null. 
         }

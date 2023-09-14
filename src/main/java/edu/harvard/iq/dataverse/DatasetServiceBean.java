@@ -560,14 +560,14 @@ public class DatasetServiceBean implements java.io.Serializable {
 
     public Dataset getDatasetByHarvestInfo(Dataverse dataverse, String harvestIdentifier) {
         String queryStr = "SELECT d FROM Dataset d, DvObject o WHERE d.id = o.id AND o.owner.id = " + dataverse.getId() + " and d.harvestIdentifier = '" + harvestIdentifier + "'";
-        Query query = em.createQuery(queryStr);
-        List resultList = query.getResultList();
+        TypedQuery<Dataset> query = em.createQuery(queryStr, Dataset.class);
+        List<Dataset> resultList = query.getResultList();
         Dataset dataset = null;
         if (resultList.size() > 1) {
             throw new EJBException("More than one dataset found in the dataverse (id= " + dataverse.getId() + "), with harvestIdentifier= " + harvestIdentifier);
         }
         if (resultList.size() == 1) {
-            dataset = (Dataset) resultList.get(0);
+            dataset = resultList.get(0);
         }
         return dataset;
 

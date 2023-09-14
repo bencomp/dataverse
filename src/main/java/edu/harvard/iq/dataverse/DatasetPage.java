@@ -3441,7 +3441,7 @@ public class DatasetPage implements java.io.Serializable {
     private List<FileMetadata> filesToBeDeleted = new ArrayList<>();
 
     public String deleteFiles() throws CommandException{
-        List filesToDelete = new ArrayList<>();
+        List<FileMetadata> filesToDelete = new ArrayList<>();
 
         if (fileMetadataForAction != null) {
             filesToDelete.add(fileMetadataForAction);
@@ -3452,7 +3452,7 @@ public class DatasetPage implements java.io.Serializable {
 
         //Remove embargoes that are no longer referenced
         //Identify which ones are involved here
-        List<Embargo> orphanedEmbargoes = new ArrayList<Embargo>();
+        List<Embargo> orphanedEmbargoes = new ArrayList<>();
         if (selectedFiles != null && selectedFiles.size() > 0) {
             for (FileMetadata fmd : workingVersion.getFileMetadatas()) {
                 for (FileMetadata fm : selectedFiles) {

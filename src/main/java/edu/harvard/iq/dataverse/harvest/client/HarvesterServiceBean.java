@@ -111,9 +111,9 @@ public class HarvesterServiceBean {
         logger.log(Level.INFO, "HarvesterService: going to (re)create Scheduled harvest timers.");
         dataverseTimerService.removeHarvestTimers();
 
-        List configuredClients = harvestingClientService.getAllHarvestingClients();
-        for (Iterator it = configuredClients.iterator(); it.hasNext();) {
-            HarvestingClient harvestingConfig = (HarvestingClient) it.next();
+        List<HarvestingClient> configuredClients = harvestingClientService.getAllHarvestingClients();
+        for (Iterator<HarvestingClient> it = configuredClients.iterator(); it.hasNext();) {
+            HarvestingClient harvestingConfig = it.next();
             if (harvestingConfig.isScheduled()) {
                 dataverseTimerService.createHarvestTimer(harvestingConfig);
             }
@@ -123,8 +123,8 @@ public class HarvesterServiceBean {
     public List<HarvestTimerInfo> getHarvestTimers() {
         List<HarvestTimerInfo> timers = new ArrayList<>();
         
-        for (Iterator it = timerService.getTimers().iterator(); it.hasNext();) {
-            Timer timer = (Timer) it.next();
+        for (Iterator<Timer> it = timerService.getTimers().iterator(); it.hasNext();) {
+            Timer timer = it.next();
             if (timer.getInfo() instanceof HarvestTimerInfo) {
                 HarvestTimerInfo info = (HarvestTimerInfo) timer.getInfo();
                 timers.add(info);

@@ -161,12 +161,12 @@ public class DataverseXoaiItemRepository implements ItemRepository {
             
             hasMore = offset + maxResponseLength < oaiRecords.size();
             
-            ResultsPage<DataverseXoaiItem> result = new ResultsPage(resumptionToken, hasMore, xoaiItems, oaiRecords.size());
+            ResultsPage<DataverseXoaiItem> result = new ResultsPage<>(resumptionToken, hasMore, xoaiItems, oaiRecords.size());
             logger.fine("returning result with " + xoaiItems.size() + " items.");
             return result;
         }
 
-        return new ResultsPage(resumptionToken, false, xoaiItems, 0);
+        return new ResultsPage<>(resumptionToken, false, xoaiItems, 0);
     }
     
     private void addExtraSets(Object xoaiItemsList, String setSpec, Instant from, Instant until) {
