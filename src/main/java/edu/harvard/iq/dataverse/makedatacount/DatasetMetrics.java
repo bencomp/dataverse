@@ -259,14 +259,14 @@ public class DatasetMetrics implements Serializable {
     }
     
     public void initCounts(){
-        this.setDownloadsTotalMachine(new Long(0));
-        this.setDownloadsTotalRegular(new Long(0));
-        this.setDownloadsUniqueMachine(new Long(0));
-        this.setDownloadsUniqueRegular(new Long(0));
-        this.setViewsTotalMachine(new Long(0));
-        this.setViewsTotalRegular(new Long(0));
-        this.setViewsUniqueMachine(new Long(0));
-        this.setViewsUniqueRegular(new Long(0));
+        this.setDownloadsTotalMachine(0L);
+        this.setDownloadsTotalRegular(0L);
+        this.setDownloadsUniqueMachine(0L);
+        this.setDownloadsUniqueRegular(0L);
+        this.setViewsTotalMachine(0L);
+        this.setViewsTotalRegular(0L);
+        this.setViewsUniqueMachine(0L);
+        this.setViewsUniqueRegular(0L);
     }
 
 }
