@@ -1048,7 +1048,7 @@ public class DatasetServiceBean implements java.io.Serializable {
         if (version == null || (mode != null &&  mode.equals("storage"))){
             filesToTally = dataset.getFiles();
         } else {
-            List <FileMetadata>  fmds = version.getFileMetadatas();
+            List<FileMetadata>  fmds = version.getFileMetadatas();
             for (FileMetadata fmd : fmds){
                     filesToTally.add(fmd.getDataFile());
             }

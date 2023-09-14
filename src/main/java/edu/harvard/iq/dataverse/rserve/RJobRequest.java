@@ -50,7 +50,7 @@ public class RJobRequest {
      * @param categoryOrders
      */
     public RJobRequest(
-            List <DataVariable> dv, 
+            List<DataVariable> dv, 
             Map <String, Map<String, String>> vts,
             Map <String, List<String>> categoryOrders
             ) {

@@ -209,7 +209,7 @@ public class Guestbook implements Serializable {
     }
     
     public List<String> getOptionalAccountInformation(){
-                List <String> retList = new ArrayList<>();
+        List<String> retList = new ArrayList<>();
         if(!nameRequired){
            retList.add(BundleUtil.getStringFromBundle("name"));
         }
@@ -226,23 +226,23 @@ public class Guestbook implements Serializable {
         
     }
     
-    public List<String> getRequiredQuestionsList(){
-        List <String> retList = new ArrayList<>();
-                for (CustomQuestion cq : this.getCustomQuestions()){
-                    if(cq.isRequired()){
-                        retList.add(cq.getQuestionString());
-                    }
-                }
+    public List<String> getRequiredQuestionsList() {
+        List<String> retList = new ArrayList<>();
+        for (CustomQuestion cq : this.getCustomQuestions()){
+            if(cq.isRequired()){
+                retList.add(cq.getQuestionString());
+            }
+        }
         return retList;
     }
     
     public List<String> getOptionalQuestionsList(){
-        List <String> retList = new ArrayList<>();
-                for (CustomQuestion cq : this.getCustomQuestions()){
-                    if(!cq.isRequired()){
-                        retList.add(cq.getQuestionString());
-                    }
-                }
+        List<String> retList = new ArrayList<>();
+        for (CustomQuestion cq : this.getCustomQuestions()){
+            if(!cq.isRequired()){
+                retList.add(cq.getQuestionString());
+            }
+        }
         return retList;
     }
         

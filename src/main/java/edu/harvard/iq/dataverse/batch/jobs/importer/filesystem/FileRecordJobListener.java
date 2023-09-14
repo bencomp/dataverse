@@ -327,7 +327,7 @@ public class FileRecordJobListener implements ItemReadListener, StepListener, Jo
                     notificationServiceBean.sendNotification((AuthenticatedUser) value, new Timestamp(new Date().getTime()), notifyType, datasetVersionId);
                 });
                 // [3] send SuperUser notification
-                List <AuthenticatedUser> superUsers = authenticationServiceBean.findSuperUsers();
+                List<AuthenticatedUser> superUsers = authenticationServiceBean.findSuperUsers();
                 if (superUsers != null && !superUsers.isEmpty()) {
                     superUsers.forEach((au) -> {
                         notificationServiceBean.sendNotification(au, timestamp, notifyType, datasetVersionId);                   

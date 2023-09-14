@@ -239,7 +239,7 @@ public class TemplatePage implements java.io.Serializable {
     }
     
     public String deleteTemplate(Long templateId) {
-        List <Dataverse> dataverseWDefaultTemplate = null;
+        List<Dataverse> dataverseWDefaultTemplate = null;
         Template doomed = templateService.find(templateId);
         dataverse.getTemplates().remove(doomed);  
         dataverseWDefaultTemplate = templateService.findDataversesByDefaultTemplateId(doomed.getId());

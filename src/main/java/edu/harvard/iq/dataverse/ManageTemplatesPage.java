@@ -141,7 +141,7 @@ public class ManageTemplatesPage implements java.io.Serializable {
     }
 
     public void deleteTemplate() {
-        List <Dataverse> dataverseWDefaultTemplate = null;
+        List<Dataverse> dataverseWDefaultTemplate = null;
         if (selectedTemplate != null) {
             templates.remove(selectedTemplate);
             if(dataverse.getDefaultTemplate() != null && dataverse.getDefaultTemplate().equals(selectedTemplate)){

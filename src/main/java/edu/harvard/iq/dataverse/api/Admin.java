@@ -238,7 +238,7 @@ public class Admin extends AbstractApiBean {
         }
 
         Dataverse dv = doomed.getDataverse();
-        List <Dataverse> dataverseWDefaultTemplate = templateService.findDataversesByDefaultTemplateId(doomed.getId());
+        List<Dataverse> dataverseWDefaultTemplate = templateService.findDataversesByDefaultTemplateId(doomed.getId());
 
         try {
             commandEngine.submit(new DeleteTemplateCommand(createDataverseRequest(superuser), dv, doomed, dataverseWDefaultTemplate));

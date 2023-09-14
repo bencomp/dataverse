@@ -155,7 +155,7 @@ public class GuestbookResponse implements Serializable {
         this.setDatasetVersion(source.getDatasetVersion());
         this.setAuthenticatedUser(source.getAuthenticatedUser());
    
-        List <CustomQuestionResponse> customQuestionResponses = new ArrayList<>();
+        List<CustomQuestionResponse> customQuestionResponses = new ArrayList<>();
         if (!source.getCustomQuestionResponses().isEmpty()){
             for (CustomQuestionResponse customQuestionResponse : source.getCustomQuestionResponses() ){
                 CustomQuestionResponse customQuestionResponseAdd = new CustomQuestionResponse();

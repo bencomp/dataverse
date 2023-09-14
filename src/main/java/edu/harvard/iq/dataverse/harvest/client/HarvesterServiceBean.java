@@ -121,7 +121,7 @@ public class HarvesterServiceBean {
     }
   
     public List<HarvestTimerInfo> getHarvestTimers() {
-        ArrayList <HarvestTimerInfo>timers = new ArrayList<>();
+        List<HarvestTimerInfo> timers = new ArrayList<>();
         
         for (Iterator it = timerService.getTimers().iterator(); it.hasNext();) {
             Timer timer = (Timer) it.next();

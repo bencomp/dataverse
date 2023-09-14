@@ -781,7 +781,7 @@ public final class DatasetVersionDifference {
 
     private void initDatasetFilesDifferencesList() {
         datasetFilesDiffList = new ArrayList<>();
-        datasetFilesReplacementList = new ArrayList <>();
+        datasetFilesReplacementList = new ArrayList<>();
         
         // Study Files themselves are version-less;
         // In other words, 2 different versions can have different sets of

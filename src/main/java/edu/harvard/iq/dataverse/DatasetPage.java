@@ -2505,7 +2505,7 @@ public class DatasetPage implements java.io.Serializable {
         workingVersion = dataset.getOrCreateEditVersion();
         workingVersion.getTermsOfUseAndAccess().setTermsOfAccess(termsOfAccess);
         workingVersion.getTermsOfUseAndAccess().setFileAccessRequest(requestAccess);
-        List <FileMetadata> newSelectedFiles = new ArrayList<>();
+        List<FileMetadata> newSelectedFiles = new ArrayList<>();
         for (FileMetadata fmd : filesToRefresh){
             for (FileMetadata fmdn: workingVersion.getFileMetadatas()){
                 if (fmd.getDataFile().equals(fmdn.getDataFile())){
@@ -4634,7 +4634,7 @@ public class DatasetPage implements java.io.Serializable {
         fileMetadataSelectedForTagsPopup = null;
     }
 
-    public List <FileMetadata> getListFileMetadataSelectedForTagsPopup(){
+    public List<FileMetadata> getListFileMetadataSelectedForTagsPopup() {
         List<FileMetadata> retList = new ArrayList<>();
         for (FileMetadata fm : selectedFiles){
             retList.add(fm);

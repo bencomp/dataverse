@@ -611,8 +611,8 @@ public class DatasetVersion implements Serializable {
             if (this.getFileMetadatas().size() != this.getDataset().getReleasedVersion().getFileMetadatas().size()){
                 return false;
             } else {
-                List <DataFile> current = new ArrayList<>();
-                List <DataFile> previous = new ArrayList<>();
+                List<DataFile> current = new ArrayList<>();
+                List<DataFile> previous = new ArrayList<>();
                 for (FileMetadata fmdc : this.getFileMetadatas()){
                     current.add(fmdc.getDataFile());
                 }
@@ -906,7 +906,7 @@ public class DatasetVersion implements Serializable {
      * database, run the value through special formatting.
      */
     public List<String[]> getDatasetContacts(boolean getDisplayValues) {
-        List <String[]> retList = new ArrayList<>();
+        List<String[]> retList = new ArrayList<>();
         for (DatasetField dsf : this.getDatasetFields()) {
             Boolean addContributor = true;
             String contributorName = "";
@@ -937,7 +937,7 @@ public class DatasetVersion implements Serializable {
     }
 
     public List<String[]> getDatasetProducers(){
-        List <String[]> retList = new ArrayList<>();
+        List<String[]> retList = new ArrayList<>();
         for (DatasetField dsf : this.getDatasetFields()) {
             Boolean addContributor = true;
             String contributorName = "";
@@ -968,7 +968,7 @@ public class DatasetVersion implements Serializable {
 
     public List<DatasetAuthor> getDatasetAuthors() {
         //TODO get "List of Authors" from datasetfieldvalue table
-        List <DatasetAuthor> retList = new ArrayList<>();
+        List<DatasetAuthor> retList = new ArrayList<>();
         for (DatasetField dsf : this.getDatasetFields()) {
             Boolean addAuthor = true;
             if (dsf.getDatasetFieldType().getName().equals(DatasetFieldConstant.author)) {
@@ -1041,7 +1041,7 @@ public class DatasetVersion implements Serializable {
     }
 
     public List<String> getTimePeriodsCovered() {
-        List <String> retList = new ArrayList<>();
+        List<String> retList = new ArrayList<>();
         for (DatasetField dsf : this.getDatasetFields()) {
             if (dsf.getDatasetFieldType().getName().equals(DatasetFieldConstant.timePeriodCovered)) {
                 for (DatasetFieldCompoundValue timePeriodValue : dsf.getDatasetFieldCompoundValues()) {

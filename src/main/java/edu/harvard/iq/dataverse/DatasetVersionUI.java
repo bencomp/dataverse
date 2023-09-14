@@ -410,7 +410,7 @@ public class DatasetVersionUI implements Serializable {
         
         List<DatasetField> filledInFields = this.datasetVersion.getDatasetFields(); 
         
-        List <MetadataBlock> actualMDB = new ArrayList<>();
+        List<MetadataBlock> actualMDB = new ArrayList<>();
             
         actualMDB.addAll(this.datasetVersion.getDataset().getOwner().getMetadataBlocks());
         

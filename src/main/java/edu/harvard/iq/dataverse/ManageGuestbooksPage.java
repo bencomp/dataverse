@@ -166,7 +166,7 @@ public class ManageGuestbooksPage implements java.io.Serializable {
             sb.append(SEPARATOR);
             sb.append(array[9] == null ? "" : array[9]);
             if(array[10] != null){
-                List <Object[]> responses = (List<Object[]>) array[10];
+                List<Object[]> responses = (List<Object[]>) array[10];
                 for (Object[] response: responses){
                     sb.append(SEPARATOR);
                     sb.append(response[0]);
