@@ -19,7 +19,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 /**
  *
@@ -102,22 +102,22 @@ public class DatasetExternalCitationsServiceBean implements java.io.Serializable
     private DatasetExternalCitations getDatasetExternalCitationsByDatasetCitingPID(Dataset dataset, String PID){
         DatasetExternalCitations dsExtCit = null;
         String queryStr = "SELECT d FROM DatasetExternalCitations d WHERE d.dataset.id = " + dataset.getId() + " and d.citedByUrl = '" + PID + "'";
-        Query query = em.createQuery(queryStr);
-        List resultList = query.getResultList();
+        TypedQuery<DatasetExternalCitations> query = em.createQuery(queryStr, DatasetExternalCitations.class);
+        List<DatasetExternalCitations> resultList = query.getResultList();
         if (resultList.size() > 1) {
             throw new EJBException("More than one Dataset External Citation found in the dataset (id= " + dataset.getId() + "), with citedByUrl= " + PID + ".");
         }
         if (resultList.size() == 1) {
-            dsExtCit = (DatasetExternalCitations) resultList.get(0);
+            dsExtCit = resultList.get(0);
             return dsExtCit;
         }
         return null;
     }
     
     public List<DatasetExternalCitations> getDatasetExternalCitationsByDataset(Dataset dataset) {
-        List<DatasetExternalCitations> retVal = new ArrayList();
+        List<DatasetExternalCitations> retVal = new ArrayList<>();
         String queryStr = "SELECT d FROM DatasetExternalCitations d WHERE d.dataset.id = " + dataset.getId();
-        Query query = em.createQuery(queryStr);
+        TypedQuery<DatasetExternalCitations> query = em.createQuery(queryStr, DatasetExternalCitations.class);
         List<DatasetExternalCitations> result = query.getResultList();
 
         for (DatasetExternalCitations row : result) {

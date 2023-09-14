@@ -159,7 +159,7 @@ public class MoveDataverseCommand extends AbstractVoidCommand {
             inheritMbValue = !destination.isMetadataBlockRoot();
         }
                 
-        List<DataverseLinkingDataverse> linkingDataverses = new ArrayList();
+        List<DataverseLinkingDataverse> linkingDataverses = new ArrayList<>();
     
         logger.info("Checking templates and metadata blocks");
         for (Dataverse dv : dataverseChildren) {
@@ -211,7 +211,7 @@ public class MoveDataverseCommand extends AbstractVoidCommand {
             }
         }
         
-        List<DatasetLinkingDataverse> linkingDatasets = new ArrayList();
+        List<DatasetLinkingDataverse> linkingDatasets = new ArrayList<>();
         logger.info("Checking guestbooks...");
         for (Dataset ds : datasetChildren) {
             // if all the dataverse's datasets GUESTBOOKS are not 

@@ -2318,7 +2318,7 @@ public class Admin extends AbstractApiBean {
                 dismissibleByUser = true;
             }
             toAdd.setDismissibleByUser(dismissibleByUser);
-            toAdd.setBannerMessageTexts(new ArrayList());
+            toAdd.setBannerMessageTexts(new ArrayList<>());
             toAdd.setActive(true);
             JsonArray jsonArray = jsonObject.getJsonArray("messageTexts");
             for (int i = 0; i < jsonArray.size(); i++) {

@@ -3375,7 +3375,7 @@ public class DatasetPage implements java.io.Serializable {
     }
 
     public String restrictFiles(boolean restricted) throws CommandException {
-        List filesToRestrict = new ArrayList();
+        List<FileMetadata> filesToRestrict = new ArrayList<>();
         if (fileMetadataForAction != null) {
             filesToRestrict.add(fileMetadataForAction);
         } else {
@@ -3441,7 +3441,7 @@ public class DatasetPage implements java.io.Serializable {
     private List<FileMetadata> filesToBeDeleted = new ArrayList<>();
 
     public String deleteFiles() throws CommandException{
-        List filesToDelete = new ArrayList();
+        List filesToDelete = new ArrayList<>();
 
         if (fileMetadataForAction != null) {
             filesToDelete.add(fileMetadataForAction);

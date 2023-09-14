@@ -836,7 +836,7 @@ public class EditDatafilesPage implements java.io.Serializable {
     }
 
     public void deleteDuplicateFiles() {
-        List<FileMetadata> filesForDelete = new ArrayList();
+        List<FileMetadata> filesForDelete = new ArrayList<>();
         for (DataFile df : newFiles) {
             if (df.isMarkedAsDuplicate()) {
                 filesForDelete.add(df.getFileMetadata());
@@ -2239,7 +2239,7 @@ public class EditDatafilesPage implements java.io.Serializable {
             return null;
         }
 
-        uploadedInThisProcess = new ArrayList();
+        uploadedInThisProcess = new ArrayList<>();
 
         DataFile dataFile;
         String warningMessage = null;

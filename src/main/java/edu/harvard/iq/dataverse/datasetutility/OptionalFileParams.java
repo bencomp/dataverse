@@ -430,7 +430,7 @@ public class OptionalFileParams {
         //----------------------
         if ((jsonObj.has(CATEGORIES_ATTR_NAME)) && (!jsonObj.get(CATEGORIES_ATTR_NAME).isJsonNull())){
 
-            List<String> catList = new ArrayList();
+            List<String> catList = new ArrayList<>();
             
             try {
                 //We try to parse this as a treeMap if the syntax passed was "categories":[{"name","A Category"}]
@@ -584,7 +584,7 @@ public class OptionalFileParams {
 
         // Add categories to the file metadata object
         //
-        fileMetadata.setCategories(new ArrayList()); //clear categories
+        fileMetadata.setCategories(new ArrayList<>()); //clear categories
         
         this.getCategories().stream().forEach((catText) -> {               
             fileMetadata.addCategoryByName(catText);  // fyi: "addCategoryByName" checks for dupes

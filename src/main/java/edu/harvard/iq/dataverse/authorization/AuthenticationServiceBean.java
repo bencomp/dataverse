@@ -471,7 +471,7 @@ public class AuthenticationServiceBean {
     
     public String getDeleteUserErrorMessages(AuthenticatedUser au) {
         String retVal = "";
-        List<String> reasons= new ArrayList();
+        List<String> reasons= new ArrayList<>();
         if (!dvObjSvc.findByAuthenticatedUserId(au).isEmpty()) {
             reasons.add(BundleUtil.getStringFromBundle("admin.api.deleteUser.failure.dvobjects"));
         }
@@ -926,7 +926,7 @@ public class AuthenticationServiceBean {
     }
     
     public List <WorkflowComment> getWorkflowCommentsByAuthenticatedUser(AuthenticatedUser user){ 
-        Query query = em.createQuery("SELECT wc FROM WorkflowComment wc WHERE wc.authenticatedUser.id = :auid");
+        TypedQuery<WorkflowComment> query = em.createQuery("SELECT wc FROM WorkflowComment wc WHERE wc.authenticatedUser.id = :auid", WorkflowComment.class);
         query.setParameter("auid", user.getId());       
         return query.getResultList();
     }

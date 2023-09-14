@@ -139,7 +139,7 @@ public class IngestUtil {
      * @return A Collection of Strings in the form of path/to/file.txt
      */
     public static Collection<String> findDuplicateFilenames(DatasetVersion datasetVersion, List<DataFile> newFiles) {
-        List<FileMetadata> toTest = new ArrayList();
+        List<FileMetadata> toTest = new ArrayList<>();
         datasetVersion.getFileMetadatas().forEach((fm) -> {
             toTest.add(fm);
         });

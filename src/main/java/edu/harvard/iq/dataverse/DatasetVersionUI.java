@@ -66,7 +66,7 @@ public class DatasetVersionUI implements Serializable {
          */
         
         setDatasetVersion(datasetVersion);
-        //this.setDatasetAuthors(new ArrayList());
+        //this.setDatasetAuthors(new ArrayList<>());
         this.setDatasetRelPublications(new ArrayList<>());
 
         // loop through vaues to get fields for view mode

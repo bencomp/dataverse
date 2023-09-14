@@ -287,7 +287,7 @@ public class DatasetServiceBean implements java.io.Serializable {
         List<Object[]> queryResults;
         queryResults = query.getResultList();
 
-        List<Long> retVal = new ArrayList();
+        List<Long> retVal = new ArrayList<>();
         for (Object[] result : queryResults) {
             Long dsId;
             if (result[0] != null) {
@@ -1043,7 +1043,7 @@ public class DatasetServiceBean implements java.io.Serializable {
             return 0L;
         }
 
-        List<DataFile> filesToTally = new ArrayList();
+        List<DataFile> filesToTally = new ArrayList<>();
 
         if (version == null || (mode != null &&  mode.equals("storage"))){
             filesToTally = dataset.getFiles();

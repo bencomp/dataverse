@@ -354,7 +354,7 @@ public class DatasetField implements Serializable {
      */
     public List<String> getValues_nondisplay()
     {
-        List returnList = new ArrayList();
+        List<String> returnList = new ArrayList<>();
         if (!datasetFieldValues.isEmpty()) {
             for (DatasetFieldValue dsfv : datasetFieldValues) {
                 String value = dsfv.getValue();

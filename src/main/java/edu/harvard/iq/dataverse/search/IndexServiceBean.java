@@ -300,8 +300,8 @@ public class IndexServiceBean {
             dataversePaths.add(dvPath);
         }
         //only do this if we're indexing an individual dataverse ie not full re-index
-        List<Long> dataverseChildrenIds = new ArrayList();
-        List<Long> datasetChildrenIds = new ArrayList();
+        List<Long> dataverseChildrenIds = new ArrayList<>();
+        List<Long> datasetChildrenIds = new ArrayList<>();
         if (processPaths) {
             //Get Linking Dataverses to see if I need to reindex my children
             if (hasAnyLinkingDataverses(dataverse)) {
@@ -1568,8 +1568,8 @@ public class IndexServiceBean {
         Dataset dataset = null;
         Dataverse dv = null;
         Dataverse rootDataverse = findRootDataverseCached();        
-        List <Dataverse>linkingDataverses = new ArrayList();
-        List<Dataverse> ancestorList = new ArrayList();
+        List<Dataverse> linkingDataverses = new ArrayList<>();
+        List<Dataverse> ancestorList = new ArrayList<>();
         
         try {
             if(dvObject.isInstanceofDataset()){

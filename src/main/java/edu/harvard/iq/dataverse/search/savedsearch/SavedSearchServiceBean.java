@@ -173,7 +173,7 @@ public class SavedSearchServiceBean {
         JsonArrayBuilder infoPerHit = Json.createArrayBuilder();
         SolrQueryResponse queryResponse = findHits(savedSearch);
 
-        List skipList = new ArrayList(); // a list for the definition point itself and already linked objects
+        List<Long> skipList = new ArrayList<>(); // a list for the definition point itself and already linked objects
         skipList.add(savedSearch.getDefinitionPoint().getId());
         
         TypedQuery<Long> typedQuery = em.createNamedQuery("DataverseLinkingDataverse.findIdsByLinkingDataverseId", Long.class)

@@ -22,6 +22,7 @@ import jakarta.json.JsonValue;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 /**
  *
@@ -42,13 +43,13 @@ public class DatasetMetricsServiceBean implements java.io.Serializable {
     public DatasetMetrics getDatasetMetricsByDatasetMonthCountry(Dataset dataset, String monthYear, String country) {
         DatasetMetrics dsm = null;
         String queryStr = "SELECT d FROM DatasetMetrics d WHERE d.dataset.id = " + dataset.getId() + " and d.monthYear = '" + monthYear + "' " + " and d.countryCode = '" + country + "' ";
-        Query query = em.createQuery(queryStr);
-        List resultList = query.getResultList();
+        TypedQuery<DatasetMetrics> query = em.createQuery(queryStr, DatasetMetrics.class);
+        List<DatasetMetrics> resultList = query.getResultList();
         if (resultList.size() > 1) {
             throw new EJBException("More than one Dataset Metric found in the dataset (id= " + dataset.getId() + "), with monthYear= " + monthYear + " and Country code = " + country  + ".");
         }
         if (resultList.size() == 1) {
-            dsm = (DatasetMetrics) resultList.get(0);
+            dsm = resultList.get(0);
             dsm.setViewsTotal(dsm.getViewsTotalRegular() + dsm.getViewsTotalMachine());
             dsm.setViewsUnique(dsm.getViewsUniqueRegular() + dsm.getViewsUniqueMachine());
             dsm.setDownloadsTotal(dsm.getDownloadsTotalRegular() + dsm.getDownloadsTotalMachine());
@@ -252,7 +253,7 @@ public class DatasetMetricsServiceBean implements java.io.Serializable {
     
     private List<DatasetMetrics> addUpdateMetrics(List<DatasetMetrics> currentList, List<DatasetMetrics> compareList, String countField, String accessMethod){
         
-        List<DatasetMetrics> toAdd = new ArrayList();
+        List<DatasetMetrics> toAdd = new ArrayList<>();
         
         for (DatasetMetrics testMetric : compareList) {
             
