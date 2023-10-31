@@ -30,7 +30,7 @@ import java.util.List;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.component.UIInput;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @ViewScoped
 @Named("PasswordResetPage")

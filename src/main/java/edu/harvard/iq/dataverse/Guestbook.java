@@ -22,7 +22,7 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 import edu.harvard.iq.dataverse.util.DateUtil;
-import org.hibernate.validator.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  *
