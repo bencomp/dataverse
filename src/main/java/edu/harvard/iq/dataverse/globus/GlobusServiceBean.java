@@ -579,12 +579,12 @@ public class GlobusServiceBean implements java.io.Serializable {
         ApiToken apiToken = null;
         User user = session.getUser();
 
-        if (user instanceof AuthenticatedUser) {
-            apiToken = authSvc.findApiTokenByUser((AuthenticatedUser) user);
+        if (user instanceof AuthenticatedUser authenticatedUser) {
+            apiToken = authSvc.findApiTokenByUser(authenticatedUser);
 
             if ((apiToken == null) || (apiToken.getExpireTime().before(new Date()))) {
                 logger.fine("Created apiToken for user: " + user.getIdentifier());
-                apiToken = authSvc.generateApiTokenForUser((AuthenticatedUser) user);
+                apiToken = authSvc.generateApiTokenForUser(authenticatedUser);
             }
         }
         String driverId = d.getEffectiveStorageDriverId();
@@ -985,21 +985,21 @@ public class GlobusServiceBean implements java.io.Serializable {
         if (taskStatus.startsWith("FAILED") || taskStatus.startsWith("INACTIVE")) {
             String comment = "Reason : " + taskStatus.split("#")[1] + "<br> Short Description : "
                     + taskStatus.split("#")[2];
-            if (authUser != null && authUser instanceof AuthenticatedUser) {
-                userNotificationService.sendNotification((AuthenticatedUser) authUser, new Timestamp(new Date().getTime()),
+            if (authUser != null && authUser instanceof AuthenticatedUser user) {
+                userNotificationService.sendNotification(user, new Timestamp(new Date().getTime()),
                         UserNotification.Type.GLOBUSDOWNLOADCOMPLETEDWITHERRORS, dataset.getId(), comment, true);
             }
             
             globusLogger.info("Globus task failed during download process: "+comment);
-        } else if (authUser != null && authUser instanceof AuthenticatedUser) {
+        } else if (authUser != null && authUser instanceof AuthenticatedUser user) {
         
             boolean taskSkippedFiles = (task.getSkip_source_errors() == null) ? false : task.getSkip_source_errors();
             if (!taskSkippedFiles) {
-                userNotificationService.sendNotification((AuthenticatedUser) authUser,
+                userNotificationService.sendNotification(user,
                         new Timestamp(new Date().getTime()), UserNotification.Type.GLOBUSDOWNLOADCOMPLETED,
                         dataset.getId());
             } else {
-                userNotificationService.sendNotification((AuthenticatedUser) authUser,
+                userNotificationService.sendNotification(user,
                         new Timestamp(new Date().getTime()), UserNotification.Type.GLOBUSDOWNLOADCOMPLETEDWITHERRORS,
                         dataset.getId(), "");
             }
@@ -1183,8 +1183,8 @@ public class GlobusServiceBean implements java.io.Serializable {
 
     private GlobusEndpoint getGlobusEndpoint(DvObject dvObject) {
         Dataset dataset = null;
-        if (dvObject instanceof Dataset) {
-            dataset = (Dataset) dvObject;
+        if (dvObject instanceof Dataset dataset1) {
+            dataset = dataset1;
         } else if (dvObject instanceof DataFile) {
             dataset = (Dataset) dvObject.getOwner();
         } else {
@@ -1234,10 +1234,9 @@ public class GlobusServiceBean implements java.io.Serializable {
 
         ApiToken apiToken = null;
         User user = session.getUser();
-        if (user instanceof AuthenticatedUser) {
-            apiToken = authSvc.findApiTokenByUser((AuthenticatedUser) user);
-        } else if (user instanceof PrivateUrlUser) {
-            PrivateUrlUser privateUrlUser = (PrivateUrlUser) user;
+        if (user instanceof AuthenticatedUser authenticatedUser) {
+            apiToken = authSvc.findApiTokenByUser(authenticatedUser);
+        } else if (user instanceof PrivateUrlUser privateUrlUser) {
             PrivateUrl privUrl = privateUrlService.getPrivateUrlFromDatasetId(privateUrlUser.getDatasetId());
             apiToken = new ApiToken();
             apiToken.setTokenString(privUrl.getToken());

@@ -15,10 +15,10 @@ import jakarta.persistence.MappedSuperclass;
 public abstract class IpAddressRange {
     
     public static IpAddressRange make( IpAddress bottom, IpAddress top ) {
-        if ( bottom instanceof IPv4Address && top instanceof IPv4Address ) {
-            return new IPv4Range((IPv4Address)bottom, (IPv4Address)top);
-        } else if ( bottom instanceof IPv6Address && top instanceof IPv6Address ) {
-            return new IPv6Range((IPv6Address)bottom, (IPv6Address)top);
+        if ( bottom instanceof IPv4Address address && top instanceof IPv4Address address1 ) {
+            return new IPv4Range(address, address1);
+        } else if ( bottom instanceof IPv6Address address && top instanceof IPv6Address address1 ) {
+            return new IPv6Range(address, address1);
         } else {
             throw new IllegalArgumentException("Both addresses have to be of the same type (either IPv4 or IPv6)");
         }

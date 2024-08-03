@@ -86,8 +86,8 @@ public class ConfigureFragmentBean implements java.io.Serializable{
         
         ApiToken apiToken = new ApiToken();
         User user = session.getUser();
-        if (user instanceof AuthenticatedUser) {
-            apiToken = authService.findApiTokenByUser((AuthenticatedUser) user);
+        if (user instanceof AuthenticatedUser authenticatedUser) {
+            apiToken = authService.findApiTokenByUser(authenticatedUser);
         }
         if ((apiToken == null) || (apiToken.getExpireTime().before(new Date()))) {
             messageApi = BundleUtil.getStringFromBundle("configurefragmentbean.apiTokenGenerated");
@@ -105,14 +105,14 @@ public class ConfigureFragmentBean implements java.io.Serializable{
 
         ApiToken apiToken = new ApiToken();
         User user = session.getUser();
-        if (user instanceof AuthenticatedUser) {
-            apiToken = authService.findApiTokenByUser((AuthenticatedUser) user);
+        if (user instanceof AuthenticatedUser authenticatedUser) {
+            apiToken = authService.findApiTokenByUser(authenticatedUser);
             if (apiToken == null) {
                 //No un-expired token
-                apiToken = authService.generateApiTokenForUser(( AuthenticatedUser) user);
+                apiToken = authService.generateApiTokenForUser(authenticatedUser);
                 toolHandler.setApiToken(apiToken);
                 toolHandler.getToolUrlWithQueryParams();
-                userNotificationService.sendNotification((AuthenticatedUser) user, new Timestamp(new Date().getTime()), UserNotification.Type.APIGENERATED, null);
+                userNotificationService.sendNotification(authenticatedUser, new Timestamp(new Date().getTime()), UserNotification.Type.APIGENERATED, null);
             }
         }
 

@@ -182,8 +182,8 @@ public class DataverseRequest {
         
         User authUser = this.getUser();
         
-        if (authUser instanceof AuthenticatedUser){
-            return (AuthenticatedUser)authUser;
+        if (authUser instanceof AuthenticatedUser authenticatedUser){
+            return authenticatedUser;
         }
         return null;
     }

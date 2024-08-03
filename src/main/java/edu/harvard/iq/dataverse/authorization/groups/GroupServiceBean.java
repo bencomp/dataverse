@@ -201,8 +201,8 @@ public class GroupServiceBean {
         Stream.Builder<Group> out = Stream.builder();
         groups.forEach( g -> {
             out.accept(g);
-            if ( g instanceof ExplicitGroup ) {
-                collectGroupContent((ExplicitGroup) g, out);
+            if ( g instanceof ExplicitGroup group ) {
+                collectGroupContent(group, out);
             } 
         });
         return out.build().distinct();

@@ -738,11 +738,11 @@ public class DatasetFieldServiceBean implements java.io.Serializable {
                 } else {
                     JsonArrayBuilder parts = Json.createArrayBuilder();
                     for (JsonValue subPath : arr) {
-                        if (subPath instanceof JsonObject) {
-                            JsonValue nextValue = ((JsonObject) subPath).get(keyVal[0]);
+                        if (subPath instanceof JsonObject object) {
+                            JsonValue nextValue = object.get(keyVal[0]);
                             Object obj = processPathSegment(index + 1, pathParts, nextValue, termUri);
-                            if (obj instanceof String) {
-                                parts.add((String) obj);
+                            if (obj instanceof String string) {
+                                parts.add(string);
                             } else {
                                 parts.add((JsonValue) obj);
                             }

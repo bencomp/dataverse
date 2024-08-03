@@ -171,8 +171,8 @@ public class AuthenticationProvidersRegistrationServiceBean {
         authenticationProviders.put( aProvider.getId(), aProvider);
         actionLogSvc.log( new ActionLogRecord(ActionLogRecord.ActionType.Auth, "registerProvider")
             .setInfo(aProvider.getId() + ":" + aProvider.getInfo().getTitle()));
-        if ( aProvider instanceof AbstractOAuth2AuthenticationProvider ) {
-            oAuth2authenticationProviders.put(aProvider.getId(), (AbstractOAuth2AuthenticationProvider) aProvider);
+        if ( aProvider instanceof AbstractOAuth2AuthenticationProvider provider ) {
+            oAuth2authenticationProviders.put(aProvider.getId(), provider);
         }
     }
     

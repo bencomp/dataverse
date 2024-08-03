@@ -335,8 +335,7 @@ public class PermissionServiceBean {
     }
 
     public boolean hasPermissionsFor(RoleAssignee ra, DvObject dvo, Set<Permission> required) {
-        if (ra instanceof User) {
-            User user = (User) ra;
+        if (ra instanceof User user) {
             if (user.isSuperuser()) {
                 return true;
             } else if (!user.isAuthenticated()) {
@@ -400,7 +399,7 @@ public class PermissionServiceBean {
      * @return the set of permissions {@code ra} has over {@code dvo}.
      */
     public Set<Permission> permissionsFor(RoleAssignee ra, DvObject dvo) {
-        if (ra instanceof AuthenticatedUser && ((AuthenticatedUser) ra).isSuperuser()) {
+        if (ra instanceof AuthenticatedUser user && user.isSuperuser()) {
             return EnumSet.allOf(Permission.class);
         }
 
@@ -410,7 +409,7 @@ public class PermissionServiceBean {
         ras.add(ra);
         addGroupPermissionsFor(ras, dvo, permissions);
 
-        if ((ra instanceof User) && (!((User) ra).isAuthenticated())) {
+        if ((ra instanceof User user) && (!user.isAuthenticated())) {
             permissions.removeAll(PERMISSIONS_FOR_AUTHENTICATED_USERS_ONLY);
         }
         return permissions;
@@ -480,7 +479,7 @@ public class PermissionServiceBean {
         Set<DvObject> ancestors = new HashSet<>();
         while (d != null) {
             ancestors.add(d);
-            if (d instanceof Dataverse && ((Dataverse) d).isEffectivelyPermissionRoot()) {
+            if (d instanceof Dataverse dataverse && dataverse.isEffectivelyPermissionRoot()) {
                 return ancestors;
             } else {
                 d = d.getOwner();

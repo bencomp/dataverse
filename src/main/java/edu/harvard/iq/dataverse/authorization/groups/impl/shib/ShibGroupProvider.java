@@ -52,8 +52,7 @@ public class ShibGroupProvider implements GroupProvider<ShibGroup> {
     
     @Override
     public Set<ShibGroup> groupsFor(RoleAssignee ra) {
-        if (ra instanceof AuthenticatedUser) {
-            AuthenticatedUser authenticatedUser = (AuthenticatedUser) ra;
+        if (ra instanceof AuthenticatedUser authenticatedUser) {
             Set<ShibGroup> groupsFor = shibGroupService.findFor(authenticatedUser);
             for (ShibGroup shibGroup : groupsFor) {
                 shibGroup.setShibGroupProvider(this);

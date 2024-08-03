@@ -221,8 +221,8 @@ public class DataAccess {
             throw new IOException("getDataAccessObject: null or invalid datafile.");
         }
                 
-        if (dvObject instanceof Dataset) {
-            return createNewStorageIO(dvObject, storageTag, ((Dataset)dvObject).getEffectiveStorageDriverId());
+        if (dvObject instanceof Dataset dataset) {
+            return createNewStorageIO(dvObject, storageTag, dataset.getEffectiveStorageDriverId());
         } 
         // it's a DataFile:
         return createNewStorageIO(dvObject, storageTag, dvObject.getOwner().getEffectiveStorageDriverId());

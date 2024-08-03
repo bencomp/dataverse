@@ -106,8 +106,7 @@ public class DataverseSession implements Serializable{
         if ( user == null ) {
             user = GuestUser.get();
         }
-        if (lookupAuthenticatedUserAgain && user instanceof AuthenticatedUser) {
-            AuthenticatedUser auFromSession = (AuthenticatedUser) user;
+        if (lookupAuthenticatedUserAgain && user instanceof AuthenticatedUser auFromSession) {
             AuthenticatedUser auFreshLookup = authenticationService.findByID(auFromSession.getId());
             if (auFreshLookup == null) {
                 logger.fine("getUser found user no longer exists (was deleted). Returning GuestUser.");

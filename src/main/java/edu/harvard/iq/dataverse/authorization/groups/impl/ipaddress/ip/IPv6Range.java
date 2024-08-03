@@ -49,8 +49,7 @@ public class IPv6Range extends IpAddressRange implements Serializable {
     @Override
     public Boolean contains(IpAddress anAddress) {
         if ( anAddress == null ) return null;
-        if ( anAddress instanceof IPv6Address ) {
-            IPv6Address adr = (IPv6Address) anAddress;
+        if ( anAddress instanceof IPv6Address adr ) {
             return getBottom().compareTo(adr)<=0 && getTop().compareTo(adr)>=0;
         }
         return null;

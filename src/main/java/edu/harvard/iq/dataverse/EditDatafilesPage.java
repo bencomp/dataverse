@@ -3187,8 +3187,8 @@ public class EditDatafilesPage implements java.io.Serializable {
     public String getWebloaderUrlForDataset(Dataset d) {
         String localeCode = session.getLocaleCode();
         User user = session.getUser();
-        if (user instanceof AuthenticatedUser) {
-            ApiToken apiToken = authService.getValidApiTokenForUser((AuthenticatedUser) user);
+        if (user instanceof AuthenticatedUser authenticatedUser) {
+            ApiToken apiToken = authService.getValidApiTokenForUser(authenticatedUser);
             return WebloaderUtil.getWebloaderUrl(d, apiToken, localeCode,
                     settingsService.getValueForKey(SettingsServiceBean.Key.WebloaderUrl));
         } else {

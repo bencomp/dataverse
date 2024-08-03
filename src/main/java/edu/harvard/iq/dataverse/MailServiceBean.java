@@ -344,12 +344,12 @@ public class MailServiceBean implements java.io.Serializable {
      * @return A string with a URL to the given Dataverse object.
      */
     private String getDvObjectLink(DvObject d) {
-        if (d instanceof Dataverse) {
-            return getDataverseLink((Dataverse) d);
-        } else if (d instanceof Dataset) {
-            return getDatasetLink((Dataset) d);
-        } else if (d instanceof DataFile) {
-            return getDatasetLink(((DataFile) d).getOwner());
+        if (d instanceof Dataverse dataverse) {
+            return getDataverseLink(dataverse);
+        } else if (d instanceof Dataset dataset) {
+            return getDatasetLink(dataset);
+        } else if (d instanceof DataFile file) {
+            return getDatasetLink(file.getOwner());
         }
         return "";
     }

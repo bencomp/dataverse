@@ -225,21 +225,21 @@ public class WorkflowServiceBean {
         WorkflowContext newCtxt = pending.reCreateContext(roleAssignees);
         final WorkflowContext ctxt = refresh(newCtxt,retrieveRequestedSettings( wf.getRequiredSettings()), getCurrentApiToken(newCtxt.getRequest().getAuthenticatedUser()));
         WorkflowStepResult res = pendingStep.resume(ctxt, pending.getLocalData(), body);
-        if (res instanceof Failure) {
-            logger.warning(((Failure) res).getReason());
-            userNotificationService.sendNotification(ctxt.getRequest().getAuthenticatedUser(), Timestamp.from(Instant.now()), UserNotification.Type.WORKFLOW_FAILURE, ctxt.getDataset().getLatestVersion().getId(), ((Failure) res).getMessage());
+        if (res instanceof Failure failure) {
+            logger.warning(failure.getReason());
+            userNotificationService.sendNotification(ctxt.getRequest().getAuthenticatedUser(), Timestamp.from(Instant.now()), UserNotification.Type.WORKFLOW_FAILURE, ctxt.getDataset().getLatestVersion().getId(), failure.getMessage());
             //UserNotification isn't meant to be a long-term record and doesn't store the comment, so we'll also keep it as a workflow comment
-            WorkflowComment wfc = new WorkflowComment(ctxt.getDataset().getLatestVersion(), WorkflowComment.Type.WORKFLOW_FAILURE, ((Failure) res).getMessage(), ctxt.getRequest().getAuthenticatedUser());
+            WorkflowComment wfc = new WorkflowComment(ctxt.getDataset().getLatestVersion(), WorkflowComment.Type.WORKFLOW_FAILURE, failure.getMessage(), ctxt.getRequest().getAuthenticatedUser());
             datasets.addWorkflowComment(wfc);
-            rollback(wf, ctxt, (Failure) res, pending.getPendingStepIdx() - 1);
-        } else if (res instanceof Pending) {
-            pauseAndAwait(wf, ctxt, (Pending) res, pending.getPendingStepIdx());
+            rollback(wf, ctxt, failure, pending.getPendingStepIdx() - 1);
+        } else if (res instanceof Pending pending1) {
+            pauseAndAwait(wf, ctxt, pending1, pending.getPendingStepIdx());
         } else {
-            if (res instanceof Success) {
-                logger.info(((Success) res).getReason());
-                userNotificationService.sendNotification(ctxt.getRequest().getAuthenticatedUser(), Timestamp.from(Instant.now()), UserNotification.Type.WORKFLOW_SUCCESS, ctxt.getDataset().getLatestVersion().getId(), ((Success) res).getMessage());
+            if (res instanceof Success success) {
+                logger.info(success.getReason());
+                userNotificationService.sendNotification(ctxt.getRequest().getAuthenticatedUser(), Timestamp.from(Instant.now()), UserNotification.Type.WORKFLOW_SUCCESS, ctxt.getDataset().getLatestVersion().getId(), success.getMessage());
                 //UserNotification isn't meant to be a long-term record and doesn't store the comment, so we'll also keep it as a workflow comment
-                WorkflowComment wfc = new WorkflowComment(ctxt.getDataset().getLatestVersion(), WorkflowComment.Type.WORKFLOW_SUCCESS, ((Success) res).getMessage(), ctxt.getRequest().getAuthenticatedUser());
+                WorkflowComment wfc = new WorkflowComment(ctxt.getDataset().getLatestVersion(), WorkflowComment.Type.WORKFLOW_SUCCESS, success.getMessage(), ctxt.getRequest().getAuthenticatedUser());
                 datasets.addWorkflowComment(wfc);
         }
             executeSteps(wf, ctxt, pending.getPendingStepIdx() + 1);
@@ -293,13 +293,13 @@ public class WorkflowServiceBean {
                     logger.log(Level.INFO, "Workflow {0} step {1}: OK", new Object[]{ctxt.getInvocationId(), stepIdx});
                     em.merge(ctxt.getDataset());
                     ctxt = refresh(ctxt);
-                } else if (res instanceof Failure) {
-                    logger.log(Level.WARNING, "Workflow {0} failed: {1}", new Object[]{ctxt.getInvocationId(), ((Failure) res).getReason()});
-                    rollback(wf, ctxt, (Failure) res, stepIdx-1 );
+                } else if (res instanceof Failure failure) {
+                    logger.log(Level.WARNING, "Workflow {0} failed: {1}", new Object[]{ctxt.getInvocationId(), failure.getReason()});
+                    rollback(wf, ctxt, failure, stepIdx-1 );
                     return;
 
-                } else if (res instanceof Pending) {
-                    pauseAndAwait(wf, ctxt, (Pending) res, stepIdx);
+                } else if (res instanceof Pending pending) {
+                    pauseAndAwait(wf, ctxt, pending, stepIdx);
                     return;
                 }
                 

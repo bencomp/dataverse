@@ -40,8 +40,8 @@ public class AlphaNumericComparator implements Comparator<String>, Serializable 
             Object token2 = tokenizedList2.get(i);
 
             if (token1 instanceof BigDecimal) {
-                if (token2 instanceof BigDecimal) {
-                    int compareVal = ((Comparable<BigDecimal>) token1).compareTo((BigDecimal) token2);
+                if (token2 instanceof BigDecimal decimal) {
+                    int compareVal = ((Comparable<BigDecimal>) token1).compareTo(decimal);
                     if (compareVal != 0) {
                         return compareVal;
                     }

@@ -64,8 +64,8 @@ public class IpGroup extends PersistedGlobalGroup {
         if ( ipv6Ranges==null ) ipv6Ranges = new HashSet<>();
         
         range.setOwner(this);
-        if ( range instanceof IPv4Range ) {
-            ipv4Ranges.add((IPv4Range) range);
+        if ( range instanceof IPv4Range pv4Range ) {
+            ipv4Ranges.add(pv4Range);
         } else {
             ipv6Ranges.add((IPv6Range) range);
         }

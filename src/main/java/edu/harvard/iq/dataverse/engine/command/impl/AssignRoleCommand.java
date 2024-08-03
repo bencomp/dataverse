@@ -63,8 +63,7 @@ public class AssignRoleCommand extends AbstractCommand<RoleAssignment> {
 
     @Override
     public RoleAssignment execute(CommandContext ctxt) throws CommandException {
-        if (grantee instanceof AuthenticatedUser) {
-            AuthenticatedUser user = (AuthenticatedUser) grantee;
+        if (grantee instanceof AuthenticatedUser user) {
             if (user.isDeactivated()) {
                 throw new IllegalCommandException("User " + user.getUserIdentifier() + " is deactivated and cannot be given a role.", this);
             }

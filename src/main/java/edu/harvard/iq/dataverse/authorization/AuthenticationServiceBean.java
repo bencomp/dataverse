@@ -964,10 +964,9 @@ public class AuthenticationServiceBean {
 
     public ApiToken getValidApiTokenForUser(User user) {
         ApiToken apiToken = null;
-        if (user instanceof AuthenticatedUser) {
-            apiToken = getValidApiTokenForAuthenticatedUser((AuthenticatedUser) user);
-        } else if (user instanceof PrivateUrlUser) {
-            PrivateUrlUser privateUrlUser = (PrivateUrlUser) user;
+        if (user instanceof AuthenticatedUser authenticatedUser) {
+            apiToken = getValidApiTokenForAuthenticatedUser(authenticatedUser);
+        } else if (user instanceof PrivateUrlUser privateUrlUser) {
             
             PrivateUrl privateUrl = privateUrlService.getPrivateUrlFromDatasetId(privateUrlUser.getDatasetId());
             apiToken = new ApiToken();

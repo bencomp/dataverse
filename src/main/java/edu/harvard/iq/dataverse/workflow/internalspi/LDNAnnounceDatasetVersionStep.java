@@ -172,8 +172,7 @@ public class LDNAnnounceDatasetVersionStep implements WorkflowStep {
                 }
 
                 if (jv != null) {
-                    if (jv instanceof JsonArray) {
-                        JsonArray rels = (JsonArray) jv;
+                    if (jv instanceof JsonArray rels) {
                         for (JsonObject jo : rels.getValuesAs(JsonObject.class)) {
                             String id = getBestPubId(jo);
                             relArrayBuilder.add(Json.createObjectBuilder().add("id", id).add("ietf:cite-as", id)

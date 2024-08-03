@@ -960,17 +960,17 @@ public class BagGenerator {
         // Also check for any indicative type
         Object o = item.get("@type");
         if (o != null) {
-            if (o instanceof JSONArray) {
+            if (o instanceof JSONArray array) {
                 // As part of an array
-                for (int i = 0; i < ((JSONArray) o).length(); i++) {
-                    String type = ((JSONArray) o).getString(i).trim();
+                for (int i = 0; i < array.length(); i++) {
+                    String type = array.getString(i).trim();
                     if ("http://cet.ncsa.uiuc.edu/2016/Folder".equals(type)) {
                         return true;
                     }
                 }
-            } else if (o instanceof String) {
+            } else if (o instanceof String string) {
                 // Or as the only type
-                String type = ((String) o).trim();
+                String type = string.trim();
                 if ("http://cet.ncsa.uiuc.edu/2016/Folder".equals(type)) {
                     return true;
                 }

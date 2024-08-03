@@ -300,7 +300,7 @@ public class ManagePermissionsPage implements java.io.Serializable {
     }
 
     public void initAccessSettings() {
-        if (dvObject instanceof Dataverse) {
+        if (dvObject instanceof Dataverse dataverse) {
             authenticatedUsersContributorRoleAlias = "";
 
             List<RoleAssignment> aUsersRoleAssignments = roleService.directRoleAssignments(AuthenticatedUsers.get(), dvObject);
@@ -311,7 +311,7 @@ public class ManagePermissionsPage implements java.io.Serializable {
                 // @todo handle case where more than one role has been assigned to the AutenticatedUsers group!
             }
 
-            defaultContributorRoleAlias = ((Dataverse) dvObject).getDefaultContributorRole() == null ? DataverseRole.NONE : ((Dataverse) dvObject).getDefaultContributorRole().getAlias();
+            defaultContributorRoleAlias = dataverse.getDefaultContributorRole() == null ? DataverseRole.NONE : dataverse.getDefaultContributorRole().getAlias();
         } else {
             //There are only default roles assigned at the dataverse level
             defaultContributorRoleAlias = DataverseRole.NONE;
@@ -346,8 +346,7 @@ public class ManagePermissionsPage implements java.io.Serializable {
         }
 
         // set dataverse default contributor role
-        if (dvObject instanceof Dataverse) {
-            Dataverse dv = (Dataverse) dvObject;
+        if (dvObject instanceof Dataverse dv) {
             DataverseRole defaultRole = roleService.findBuiltinRoleByAlias(defaultContributorRoleAlias);
             if (!defaultRole.equals(dv.getDefaultContributorRole())) {
                 try {
@@ -506,15 +505,14 @@ public class ManagePermissionsPage implements java.io.Serializable {
      * @param type The type of notification.
      */
     private void notifyRoleChange(RoleAssignee ra, UserNotification.Type type) {
-        if (ra instanceof AuthenticatedUser) {
-            userNotificationService.sendNotification((AuthenticatedUser) ra, new Timestamp(new Date().getTime()), type, dvObject.getId());
-        } else if (ra instanceof ExplicitGroup) {
-            ExplicitGroup eg = (ExplicitGroup) ra;
+        if (ra instanceof AuthenticatedUser user) {
+            userNotificationService.sendNotification(user, new Timestamp(new Date().getTime()), type, dvObject.getId());
+        } else if (ra instanceof ExplicitGroup eg) {
             Set<String> explicitGroupMembers = eg.getContainedRoleAssgineeIdentifiers();
             for (String id : explicitGroupMembers) {
                 RoleAssignee explicitGroupMember = roleAssigneeService.getRoleAssignee(id);
-                if (explicitGroupMember instanceof AuthenticatedUser) {
-                    userNotificationService.sendNotification((AuthenticatedUser) explicitGroupMember, new Timestamp(new Date().getTime()), type, dvObject.getId());
+                if (explicitGroupMember instanceof AuthenticatedUser user) {
+                    userNotificationService.sendNotification(user, new Timestamp(new Date().getTime()), type, dvObject.getId());
                 }
             }
         }

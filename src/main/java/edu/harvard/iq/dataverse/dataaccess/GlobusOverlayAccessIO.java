@@ -141,10 +141,10 @@ public class GlobusOverlayAccessIO<T extends DvObject> extends AbstractRemoteOve
         if (isManaged() && (dvObject!=null)) {
             
             Dataset ds = null;
-            if (dvObject instanceof Dataset) {
-                ds = (Dataset) dvObject;
-            } else if (dvObject instanceof DataFile) {
-                ds = ((DataFile) dvObject).getOwner();
+            if (dvObject instanceof Dataset dataset) {
+                ds = dataset;
+            } else if (dvObject instanceof DataFile file) {
+                ds = file.getOwner();
             }
             relativeDirectoryPath = "/" + ds.getAuthority() + "/" + ds.getIdentifier();
         } else {

@@ -22,8 +22,7 @@ public class ConstraintViolationUtil {
         }
         while (cause.getCause() != null) {
             cause = cause.getCause();
-            if (cause instanceof ConstraintViolationException) {
-                ConstraintViolationException constraintViolationException = (ConstraintViolationException) cause;
+            if (cause instanceof ConstraintViolationException constraintViolationException) {
                 for (ConstraintViolation<?> violation : constraintViolationException.getConstraintViolations()) {
                     sb.append(" Invalid value: <<<").append(violation.getInvalidValue()).append(">>> for ")
                             .append(violation.getPropertyPath()).append(" at ")

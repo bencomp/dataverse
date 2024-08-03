@@ -254,8 +254,7 @@ public class DataCiteDOIProvider extends AbstractDOIProvider {
      */
     String getPidStatus(DvObject dvObject) {
         String status = NONE;
-        if (dvObject instanceof Dataset) {
-            Dataset dataset = (Dataset) dvObject;
+        if (dvObject instanceof Dataset dataset) {
             // return true, if all published versions were deaccessioned
             boolean hasDeaccessionedVersions = false;
             for (DatasetVersion testDsv : dataset.getVersions()) {
@@ -281,8 +280,7 @@ public class DataCiteDOIProvider extends AbstractDOIProvider {
                 }
             }
             return status;
-        } else if (dvObject instanceof DataFile) {
-            DataFile df = (DataFile) dvObject;
+        } else if (dvObject instanceof DataFile df) {
             // return true, if all published versions were deaccessioned
             boolean isInDeaccessionedVersions = false;
             for (FileMetadata fmd : df.getFileMetadatas()) {

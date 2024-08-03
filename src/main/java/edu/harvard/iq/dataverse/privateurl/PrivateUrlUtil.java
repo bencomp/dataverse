@@ -156,8 +156,8 @@ public class PrivateUrlUtil {
 
     static PrivateUrlUser getPrivateUrlUserFromRoleAssignment(RoleAssignment roleAssignment, RoleAssignee roleAssignee) {
         if (roleAssignment != null) {
-            if (roleAssignee instanceof PrivateUrlUser) {
-                return (PrivateUrlUser) roleAssignee;
+            if (roleAssignee instanceof PrivateUrlUser user) {
+                return user;
             }
         }
         return null;

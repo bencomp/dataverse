@@ -127,9 +127,9 @@ public class HttpSendReceiveClientStep implements WorkflowStep {
         }
         
         String bodyKey = (rollback ? "rollbackBody" : "body");
-        if ( params.containsKey(bodyKey) && m instanceof EntityEnclosingMethod ) {
+        if ( params.containsKey(bodyKey) && m instanceof EntityEnclosingMethod method ) {
             String body = params.get(bodyKey);
-            ((EntityEnclosingMethod)m).setRequestEntity(new StringRequestEntity(process( body, templateParams)));
+            method.setRequestEntity(new StringRequestEntity(process( body, templateParams)));
         }
         
         return m;

@@ -50,8 +50,7 @@ public class AddRoleAssigneesToExplicitGroupCommand extends AbstractCommand<Expl
             if ( ra == null ) {
                 nonexistentRAs.add( rai );
             } else {
-                if (ra instanceof AuthenticatedUser) {
-                    AuthenticatedUser user = (AuthenticatedUser) ra;
+                if (ra instanceof AuthenticatedUser user) {
                     if (user.isDeactivated()) {
                         throw new IllegalCommandException("User " + user.getUserIdentifier() + " is deactivated and cannot be added to a group.", this);
                     }

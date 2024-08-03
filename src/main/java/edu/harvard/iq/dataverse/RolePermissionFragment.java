@@ -78,8 +78,8 @@ public class RolePermissionFragment implements java.io.Serializable {
 
     public void setDvObject(DvObject dvObject) {
         this.dvObject = dvObject;
-        if (dvObject instanceof Dataverse) {
-            inheritAssignments = !((Dataverse) dvObject).isPermissionRoot();
+        if (dvObject instanceof Dataverse dataverse) {
+            inheritAssignments = !dataverse.isPermissionRoot();
         }
     }
 
@@ -150,7 +150,7 @@ public class RolePermissionFragment implements java.io.Serializable {
         List<DataverseRole> roles = new LinkedList<>();
         if (dvObject != null && (dvObject instanceof Dataverse || dvObject instanceof Dataset)) {
             // current the available roles for a dataset are gotten from its parent
-            Dataverse dv = dvObject instanceof Dataverse ? (Dataverse) dvObject : ((Dataset) dvObject).getOwner();
+            Dataverse dv = dvObject instanceof Dataverse d ? d : ((Dataset) dvObject).getOwner();
 
             roles.addAll(roleService.availableRoles(dv.getId()));
 

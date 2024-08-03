@@ -431,8 +431,8 @@ public abstract class DvObject extends DataverseEntity implements java.io.Serial
     }
 
     public Dataverse getDataverseContext() {
-        if (this instanceof Dataverse) {
-            return (Dataverse) this;
+        if (this instanceof Dataverse dataverse) {
+            return dataverse;
         } else if (this.getOwner() != null){
             return this.getOwner().getDataverseContext();
         }
@@ -444,8 +444,7 @@ public abstract class DvObject extends DataverseEntity implements java.io.Serial
         if (this instanceof Dataverse){
             throw new UnsupportedOperationException("Not supported yet.");
         }
-        if (this instanceof Dataset){
-            Dataset dataset = (Dataset) this;
+        if (this instanceof Dataset dataset){
             return dataset.getLatestVersion().getAuthorsStr();
         }
         if (this instanceof DataFile){

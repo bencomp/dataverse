@@ -175,8 +175,7 @@ public class EZIdDOIProvider extends AbstractDOIProvider {
                     + "/" + dvObject.getIdentifier());
             try {
                 modifyIdentifierTargetURL(dvObject);
-                if (dvObject instanceof Dataset) {
-                    Dataset dataset = (Dataset) dvObject;
+                if (dvObject instanceof Dataset dataset) {
                     for (DataFile df : dataset.getFiles()) {
                         metadata = new HashMap<>();
                         metadata.put("_target", "http://ezid.cdlib.org/id/" + df.getProtocol() + ":" + df.getAuthority()

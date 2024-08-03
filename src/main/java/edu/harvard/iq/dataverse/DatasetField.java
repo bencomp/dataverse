@@ -566,8 +566,8 @@ public class DatasetField implements Serializable {
         dsf.setDatasetFieldType(datasetFieldType);
         
         if (versionOrTemplate != null) {
-            if (versionOrTemplate instanceof DatasetVersion) {
-                dsf.setDatasetVersion((DatasetVersion) versionOrTemplate);               
+            if (versionOrTemplate instanceof DatasetVersion version) {
+                dsf.setDatasetVersion(version);               
             } else {
                 dsf.setTemplate((Template) versionOrTemplate);
             }

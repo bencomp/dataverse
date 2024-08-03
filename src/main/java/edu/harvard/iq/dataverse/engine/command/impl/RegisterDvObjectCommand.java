@@ -41,7 +41,7 @@ public class RegisterDvObjectCommand extends AbstractVoidCommand {
     @Override
     protected void executeImpl(CommandContext ctxt) throws CommandException {
         
-        DvObjectContainer container = (target instanceof DvObjectContainer) ? (DvObjectContainer) target : target.getOwner();
+        DvObjectContainer container = (target instanceof DvObjectContainer doc) ? doc : target.getOwner();
         // Get the pidProvider that is configured to mint new IDs
         PidProvider pidProvider = ctxt.dvObjects().getEffectivePidGenerator(container);
         if(this.migrateHandle){

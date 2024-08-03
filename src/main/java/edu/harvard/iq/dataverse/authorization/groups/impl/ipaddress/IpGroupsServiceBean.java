@@ -98,14 +98,12 @@ public class IpGroupsServiceBean {
     }
     
     public Set<IpGroup> findAllIncludingIp( IpAddress ipa ) {
-        if ( ipa instanceof IPv4Address ) {
-            IPv4Address ip4 = (IPv4Address) ipa;
+        if ( ipa instanceof IPv4Address ip4 ) {
             List<IpGroup> groupList = em.createNamedQuery("IPv4Range.findGroupsContainingAddressAsLong", IpGroup.class)
                     .setParameter("addressAsLong", ip4.toBigInteger()).getResultList();
             return new HashSet<>(groupList);
 
-        } else if ( ipa instanceof IPv6Address ) {
-            IPv6Address ip6 = (IPv6Address) ipa;
+        } else if ( ipa instanceof IPv6Address ip6 ) {
             long[] ip6arr = ip6.toLongArray();
             List<IpGroup> groupList = em.createNamedQuery("IPv6Range.findGroupsContainingABCD", IpGroup.class)
                     .setParameter("a", ip6arr[0])

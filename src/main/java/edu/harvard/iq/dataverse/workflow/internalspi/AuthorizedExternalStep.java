@@ -135,9 +135,9 @@ public class AuthorizedExternalStep implements WorkflowStep {
         }
         
         String bodyKey = (rollback ? "rollbackBody" : "body");
-        if ( params.containsKey(bodyKey) && m instanceof EntityEnclosingMethod ) {
+        if ( params.containsKey(bodyKey) && m instanceof EntityEnclosingMethod method ) {
             String body = params.get(bodyKey);
-            ((EntityEnclosingMethod)m).setRequestEntity(new StringRequestEntity(process( body, templateParams), params.getOrDefault("contentType", "text/plain"), StandardCharsets.UTF_8.name()));
+            method.setRequestEntity(new StringRequestEntity(process( body, templateParams), params.getOrDefault("contentType", "text/plain"), StandardCharsets.UTF_8.name()));
         }
         
         return m;

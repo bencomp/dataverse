@@ -1061,9 +1061,9 @@ public class SolrSearchResult {
 			 */
 			String badString = "null";
 			if (!identifier.contains(badString)) {
-				if (entity != null && entity instanceof Dataset) {
-					if (this.isHarvested() && ((Dataset) entity).getHarvestedFrom() != null) {
-						String remoteArchiveUrl = ((Dataset) entity).getRemoteArchiveURL();
+				if (entity != null && entity instanceof Dataset dataset) {
+					if (this.isHarvested() && dataset.getHarvestedFrom() != null) {
+						String remoteArchiveUrl = dataset.getRemoteArchiveURL();
 						if (remoteArchiveUrl != null) {
 							return remoteArchiveUrl;
 						}

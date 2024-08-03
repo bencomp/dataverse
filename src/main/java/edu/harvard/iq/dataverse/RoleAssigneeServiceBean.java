@@ -123,10 +123,9 @@ public class RoleAssigneeServiceBean {
 
     public List<AuthenticatedUser> getExplicitUsers(RoleAssignee ra) {
         List<AuthenticatedUser> explicitUsers = new ArrayList<>();
-        if (ra instanceof AuthenticatedUser) {
-            explicitUsers.add((AuthenticatedUser) ra);
-        } else if (ra instanceof ExplicitGroup) {
-            ExplicitGroup group = (ExplicitGroup) ra;
+        if (ra instanceof AuthenticatedUser user) {
+            explicitUsers.add(user);
+        } else if (ra instanceof ExplicitGroup group) {
             for (String raIdentifier : group.getContainedRoleAssgineeIdentifiers()) {
                 explicitUsers.addAll(getExplicitUsers(getRoleAssignee(raIdentifier)));
             }

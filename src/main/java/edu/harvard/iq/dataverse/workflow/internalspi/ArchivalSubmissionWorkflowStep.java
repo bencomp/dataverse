@@ -36,10 +36,10 @@ public class ArchivalSubmissionWorkflowStep implements WorkflowStep {
         Map<String, Object> typedSettings = context.getSettings();
         for (String setting : (typedSettings.keySet())) {
             Object val = typedSettings.get(setting);
-            if (val instanceof String) {
-                requestedSettings.put(setting, (String) val);
-            } else if (val instanceof Boolean) {
-                requestedSettings.put(setting, ((Boolean) val).booleanValue() ? "true" : "false");
+            if (val instanceof String string) {
+                requestedSettings.put(setting, string);
+            } else if (val instanceof Boolean boolean1) {
+                requestedSettings.put(setting, boolean1.booleanValue() ? "true" : "false");
             } else if (val instanceof Long) {
                 requestedSettings.put(setting, val.toString());
             }

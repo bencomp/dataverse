@@ -481,11 +481,11 @@ public class JSONLDUtil {
 
     private static JsonArray getValues(JsonValue val, boolean allowMultiples, String name) {
         JsonArray valArray = null;
-        if (val instanceof JsonArray) {
-            if ((((JsonArray) val).size() > 1) && !allowMultiples) {
+        if (val instanceof JsonArray array) {
+            if ((array.size() > 1) && !allowMultiples) {
                 throw new BadRequestException("Array for single value notsupported: " + name);
             } else {
-                valArray = (JsonArray) val;
+                valArray = array;
             }
         } else {
             valArray = Json.createArrayBuilder().add(val).build();

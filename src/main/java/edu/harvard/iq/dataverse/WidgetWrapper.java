@@ -57,20 +57,20 @@ public class WidgetWrapper implements java.io.Serializable {
                     if ("datafile".equals(widgetScope)) {
                         //todo: add logic for when we add file widgets
                     }
-                } else if (dvo instanceof Dataset) {
+                } else if (dvo instanceof Dataset dataset) {
                     switch (widgetScope) {
                         case "dataverse": 
                             break; // keep looping
                         case "dataset":
-                            if (((Dataset) dvo).getGlobalId().asString().equals(widgetHome)) {
+                            if (dataset.getGlobalId().asString().equals(widgetHome)) {
                                 return true;
                             }   break;
                         default:
                             return false; // scope is for lower type dvObject
                     }
-                } else if (dvo instanceof Dataverse) {
+                } else if (dvo instanceof Dataverse dataverse) {
                     if ("dataverse".equals(widgetScope)) {
-                        if (((Dataverse) dvo).getAlias().equals(widgetHome)) {
+                        if (dataverse.getAlias().equals(widgetHome)) {
                             return true;
                         }
                     } else {

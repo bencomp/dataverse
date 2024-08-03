@@ -181,8 +181,8 @@ public class MoveDataverseCommandTest {
                     @Override 
                     public Dataverse find(Object pk) {
                     // fake this for what we need
-                        if (pk instanceof Long) {
-                            if ((Long)pk == 10) {
+                        if (pk instanceof Long long1) {
+                            if (long1 == 10) {
                                 return grandchildEE;
                             }
                         }
@@ -254,8 +254,8 @@ public class MoveDataverseCommandTest {
                     @Override
                     public Dataset find(Object pk) {
                         // fake this for what we need
-                        if (pk instanceof Long) {
-                            if ((Long)pk == 2) {
+                        if (pk instanceof Long long1) {
+                            if (long1 == 2) {
                                 return datasetCC;
                             }
                         }

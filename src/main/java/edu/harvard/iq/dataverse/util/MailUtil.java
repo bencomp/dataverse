@@ -18,12 +18,12 @@ public class MailUtil {
         String datasetDisplayName = "";
 
         if (objectOfNotification != null) {
-            if (objectOfNotification instanceof Dataset) {
-                datasetDisplayName = ((Dataset) objectOfNotification).getDisplayName();
-            } else if (objectOfNotification instanceof DatasetVersion) {
-                datasetDisplayName = ((DatasetVersion) objectOfNotification).getDataset().getDisplayName();
-            } else if (objectOfNotification instanceof DataFile) {
-                datasetDisplayName = ((DataFile) objectOfNotification).getOwner().getDisplayName();
+            if (objectOfNotification instanceof Dataset dataset) {
+                datasetDisplayName = dataset.getDisplayName();
+            } else if (objectOfNotification instanceof DatasetVersion version) {
+                datasetDisplayName = version.getDataset().getDisplayName();
+            } else if (objectOfNotification instanceof DataFile file) {
+                datasetDisplayName = file.getOwner().getDisplayName();
             }
         }
 

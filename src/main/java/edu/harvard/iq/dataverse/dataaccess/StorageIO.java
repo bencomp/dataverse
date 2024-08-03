@@ -253,8 +253,8 @@ public abstract class StorageIO<T extends DvObject> {
     }
 
     public WritableByteChannel getWriteChannel() throws IOException {
-        if (canWrite() && channel != null && channel instanceof WritableByteChannel) {
-            return (WritableByteChannel) channel;
+        if (canWrite() && channel != null && channel instanceof WritableByteChannel byteChannel) {
+            return byteChannel;
         }
 
         throw new IOException("No NIO write access in this DataAccessObject.");

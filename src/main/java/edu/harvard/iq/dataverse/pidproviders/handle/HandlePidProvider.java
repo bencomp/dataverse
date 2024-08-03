@@ -341,8 +341,7 @@ public class HandlePidProvider extends AbstractPidProvider {
     public String modifyIdentifierTargetURL(DvObject dvObject) throws Exception  {
         logger.log(Level.FINE,"modifyIdentifier");
         reRegisterHandle(dvObject);
-        if(dvObject instanceof Dataset){
-            Dataset dataset = (Dataset) dvObject;
+        if(dvObject instanceof Dataset dataset){
             dataset.getFiles().forEach((df) -> {
                 reRegisterHandle(df);
             });            

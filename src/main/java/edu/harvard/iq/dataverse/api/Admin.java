@@ -1115,8 +1115,7 @@ public class Admin extends AbstractApiBean {
                     } catch (Exception ex) {
                         Throwable cause = ex;
                         while (cause != null) {
-                            if (cause instanceof ConstraintViolationException) {
-                                ConstraintViolationException constraintViolationException = (ConstraintViolationException) cause;
+                            if (cause instanceof ConstraintViolationException constraintViolationException) {
                                 for (ConstraintViolation<?> constraintViolation : constraintViolationException
                                         .getConstraintViolations()) {
                                     String databaseRow = constraintViolation.getLeafBean().toString();
@@ -1187,8 +1186,7 @@ public class Admin extends AbstractApiBean {
         } catch (Exception ex) {
             Throwable cause = ex;
             while (cause != null) {
-                if (cause instanceof ConstraintViolationException) {
-                    ConstraintViolationException constraintViolationException = (ConstraintViolationException) cause;
+                if (cause instanceof ConstraintViolationException constraintViolationException) {
                     for (ConstraintViolation<?> constraintViolation : constraintViolationException
                             .getConstraintViolations()) {
                         String databaseRow = constraintViolation.getLeafBean().toString();

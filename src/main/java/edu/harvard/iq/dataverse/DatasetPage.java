@@ -1146,8 +1146,8 @@ public class DatasetPage implements java.io.Serializable {
     public SwiftAccessIO getSwiftObject() {
         try {
             StorageIO<DataFile> storageIO = getInitialDataFile() == null ? null : getInitialDataFile().getStorageIO();
-            if (storageIO != null && storageIO instanceof SwiftAccessIO) {
-                return (SwiftAccessIO)storageIO;
+            if (storageIO != null && storageIO instanceof SwiftAccessIO<?> iO) {
+                return iO;
             } else {
                 logger.fine("DatasetPage: Failed to cast storageIO as SwiftAccessIO (most likely because storageIO is a FileAccessIO)");
             }
@@ -1300,8 +1300,8 @@ public class DatasetPage implements java.io.Serializable {
         SwiftAccessIO swiftObject = null;
         try {
             StorageIO<DataFile> storageIO = metadata.getDataFile().getStorageIO();
-            if (storageIO != null && storageIO instanceof SwiftAccessIO) {
-                swiftObject = (SwiftAccessIO)storageIO;
+            if (storageIO != null && storageIO instanceof SwiftAccessIO<?> iO) {
+                swiftObject = iO;
                 swiftObject.open();
             }
 
@@ -6085,8 +6085,8 @@ public class DatasetPage implements java.io.Serializable {
         ApiToken apiToken = null;
         User user = session.getUser();
         //Not enabled for PrivateUrlUsers (who wouldn't have write permissions anyway)
-        if (user instanceof AuthenticatedUser) {
-            apiToken = authService.getValidApiTokenForAuthenticatedUser((AuthenticatedUser) user);
+        if (user instanceof AuthenticatedUser authenticatedUser) {
+            apiToken = authService.getValidApiTokenForAuthenticatedUser(authenticatedUser);
         }
         ExternalToolHandler externalToolHandler = new ExternalToolHandler(externalTool, dataset, apiToken, session.getLocaleCode());
         PrimeFaces.current().executeScript(externalToolHandler.getConfigureScript());
@@ -6654,8 +6654,8 @@ public class DatasetPage implements java.io.Serializable {
     public String getWebloaderUrlForDataset(Dataset d) {
         String localeCode = session.getLocaleCode();
         User user = session.getUser();
-        if (user instanceof AuthenticatedUser) {
-            ApiToken apiToken = authService.getValidApiTokenForUser((AuthenticatedUser) user);
+        if (user instanceof AuthenticatedUser authenticatedUser) {
+            ApiToken apiToken = authService.getValidApiTokenForUser(authenticatedUser);
             return WebloaderUtil.getWebloaderUrl(d, apiToken, localeCode,
                     settingsService.getValueForKey(SettingsServiceBean.Key.WebloaderUrl));
         } else {

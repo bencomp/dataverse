@@ -153,8 +153,8 @@ public class ExplicitGroup implements Group, java.io.Serializable {
     
     public void add( User u ) {
         if ( u == null ) throw new IllegalArgumentException("Cannot add a null user to an explicit group.");
-        if ( u instanceof AuthenticatedUser ) {
-            containedAuthenticatedUsers.add((AuthenticatedUser)u);
+        if ( u instanceof AuthenticatedUser user ) {
+            containedAuthenticatedUsers.add(user);
         } else {
             containedRoleAssignees.add( u.getIdentifier() );
         }
@@ -173,13 +173,11 @@ public class ExplicitGroup implements Group, java.io.Serializable {
             throw new GroupException(this, "A group cannot be added to itself.");
         }
         
-        if ( ra instanceof User ) {
-            add( (User)ra );
+        if ( ra instanceof User user ) {
+            add( user );
             
         } else {
-            if ( ra instanceof ExplicitGroup ) {
-                // validate no circular deps
-                ExplicitGroup g = (ExplicitGroup) ra;
+            if ( ra instanceof ExplicitGroup g ) {
                 if ( g.structuralContains(this) ) {
                     throw new GroupException(this, "A group cannot be added to one of its childs.");
                 }
@@ -285,13 +283,13 @@ public class ExplicitGroup implements Group, java.io.Serializable {
      */
     public boolean structuralContains(RoleAssignee ra) {
         // direct containment
-        if ( ra instanceof AuthenticatedUser ) {
-            if ( containedAuthenticatedUsers.contains((AuthenticatedUser)ra) ) {
+        if ( ra instanceof AuthenticatedUser user ) {
+            if ( containedAuthenticatedUsers.contains(user) ) {
                 return true;
             }
             
-        } else if ( ra instanceof ExplicitGroup ) {
-            if ( containedExplicitGroups.contains((ExplicitGroup)ra) ) { 
+        } else if ( ra instanceof ExplicitGroup group ) {
+            if ( containedExplicitGroups.contains(group) ) { 
                 return true;
             }
             
@@ -318,8 +316,7 @@ public class ExplicitGroup implements Group, java.io.Serializable {
      */
     protected boolean containsDirectly( DataverseRequest req ) {
         User ra = req.getUser();
-        if ( ra instanceof AuthenticatedUser ) {
-            AuthenticatedUser au = (AuthenticatedUser) ra;
+        if ( ra instanceof AuthenticatedUser au ) {
             if ( containedAuthenticatedUsers.contains(au) ) {
                 return true;
             }    
@@ -333,8 +330,7 @@ public class ExplicitGroup implements Group, java.io.Serializable {
             // Need to retrieve the actual role assingee, and let it's logic decide.
             RoleAssignee cra = provider.findRoleAssignee(craIdtf);
             if ( cra != null ) {
-                if ( cra instanceof Group ) {
-                    Group cgrp = (Group) cra;
+                if ( cra instanceof Group cgrp ) {
                     if ( cgrp.contains(req) ) {
                         return true;
                     }

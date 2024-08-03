@@ -86,8 +86,8 @@ public abstract class AbstractDOIProvider extends AbstractPidProvider {
 
         Dataset dataset = null;
 
-        if (dvObject instanceof Dataset) {
-            dataset = (Dataset) dvObject;
+        if (dvObject instanceof Dataset dataset1) {
+            dataset = dataset1;
         } else {
             dataset = (Dataset) dvObject.getOwner();
         }

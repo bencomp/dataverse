@@ -158,12 +158,12 @@ public class OAIServlet extends HttpServlet {
                 exporter = null;
             }
 
-            if (exporter != null && (exporter instanceof XMLExporter) && exporter.isHarvestable()) {
+            if (exporter != null && (exporter instanceof XMLExporter lExporter) && exporter.isHarvestable()) {
                 MetadataFormat metadataFormat;
 
                 metadataFormat = MetadataFormat.metadataFormat(formatName);
-                metadataFormat.withNamespace(((XMLExporter) exporter).getXMLNameSpace());
-                metadataFormat.withSchemaLocation(((XMLExporter) exporter).getXMLSchemaLocation());
+                metadataFormat.withNamespace(lExporter.getXMLNameSpace());
+                metadataFormat.withSchemaLocation(lExporter.getXMLSchemaLocation());
 
                 if (metadataFormat != null) {
                     context.withMetadataFormat(metadataFormat);

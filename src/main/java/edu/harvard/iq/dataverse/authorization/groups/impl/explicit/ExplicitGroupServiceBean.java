@@ -158,11 +158,11 @@ public class ExplicitGroupServiceBean {
                               .setParameter("authenticatedUserIdentifier", ra.getIdentifier().substring(1))
                               .getResultList()
                   ));
-        } else if ( ra instanceof ExplicitGroup ) {
+        } else if ( ra instanceof ExplicitGroup group ) {
             return provider.updateProvider(
                     new HashSet<>(
                             em.createNamedQuery("ExplicitGroup.findByContainedExplicitGroupId", ExplicitGroup.class)
-                              .setParameter("containedExplicitGroupId", ((ExplicitGroup) ra).getId())
+                              .setParameter("containedExplicitGroupId", group.getId())
                               .getResultList()
                   ));
         } else {
@@ -215,19 +215,19 @@ public class ExplicitGroupServiceBean {
         }
         List<ExplicitGroup> groupList = new LinkedList<>();
         
-        if ( ra instanceof ExplicitGroup ) {
+        if ( ra instanceof ExplicitGroup group ) {
             for ( DvObject cur = o; cur != null; cur=cur.getOwner() ) {
                 groupList.addAll( em.createNamedQuery("ExplicitGroup.findByOwnerAndSubExGroupId", ExplicitGroup.class)
                   .setParameter("ownerId", cur.getId())
-                  .setParameter("subExGroupId", ((ExplicitGroup)ra).getId())
+                  .setParameter("subExGroupId", group.getId())
                   .getResultList() );
             }
             
-        } else if ( ra instanceof AuthenticatedUser ) {
+        } else if ( ra instanceof AuthenticatedUser user ) {
             for ( DvObject cur = o; cur != null; cur=cur.getOwner() ) {
                 groupList.addAll( em.createNamedQuery("ExplicitGroup.findByOwnerAndAuthUserId", ExplicitGroup.class)
                   .setParameter("ownerId", cur.getId())
-                  .setParameter("authUserId", ((AuthenticatedUser)ra).getId())
+                  .setParameter("authUserId", user.getId())
                   .getResultList() );
             }
             
@@ -272,10 +272,10 @@ public class ExplicitGroupServiceBean {
      * @param assignee User or Group 
      */
     public void revokeAllGroupsForAssignee(RoleAssignee assignee) {
-        if (assignee instanceof AuthenticatedUser) {
-            em.createNativeQuery("DELETE FROM explicitgroup_authenticateduser WHERE containedauthenticatedusers_id=" + ((AuthenticatedUser) assignee).getId()).executeUpdate();
-        } else if (assignee instanceof ExplicitGroup) {
-            em.createNativeQuery("DELETE FROM explicitgroup_explicitgroup WHERE containedexplicitgroups_id=" + ((ExplicitGroup) assignee).getId()).executeUpdate();
+        if (assignee instanceof AuthenticatedUser user) {
+            em.createNativeQuery("DELETE FROM explicitgroup_authenticateduser WHERE containedauthenticatedusers_id=" + user.getId()).executeUpdate();
+        } else if (assignee instanceof ExplicitGroup group) {
+            em.createNativeQuery("DELETE FROM explicitgroup_explicitgroup WHERE containedexplicitgroups_id=" + group.getId()).executeUpdate();
         }
     }
     

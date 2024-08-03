@@ -125,8 +125,8 @@ public class PermissionsWrapper implements java.io.Serializable {
         }
         
         User u = session.getUser();
-        return dvo instanceof Dataverse
-                ? canManageDataversePermissions(u, (Dataverse) dvo)
+        return dvo instanceof Dataverse d
+                ? canManageDataversePermissions(u, d)
                 : canManageDatasetPermissions(u, (Dataset) dvo);
     }
     
