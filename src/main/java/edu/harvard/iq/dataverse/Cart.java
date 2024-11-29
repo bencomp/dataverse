@@ -1,4 +1,5 @@
 package edu.harvard.iq.dataverse;
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class Cart {
         return entry;
     }
     
-    public void addItem(String title, String persistentId) throws Exception{
+    public void addItem(String title, String persistentId) throws Exception {
         if (!checkCartForItem(title, persistentId)) {
             contents.add(createEntry(title, persistentId));
         } else {
@@ -25,7 +26,7 @@ public class Cart {
         }
     }
 
-    public void removeItem(String title, String persistentId) throws Exception{
+    public void removeItem(String title, String persistentId) throws Exception {
         boolean result = contents.remove(createEntry(title, persistentId));
         if (result == false) {
             throw new Exception(title + " not in cart.");

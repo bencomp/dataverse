@@ -4,18 +4,23 @@ on:
        paths:
            - "**.java"
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
     checkstyle_job:
         runs-on: ubuntu-latest
         name: Checkstyle job
         steps:
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - name: Run check style
               uses: nikitasavinov/checkstyle-action@master
               with:
                   fail_on_error: true
+                  level: error
                   reporter: github-pr-review
+                  filter_mode: added
                   checkstyle_config: checkstyle.xml
                   github_token: ${{ secrets.GITHUB_TOKEN }}
-
